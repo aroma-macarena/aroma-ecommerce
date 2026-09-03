@@ -1,0 +1,32 @@
+name: Work item
+description: Create a feature, design, infrastructure, or documentation work item.
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe what needs to be done and why it is needed.
+      placeholder: Briefly describe the expected outcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: Define the conditions that must be met for this issue to be considered complete.
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add relevant links, mockups, dependencies, or technical considerations if applicable.
+    validations:
+      required: false
