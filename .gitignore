@@ -15,7 +15,11 @@ build
 
 # Environment files
 .env*
+!.env.example
 
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE
+.vscode
