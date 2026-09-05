@@ -8,6 +8,13 @@
       "when": 1788568082282,
       "tag": "0000_long_jocasta",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788574473423,
+      "tag": "0001_workable_lord_hawal",
+      "breakpoints": true
     }
   ]
 }

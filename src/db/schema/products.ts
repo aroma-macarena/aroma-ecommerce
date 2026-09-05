@@ -14,7 +14,7 @@ import { productStatus } from "./enums";
 export const productsTable = pgTable(
   "products",
   {
-    id: uuid("id").primaryKey().notNull(),
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
     associationId: uuid("association_id")
       .notNull()
       .references(() => associations.id, { onDelete: "restrict" }),
