@@ -19,10 +19,11 @@ App runs at `http://localhost:3000`.
 
 Copy `.env.example` to `.env.local` and provide the Neon connection strings:
 
-| Variable                | Description                     |
-| ----------------------- | ------------------------------- |
-| `DATABASE_URL`          | Pooled connection string (Neon) |
-| `DATABASE_URL_UNPOOLED` | Direct connection string (Neon) |
+| Variable                | Description                              |
+| ----------------------- | ---------------------------------------- |
+| `DATABASE_URL`          | Pooled connection string (Neon)          |
+| `DATABASE_URL_UNPOOLED` | Direct connection string (Neon)          |
+| `ALLOW_DB_SEED`         | Set to `true` to enable database seeding |
 
 ## Scripts
 
@@ -37,3 +38,4 @@ Copy `.env.example` to `.env.local` and provide the Neon connection strings:
 | `pnpm db:migrate`  | Apply pending migrations       |
 | `pnpm db:check`    | Validate migration consistency |
 | `pnpm db:studio`   | Open Drizzle Studio            |
+| `pnpm db:seed`     | Seed the database              |

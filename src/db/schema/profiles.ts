@@ -6,7 +6,7 @@ import { sql } from "drizzle-orm";
 export const profilesTable = pgTable(
   "profiles",
   {
-    id: uuid("id").primaryKey().notNull(),
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
     authUserId: varchar("auth_user_id", { length: 255 }).notNull().unique(),
     associationId: uuid("association_id").references(() => associations.id, {
       onDelete: "restrict",

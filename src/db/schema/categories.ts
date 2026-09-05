@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const categoriesTable = pgTable("categories", {
-  id: uuid("id").primaryKey().notNull(),
+  id: uuid("id").primaryKey().defaultRandom().notNull(),
   name: varchar("name", { length: 100 }).notNull(),
   slug: varchar("slug", { length: 120 }).notNull().unique(),
   description: text("description"),

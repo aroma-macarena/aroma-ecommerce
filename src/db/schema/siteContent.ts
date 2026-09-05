@@ -2,7 +2,7 @@ import { pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { profilesTable as profiles } from "./profiles";
 
 export const siteContentTable = pgTable("site_content", {
-  id: uuid("id").primaryKey().notNull(),
+  id: uuid("id").primaryKey().defaultRandom().notNull(),
   key: varchar("key", { length: 100 }).notNull().unique(),
   title: varchar("title", { length: 250 }),
   content: text("content").notNull(),

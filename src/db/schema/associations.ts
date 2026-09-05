@@ -2,7 +2,7 @@ import { pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { associationStatus } from "./enums";
 
 export const associationsTable = pgTable("associations", {
-  id: uuid("id").primaryKey().notNull(),
+  id: uuid("id").primaryKey().defaultRandom().notNull(),
   name: varchar("name", { length: 200 }).notNull(),
   slug: varchar("slug", { length: 200 }).notNull().unique(),
   description: text("description"),
