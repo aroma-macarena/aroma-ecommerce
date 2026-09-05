@@ -1,11 +1,11 @@
 {
-  "id": "835afc7b-c30d-4c32-96f5-b4b6c891e383",
+  "id": "697d2fe5-6c83-4581-ae3d-69686adbcff7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.profiles": {
-      "name": "profiles",
+    "public.associations": {
+      "name": "associations",
       "schema": "",
       "columns": {
         "id": {
@@ -14,40 +14,63 @@
           "primaryKey": true,
           "notNull": true
         },
-        "auth_user_id": {
-          "name": "auth_user_id",
-          "type": "varchar(255)",
+        "name": {
+          "name": "name",
+          "type": "varchar(200)",
           "primaryKey": false,
           "notNull": true
         },
-        "association_id": {
-          "name": "association_id",
-          "type": "uuid",
+        "slug": {
+          "name": "slug",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "name": {
-          "name": "name",
-          "type": "varchar(150)",
+        "history": {
+          "name": "history",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "email": {
-          "name": "email",
+        "location": {
+          "name": "location",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
-        "role": {
-          "name": "role",
-          "type": "user_role",
-          "typeSchema": "public",
+        "contact_name": {
+          "name": "contact_name",
+          "type": "varchar(150)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
+        },
+        "whatsapp_number": {
+          "name": "whatsapp_number",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "logo_object_key": {
+          "name": "logo_object_key",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cover_object_key": {
+          "name": "cover_object_key",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
         },
         "status": {
           "name": "status",
-          "type": "user_status",
+          "type": "association_status",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
@@ -55,41 +78,27 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "profiles_association_id_profiles_id_fk": {
-          "name": "profiles_association_id_profiles_id_fk",
-          "tableFrom": "profiles",
-          "tableTo": "profiles",
-          "columnsFrom": [
-            "association_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "profiles_auth_user_id_unique": {
-          "name": "profiles_auth_user_id_unique",
+        "associations_slug_unique": {
+          "name": "associations_slug_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "auth_user_id"
+            "slug"
           ]
         }
       },
@@ -134,14 +143,14 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         }
@@ -176,7 +185,7 @@
           "name": "product_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "object_key": {
           "name": "object_key",
@@ -206,14 +215,14 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         }
@@ -247,14 +256,19 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "ck_product_images_display_order_non_negative": {
+          "name": "ck_product_images_display_order_non_negative",
+          "value": "\"product_images\".\"display_order\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.product_presentations": {
@@ -271,7 +285,7 @@
           "name": "product_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "name": {
           "name": "name",
@@ -313,14 +327,14 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         }
@@ -337,14 +351,27 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "ck_products_quantity_positive": {
+          "name": "ck_products_quantity_positive",
+          "value": "\"product_presentations\".\"quantity\" IS NULL OR \"product_presentations\".\"quantity\" > 0"
+        },
+        "ck_products_reference_price_non_negative": {
+          "name": "ck_products_reference_price_non_negative",
+          "value": "\"product_presentations\".\"reference_price\" IS NULL OR \"product_presentations\".\"reference_price\" >= 0"
+        },
+        "ck_products_display_order_non_negative": {
+          "name": "ck_products_display_order_non_negative",
+          "value": "\"product_presentations\".\"display_order\" >= 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.products": {
@@ -361,13 +388,13 @@
           "name": "association_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "category_id": {
           "name": "category_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "name": {
           "name": "name",
@@ -433,37 +460,59 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         },
         "published_at": {
           "name": "published_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "uq_products_association_slug": {
+          "name": "uq_products_association_slug",
+          "columns": [
+            {
+              "expression": "association_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "slug",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
-        "products_association_id_profiles_id_fk": {
-          "name": "products_association_id_profiles_id_fk",
+        "products_association_id_associations_id_fk": {
+          "name": "products_association_id_associations_id_fk",
           "tableFrom": "products",
-          "tableTo": "profiles",
+          "tableTo": "associations",
           "columnsFrom": [
             "association_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "restrict",
           "onUpdate": "no action"
         },
         "products_category_id_categories_id_fk": {
@@ -476,7 +525,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "restrict",
           "onUpdate": "no action"
         },
         "products_created_by_profiles_id_fk": {
@@ -489,7 +538,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "set null",
           "onUpdate": "no action"
         },
         "products_updated_by_profiles_id_fk": {
@@ -502,7 +551,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -510,6 +559,104 @@
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "auth_user_id": {
+          "name": "auth_user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "association_id": {
+          "name": "association_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(150)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "user_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "user_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profiles_association_id_associations_id_fk": {
+          "name": "profiles_association_id_associations_id_fk",
+          "tableFrom": "profiles",
+          "tableTo": "associations",
+          "columnsFrom": [
+            "association_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "profiles_auth_user_id_unique": {
+          "name": "profiles_auth_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "auth_user_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "ck_association_admin_requires_association": {
+          "name": "ck_association_admin_requires_association",
+          "value": "\"profiles\".\"role\" <> 'ASSOCIATION_ADMIN' OR \"profiles\".\"association_id\" IS NOT NULL"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.site_content": {
@@ -548,14 +695,14 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         }
@@ -572,7 +719,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },

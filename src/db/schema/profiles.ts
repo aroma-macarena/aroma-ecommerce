@@ -8,7 +8,9 @@ export const profilesTable = pgTable(
   {
     id: uuid("id").primaryKey().notNull(),
     authUserId: varchar("auth_user_id", { length: 255 }).notNull().unique(),
-    associationId: uuid("association_id").references(() => associations.id),
+    associationId: uuid("association_id").references(() => associations.id, {
+      onDelete: "restrict",
+    }),
     name: varchar("name", { length: 150 }).notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     role: userRoleEnum("role").notNull(),
