@@ -20,7 +20,7 @@ export const profilesTable = pgTable(
   },
   (table) => [
     check(
-      "chk_association_admin_requires_association",
+      "ck_association_admin_requires_association",
       sql`${table.role} <> 'ASSOCIATION_ADMIN' OR ${table.associationId} IS NOT NULL`,
     ),
   ],

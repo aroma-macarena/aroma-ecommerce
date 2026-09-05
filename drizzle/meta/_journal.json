@@ -8,6 +8,13 @@
       "when": 1788565640059,
       "tag": "0000_colorful_gertrude_yorkes",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788567673274,
+      "tag": "0001_serious_rick_jones",
+      "breakpoints": true
     }
   ]
 }
