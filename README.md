@@ -27,15 +27,15 @@ Copy `.env.example` to `.env.local` and provide the Neon connection strings:
 
 ## Scripts
 
-| Command            | Action                         |
-| ------------------ | ------------------------------ |
-| `pnpm dev`         | Start development server       |
-| `pnpm build`       | Production build               |
-| `pnpm start`       | Start production server        |
-| `pnpm lint`        | Run ESLint                     |
-| `pnpm typecheck`   | Type-check without emitting    |
-| `pnpm db:generate` | Generate Drizzle migrations    |
-| `pnpm db:migrate`  | Apply pending migrations       |
-| `pnpm db:check`    | Validate migration consistency |
-| `pnpm db:studio`   | Open Drizzle Studio            |
-| `pnpm db:seed`     | Seed the database              |
+| Command            | Action                            |
+| ------------------ | --------------------------------- |
+| `pnpm dev`         | Start development server          |
+| `pnpm build`       | Production build                  |
+| `pnpm start`       | Start production server           |
+| `pnpm lint`        | Run ESLint                        |
+| `pnpm typecheck`   | Type-check without emitting       |
+| `pnpm db:generate` | Generate Drizzle migrations       |
+| `pnpm db:migrate`  | Apply pending migrations          |
+| `pnpm db:check`    | Validate migration consistency    |
+| `pnpm db:studio`   | Open Drizzle Studio               |
+| `pnpm db:seed`     | Seed the database (⚠ destructive) |
