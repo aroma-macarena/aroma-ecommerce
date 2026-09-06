@@ -2,7 +2,7 @@
 
 Web platform for showcasing and managing products from the AROMA alliance.
 
-**Stack:** Next.js 16 · TypeScript · Tailwind CSS v4 · Drizzle ORM · Neon PostgreSQL · pnpm
+**Stack:** Next.js 16 · TypeScript · Tailwind CSS v4 · Drizzle ORM · Neon PostgreSQL · pnpm · Clerk · shadcn/ui
 
 ## Quick start
 
