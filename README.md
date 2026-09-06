@@ -17,13 +17,24 @@ App runs at `http://localhost:3000`.
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local` and provide the Neon connection strings:
+Copy `.env.example` to `.env.local` and fill in the required values:
+
+**Neon DB**
 
 | Variable                | Description                              |
 | ----------------------- | ---------------------------------------- |
 | `DATABASE_URL`          | Pooled connection string (Neon)          |
 | `DATABASE_URL_UNPOOLED` | Direct connection string (Neon)          |
 | `ALLOW_DB_SEED`         | Set to `true` to enable database seeding |
+
+**Clerk**
+
+| Variable                                          | Description                                   |
+| ------------------------------------------------- | --------------------------------------------- |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`               | Clerk publishable key (client-side)           |
+| `CLERK_SECRET_KEY`                                | Clerk secret key (server-side)                |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_URL`                   | Sign-in page path (default: `/admin/sign-in`) |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | Post sign-in redirect (default: `/admin`)     |
 
 ## Scripts
 
