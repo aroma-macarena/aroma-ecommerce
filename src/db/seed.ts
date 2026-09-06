@@ -1,4 +1,5 @@
 import { reset } from "drizzle-seed";
+
 import { db } from "./index";
 import { associationsTable as associations } from "./schema/associations";
 import { categoriesTable as categories } from "./schema/categories";

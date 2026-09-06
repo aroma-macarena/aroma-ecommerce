@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
@@ -8,8 +9,8 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+
 import { productsTable as products } from "./products";
-import { sql } from "drizzle-orm";
 
 export const productPresentationsTable = pgTable(
   "product_presentations",

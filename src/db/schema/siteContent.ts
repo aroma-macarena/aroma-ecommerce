@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+
 import { profilesTable as profiles } from "./profiles";
 
 export const siteContentTable = pgTable("site_content", {

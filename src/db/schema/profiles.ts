@@ -1,7 +1,8 @@
+import { sql } from "drizzle-orm";
 import { check, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+
 import { associationsTable as associations } from "./associations";
 import { userRoleEnum, userStatusEnum } from "./enums";
-import { sql } from "drizzle-orm";
 
 export const profilesTable = pgTable(
   "profiles",
