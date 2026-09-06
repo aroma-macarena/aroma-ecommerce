@@ -18,8 +18,8 @@ function AromaLogo({ className, variant = "horizontal" }: AromaLogoProps) {
           : "/brand/aroma-logo-horizontal.png"
       }
       alt="Alianza AROMA"
-      width={isSymbol ? 1183 : 1895}
-      height={isSymbol ? 892 : 679}
+      width={isSymbol ? 64 : 224}
+      height={isSymbol ? 48 : 80}
       className={cn("h-auto", isSymbol ? "w-16" : "w-56", className)}
     />
   );
