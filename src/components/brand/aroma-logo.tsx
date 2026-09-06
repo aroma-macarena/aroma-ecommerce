@@ -5,9 +5,14 @@ import { cn } from "@/lib/utils";
 type AromaLogoProps = {
   className?: string;
   variant?: "horizontal" | "symbol";
+  sizes?: string;
 };
 
-function AromaLogo({ className, variant = "horizontal" }: AromaLogoProps) {
+function AromaLogo({
+  className,
+  variant = "horizontal",
+  sizes,
+}: AromaLogoProps) {
   const isSymbol = variant === "symbol";
 
   return (
@@ -18,8 +23,9 @@ function AromaLogo({ className, variant = "horizontal" }: AromaLogoProps) {
           : "/brand/aroma-logo-horizontal.png"
       }
       alt="Alianza AROMA"
-      width={isSymbol ? 64 : 224}
-      height={isSymbol ? 48 : 80}
+      width={isSymbol ? 1183 : 1895}
+      height={isSymbol ? 892 : 679}
+      sizes={sizes ?? (isSymbol ? "64px" : "224px")}
       className={cn("h-auto", isSymbol ? "w-16" : "w-56", className)}
     />
   );
