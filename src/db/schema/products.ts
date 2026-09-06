@@ -6,10 +6,11 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+
 import { associationsTable as associations } from "./associations";
 import { categoriesTable as categories } from "./categories";
-import { profilesTable as profiles } from "./profiles";
 import { productStatus } from "./enums";
+import { profilesTable as profiles } from "./profiles";
 
 export const productsTable = pgTable(
   "products",

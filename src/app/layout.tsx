@@ -1,8 +1,9 @@
+import "./globals.css";
+
+import { esMX } from "@clerk/localizations";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
-import { esMX } from "@clerk/localizations";
-import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

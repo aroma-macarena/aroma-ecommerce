@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+
 import { associationStatus } from "./enums";
 
 export const associationsTable = pgTable("associations", {
