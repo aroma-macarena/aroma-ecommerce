@@ -1,7 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
-
-export default async function AdminPage() {
-  await auth.protect();
-
+export default function AdminPage() {
   return <h1>Dashboard administración</h1>;
 }
