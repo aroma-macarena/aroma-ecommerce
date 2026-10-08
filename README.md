@@ -36,6 +36,12 @@ Copy `.env.example` to `.env.local` and fill in the required values:
 | `NEXT_PUBLIC_CLERK_SIGN_IN_URL`                   | Sign-in page path (default: `/admin/sign-in`) |
 | `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | Post sign-in redirect (default: `/admin`)     |
 
+**Media storage**
+
+| Variable                     | Description                                                                                 |
+| ---------------------------- | ------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_MEDIA_BASE_URL` | Base URL for stored images (optional; products show a placeholder image when it is not set) |
+
 ## Scripts
 
 | Command            | Action                            |
