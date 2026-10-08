@@ -1,49 +1,52 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { AdminHeader } from "@/components/AdminHeader";
+import { AdminAccessNotice } from "@/components/admin/admin-access-notice";
+import { AdminShell } from "@/components/admin/admin-shell";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
+
+export const metadata: Metadata = {
+  title: "Administración | AROMA",
+};
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { status } = await getCurrentProfile();
+  const result = await getCurrentProfile();
 
-  switch (status) {
+  switch (result.status) {
     case "UNAUTHENTICATED":
       redirect("/admin/sign-in");
 
     case "PROFILE_NOT_FOUND":
       return (
-        <main>
-          <h1>Acceso no habilitado</h1>
-          <p>Tu cuenta no tiene un perfil administrativo asociado.</p>
-        </main>
+        <AdminAccessNotice
+          title="Acceso no habilitado"
+          description="Tu cuenta no tiene un perfil administrativo asociado."
+        />
       );
 
     case "INACTIVE":
       return (
-        <main>
-          <h1>Cuenta inactiva</h1>
-          <p>Tu acceso administrativo se encuentra deshabilitado.</p>
-        </main>
+        <AdminAccessNotice
+          title="Cuenta inactiva"
+          description="Tu acceso administrativo se encuentra deshabilitado."
+        />
       );
 
     case "ASSOCIATION_INACTIVE":
       return (
-        <main>
-          <h1>Asociación inactiva</h1>
-          <p>La asociación de tu cuenta se encuentra deshabilitada.</p>
-        </main>
+        <AdminAccessNotice
+          title="Asociación inactiva"
+          description="La asociación de tu cuenta se encuentra deshabilitada."
+        />
       );
 
     case "ACTIVE":
       return (
-        <>
-          <AdminHeader />
-          {children}
-        </>
+        <AdminShell profile={result.currentProfile}>{children}</AdminShell>
       );
   }
 }
