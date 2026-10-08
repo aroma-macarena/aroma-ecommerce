@@ -6,9 +6,14 @@ import { db } from "@/db";
 import { associationsTable as associations } from "@/db/schema/associations";
 import { profilesTable as profiles } from "@/db/schema/profiles";
 
-export type AdminProfile =
-  | { id: string; role: "SUPER_ADMIN"; associationId: null }
-  | { id: string; role: "ASSOCIATION_ADMIN"; associationId: string };
+export type AdminProfile = { id: string; name: string; email: string } & (
+  | { role: "SUPER_ADMIN"; associationId: null; associationName: null }
+  | {
+      role: "ASSOCIATION_ADMIN";
+      associationId: string;
+      associationName: string;
+    }
+);
 
 export type AdminRole = AdminProfile["role"];
 
@@ -29,9 +34,12 @@ const getCurrentProfile = cache(async (): Promise<CurrentProfileResult> => {
   const [currentProfile] = await db
     .select({
       id: profiles.id,
+      name: profiles.name,
+      email: profiles.email,
       associationId: profiles.associationId,
       role: profiles.role,
       status: profiles.status,
+      associationName: associations.name,
       associationStatus: associations.status,
     })
     .from(profiles)
@@ -52,13 +60,16 @@ const getCurrentProfile = cache(async (): Promise<CurrentProfileResult> => {
       status: "ACTIVE",
       currentProfile: {
         id: currentProfile.id,
+        name: currentProfile.name,
+        email: currentProfile.email,
         role: "SUPER_ADMIN",
         associationId: null,
+        associationName: null,
       },
     };
   }
 
-  if (!currentProfile.associationId) {
+  if (!currentProfile.associationId || !currentProfile.associationName) {
     return { status: "INACTIVE" };
   }
 
@@ -70,8 +81,11 @@ const getCurrentProfile = cache(async (): Promise<CurrentProfileResult> => {
     status: "ACTIVE",
     currentProfile: {
       id: currentProfile.id,
+      name: currentProfile.name,
+      email: currentProfile.email,
       role: "ASSOCIATION_ADMIN",
       associationId: currentProfile.associationId,
+      associationName: currentProfile.associationName,
     },
   };
 });
