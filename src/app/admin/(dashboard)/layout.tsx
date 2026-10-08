@@ -30,6 +30,14 @@ export default async function AdminLayout({
         </main>
       );
 
+    case "ASSOCIATION_INACTIVE":
+      return (
+        <main>
+          <h1>Asociación inactiva</h1>
+          <p>La asociación de tu cuenta se encuentra deshabilitada.</p>
+        </main>
+      );
+
     case "ACTIVE":
       return (
         <>
