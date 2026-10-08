@@ -22,7 +22,7 @@ export default function Home() {
       <Section className="py-16 md:py-24">
         <Container className="grid items-center gap-10 md:grid-cols-[1fr_auto]">
           <div className="max-w-2xl space-y-6">
-            <p className="text-brand-orange text-sm font-semibold tracking-wide uppercase">
+            <p className="text-brand-burgundy text-sm font-semibold tracking-wide uppercase">
               {hero.eyebrow}
             </p>
             <h1 className="font-heading text-4xl font-semibold tracking-tight text-balance md:text-5xl">

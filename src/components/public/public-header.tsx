@@ -7,10 +7,15 @@ import { publicNavigation, publicRoutes } from "@/lib/public-routes";
 function PublicHeader() {
   return (
     <header className="bg-background/95 supports-backdrop-filter:bg-background/80 sticky top-0 z-40 border-b backdrop-blur">
-      <Container className="flex h-16 items-center justify-between gap-4">
+      <Container className="flex h-16 items-center justify-between gap-2 min-[400px]:gap-4">
         <Link href={publicRoutes.home} aria-label="Inicio de AROMA">
           <AromaLogo
-            className="w-28 sm:w-36"
+            variant="symbol"
+            className="w-10 min-[400px]:hidden"
+            sizes="40px"
+          />
+          <AromaLogo
+            className="hidden w-28 min-[400px]:block sm:w-36"
             sizes="(min-width: 640px) 144px, 112px"
           />
         </Link>
@@ -21,7 +26,7 @@ function PublicHeader() {
               <li key={href}>
                 <Link
                   href={href}
-                  className="hover:bg-muted focus-visible:ring-ring/30 rounded-4xl px-3 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-3"
+                  className="hover:bg-muted focus-visible:ring-ring/30 rounded-4xl px-2.5 py-2 min-[400px]:px-3 text-sm font-medium transition-colors outline-none focus-visible:ring-3"
                 >
                   {label}
                 </Link>
