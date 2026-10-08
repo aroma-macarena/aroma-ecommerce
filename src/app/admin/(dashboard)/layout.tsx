@@ -6,7 +6,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
 
 export const metadata: Metadata = {
-  title: "Administración | AROMA",
+  title: "Administración",
 };
 
 export default async function AdminLayout({
