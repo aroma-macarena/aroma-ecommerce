@@ -2,13 +2,18 @@ import Link from "next/link";
 
 import { AromaLogo } from "@/components/brand/aroma-logo";
 import { Container } from "@/components/public/container";
-import { publicNavigation, publicRoutes } from "@/lib/public-routes";
+import { PublicNav } from "@/components/public/public-nav";
+import { publicRoutes } from "@/lib/public-routes";
 
 function PublicHeader() {
   return (
-    <header className="bg-background/95 supports-backdrop-filter:bg-background/80 sticky top-0 z-40 border-b backdrop-blur">
-      <Container className="flex h-16 items-center justify-between gap-2 min-[400px]:gap-4">
-        <Link href={publicRoutes.home} aria-label="Inicio de AROMA">
+    <header className="bg-background sticky top-0 z-40 border-b">
+      <Container className="flex min-h-20 flex-wrap items-center justify-between gap-3 py-3">
+        <Link
+          href={publicRoutes.home}
+          aria-label="Inicio de AROMA"
+          className="inline-flex min-h-11 min-w-11 shrink-0 items-center rounded-md"
+        >
           <AromaLogo
             variant="symbol"
             className="w-10 min-[400px]:hidden"
@@ -20,20 +25,7 @@ function PublicHeader() {
           />
         </Link>
 
-        <nav aria-label="Navegación principal">
-          <ul className="flex items-center gap-1 sm:gap-2">
-            {publicNavigation.map(({ href, label }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="hover:bg-muted focus-visible:ring-ring/30 rounded-4xl px-2.5 py-2 min-[400px]:px-3 text-sm font-medium transition-colors outline-none focus-visible:ring-3"
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <PublicNav />
       </Container>
     </header>
   );

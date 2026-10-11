@@ -1,16 +1,14 @@
 export const homeContent = {
   hero: {
     eyebrow: "La Macarena, Meta",
-    title: "Productos locales con historia",
+    title: "Productos de La Macarena",
     description:
-      "AROMA reúne a asociaciones de la región para dar a conocer sus productos y facilitar el contacto directo con quienes los elaboran.",
-    primaryAction: "Ver productos",
-    secondaryAction: "Conocer asociaciones",
+      "Conoce la oferta de las organizaciones y mujeres productoras de la Alianza AROMA.",
   },
   about: {
-    title: "¿Qué es AROMA?",
+    title: "Una alianza con raíces en La Macarena",
     description:
-      "Una alianza de asociaciones locales que comparten un mismo espacio para mostrar lo que producen.",
+      "AROMA reúne a organizaciones y mujeres productoras de La Macarena, Meta, para dar a conocer lo que elaboran y acercar su oferta a nuevos compradores.",
     highlights: [
       {
         title: "Productos de la región",
@@ -20,19 +18,13 @@ export const homeContent = {
       {
         title: "Asociaciones participantes",
         description:
-          "Cada producto está vinculado a la asociación que lo elabora y a su historia.",
+          "Cada producto identifica a la organización que lo elabora.",
       },
       {
         title: "Contacto directo",
         description:
-          "Comunícate directamente con las asociaciones para conocer la disponibilidad de sus productos.",
+          "La vitrina está orientada a facilitar el contacto con las asociaciones, sin intermediarios en la venta.",
       },
     ],
-  },
-  associations: {
-    title: "Conoce a quienes hacen posible AROMA",
-    description:
-      "Descubre las asociaciones que forman parte de la alianza, su trabajo y los productos que ofrecen.",
-    action: "Ver asociaciones",
   },
 } as const;

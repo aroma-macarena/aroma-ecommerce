@@ -52,7 +52,7 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
+  --background: oklch(0.989 0.006 85);
   --foreground: oklch(0.147 0.004 49.25);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.147 0.004 49.25);
@@ -60,22 +60,22 @@
   --popover-foreground: oklch(0.147 0.004 49.25);
   --primary: oklch(0.506 0.135 135.396);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
+  --secondary: oklch(0.946 0.015 85);
   --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.97 0.001 106.424);
-  --muted-foreground: oklch(0.553 0.013 58.071);
-  --accent: oklch(0.97 0.001 106.424);
+  --muted: oklch(0.956 0.012 85);
+  --muted-foreground: oklch(0.46 0.018 58);
+  --accent: oklch(0.946 0.015 85);
   --accent-foreground: oklch(0.216 0.006 56.043);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.923 0.003 48.717);
-  --input: oklch(0.923 0.003 48.717);
+  --border: oklch(0.87 0.014 85);
+  --input: oklch(0.65 0.018 85);
   --ring: var(--brand-green);
   --chart-1: oklch(0.871 0.15 154.449);
   --chart-2: oklch(0.723 0.219 149.579);
   --chart-3: oklch(0.627 0.194 149.214);
   --chart-4: oklch(0.527 0.154 150.069);
   --chart-5: oklch(0.448 0.119 151.328);
-  --radius: 0.875rem;
+  --radius: 0.75rem;
   --sidebar: oklch(0.985 0.001 106.423);
   --sidebar-foreground: oklch(0.147 0.004 49.25);
   --sidebar-primary: oklch(0.627 0.194 149.214);
@@ -125,7 +125,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
@@ -136,5 +136,25 @@
   }
   html {
     @apply font-sans;
+    scroll-padding-top: 6rem;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 4px;
+  }
+  ::selection {
+    background: var(--brand-burgundy);
+    color: white;
+  }
+  input,
+  textarea {
+    caret-color: var(--primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="sheet-overlay"],
+  [data-slot="sheet-content"] {
+    transition: none;
   }
 }

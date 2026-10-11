@@ -28,7 +28,7 @@ function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) {
               scroll={false}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "focus-visible:ring-ring/30 inline-flex h-9 items-center rounded-4xl border px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-3",
+                "inline-flex min-h-11 items-center rounded-full border px-5 text-sm font-medium transition-colors",
                 isActive
                   ? "bg-primary text-primary-foreground border-transparent"
                   : "bg-background hover:bg-muted",

@@ -1,13 +1,13 @@
 export const publicRoutes = {
   home: "/",
-  products: "/productos",
+  products: "/",
   associations: "/asociaciones",
   admin: "/admin",
 } as const;
 
 export const publicNavigation = [
-  { href: publicRoutes.products, label: "Productos" },
-  { href: publicRoutes.associations, label: "Asociaciones" },
+  { href: publicRoutes.products, label: "Productos", available: true },
+  { href: "/#alianza", label: "La alianza", available: true },
 ] as const;
 
 export function getProductsByCategoryHref(categorySlug: string) {
@@ -18,5 +18,5 @@ export function getProductDetailHref(
   associationSlug: string,
   productSlug: string,
 ) {
-  return `${publicRoutes.products}/${associationSlug}/${productSlug}`;
+  return `/productos/${associationSlug}/${productSlug}`;
 }

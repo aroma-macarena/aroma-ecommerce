@@ -5,7 +5,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 
 type AdminAccessNoticeProps = {
@@ -15,11 +14,13 @@ type AdminAccessNoticeProps = {
 
 function AdminAccessNotice({ title, description }: AdminAccessNoticeProps) {
   return (
-    <main className="bg-muted/40 flex min-h-svh flex-1 items-center justify-center px-4 py-12">
+    <main className="bg-background flex min-h-svh flex-1 items-center justify-center px-5 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4">
           <AromaLogo className="w-36" sizes="144px" />
-          <CardTitle>{title}</CardTitle>
+          <h1 className="text-brand-burgundy text-2xl font-semibold tracking-tight">
+            {title}
+          </h1>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>

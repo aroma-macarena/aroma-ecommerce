@@ -27,18 +27,20 @@ function AdminNav({ role, onNavigate }: AdminNavProps) {
         {getAdminNavigation(role).map(
           ({ href, label, icon: Icon, available }) => {
             const itemClassName =
-              "flex h-10 items-center gap-3 rounded-2xl px-3 text-sm font-medium";
+              "grid min-h-11 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1 rounded-md px-3 py-2 text-sm font-medium wrap-anywhere";
 
             if (!available) {
               return (
                 <li key={href}>
                   <span
                     aria-disabled="true"
-                    className={cn(itemClassName, "text-muted-foreground/70")}
+                    className={cn(itemClassName, "text-muted-foreground")}
                   >
-                    <Icon className="size-4" />
-                    {label}
-                    <span className="ml-auto text-xs font-normal">Pronto</span>
+                    <Icon className="size-4 shrink-0" aria-hidden="true" />
+                    <span className="min-w-0">{label}</span>
+                    <span className="col-start-2 text-xs font-normal">
+                      Pronto
+                    </span>
                   </span>
                 </li>
               );
@@ -54,14 +56,14 @@ function AdminNav({ role, onNavigate }: AdminNavProps) {
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
                     itemClassName,
-                    "focus-visible:ring-ring/30 transition-colors outline-none focus-visible:ring-3",
+                    "transition-colors",
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-foreground hover:bg-muted",
                   )}
                 >
-                  <Icon className="size-4" />
-                  {label}
+                  <Icon className="size-4 shrink-0" aria-hidden="true" />
+                  <span className="min-w-0">{label}</span>
                 </Link>
               </li>
             );

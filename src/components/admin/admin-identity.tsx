@@ -7,14 +7,14 @@ type AdminIdentityProps = {
 
 function AdminIdentity({ profile }: AdminIdentityProps) {
   return (
-    <div className="bg-muted space-y-1 rounded-2xl p-3 text-sm">
-      <p className="truncate font-medium">{profile.name}</p>
-      <p className="text-muted-foreground truncate">{profile.email}</p>
+    <div className="space-y-1 border-t pt-4 text-sm wrap-anywhere">
+      <p className="font-medium">{profile.name}</p>
+      <p className="text-muted-foreground">{profile.email}</p>
       <p className="text-primary text-xs font-medium">
         {adminRoleLabels[profile.role]}
       </p>
       {profile.associationName ? (
-        <p className="text-muted-foreground truncate text-xs">
+        <p className="text-muted-foreground text-xs">
           {profile.associationName}
         </p>
       ) : null}
