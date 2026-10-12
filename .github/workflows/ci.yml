@@ -40,5 +40,10 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
+      - name: Run tests
+        run: pnpm test:ci
+        env:
+          DATABASE_URL: ""
+
       - name: Build
         run: pnpm build
