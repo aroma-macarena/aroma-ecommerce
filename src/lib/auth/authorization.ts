@@ -13,9 +13,8 @@ export type AuthorizationErrorCode =
 const authorizationErrorMessages: Record<AuthorizationErrorCode, string> = {
   UNAUTHENTICATED: "Debes iniciar sesión para continuar.",
   PROFILE_NOT_FOUND: "Tu cuenta no tiene un perfil administrativo asociado.",
-  INACTIVE: "Tu acceso administrativo se encuentra deshabilitado.",
-  ASSOCIATION_INACTIVE:
-    "La asociación de tu cuenta se encuentra deshabilitada.",
+  INACTIVE: "Tu acceso administrativo está deshabilitado.",
+  ASSOCIATION_INACTIVE: "La asociación de tu cuenta está deshabilitada.",
   FORBIDDEN: "No tienes permisos para realizar esta acción.",
 };
 

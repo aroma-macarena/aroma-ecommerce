@@ -35,7 +35,7 @@ export default async function AdminLayout({
       return (
         <AdminAccessNotice
           title="Cuenta inactiva"
-          description="Tu acceso administrativo se encuentra deshabilitado."
+          description="Tu acceso administrativo está deshabilitado."
         />
       );
 
@@ -43,7 +43,7 @@ export default async function AdminLayout({
       return (
         <AdminAccessNotice
           title="Asociación inactiva"
-          description="La asociación de tu cuenta se encuentra deshabilitada."
+          description="La asociación de tu cuenta está deshabilitada."
         />
       );
 
