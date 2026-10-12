@@ -49,7 +49,10 @@ export default async function AdminProductsPage({
             : "Consulta los productos de todas las asociaciones de la alianza, en cualquier estado."
         }
         actions={
-          <Link href="/admin/products/new" className={buttonVariants()}>
+          <Link
+            href="/admin/products/new"
+            className={buttonVariants({ className: "w-full md:w-auto" })}
+          >
             <Plus aria-hidden />
             Nuevo producto
           </Link>
