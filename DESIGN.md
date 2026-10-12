@@ -113,7 +113,7 @@ SVG oficiales en `public/brand`, servidos sin optimizar mediante `AromaLogo`. Pa
 
 - **ProductCard**: sin caja. Imagen 4:3 en móvil y 4:5 desde tablet, categoría en mono verde, nombre en display, descripción completa y línea de origen con la organización bajo una regla en tinta. No enlaza hasta que exista el detalle.
 - **CategoryFilter**: pestañas con subrayado naranja sobre una regla, desplazables en móvil. Usa enlaces y el parámetro `categoria`, sin JavaScript de cliente.
-- **Navegación pública**: mismo subrayado para la página activa, anunciada con `aria-current`.
+- **Navegación pública**: mismo subrayado para la página activa, anunciada con `aria-current`. En la entrada, «La alianza» se resalta mientras su sección ocupa el centro de la pantalla, y el ancla compensa la altura de la cabecera fija (`scroll-padding-top`).
 - **Banda de la alianza**: bordó a todo el ancho, lema, descripción, sello y lista de organizaciones con su número de integrantes. Los datos viven en `src/content/home.ts`.
 - **AdminPageHeader**: antetítulo opcional (asociación o alianza), título en display y regla en tinta.
 - **Navegación admin**: activo en verde claro con barra verde a la izquierda; las secciones pendientes muestran «Pronto» y están deshabilitadas.

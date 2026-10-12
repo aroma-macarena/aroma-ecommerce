@@ -154,10 +154,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         </Container>
       </Section>
 
-      <Section
-        id="alianza"
-        className="bg-brand-burgundy text-background scroll-mt-24"
-      >
+      <Section id="alianza" className="bg-brand-burgundy text-background">
         <Container className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-16">
           <div className="flex flex-col gap-10">
             <SectionHeading

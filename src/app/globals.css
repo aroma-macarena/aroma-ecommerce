@@ -136,7 +136,11 @@
   }
   html {
     @apply font-sans;
-    scroll-padding-top: 6rem;
+    /* Height of the sticky public header, so in-page links land at the section start. */
+    scroll-padding-top: 69px;
+    @media (min-width: 40rem) {
+      scroll-padding-top: 74px;
+    }
   }
   :focus-visible {
     outline: 2px solid var(--ring);

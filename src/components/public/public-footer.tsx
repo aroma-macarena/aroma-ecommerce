@@ -9,7 +9,7 @@ function PublicFooter() {
   return (
     <footer className="bg-card border-t">
       <Container className="flex flex-col gap-8 py-10 md:flex-row md:items-start md:justify-between">
-        <div className="max-w-sm space-y-3">
+        <div className="max-w-3xl space-y-3">
           <AromaLogo className="w-32" />
           <p className="text-muted-foreground text-sm leading-6">
             Productos de las organizaciones de mujeres que forman parte de la
@@ -21,7 +21,7 @@ function PublicFooter() {
         </div>
 
         <nav aria-label="Navegación del pie de página">
-          <ul className="text-sm">
+          <ul className="flex flex-wrap gap-x-6 text-sm md:block">
             {publicNavigation.map(({ href, label, available }) => (
               <li key={href}>
                 {available ? (
@@ -46,7 +46,7 @@ function PublicFooter() {
         </nav>
       </Container>
 
-      <Container className="text-muted-foreground flex flex-col gap-2 border-t py-6 text-xs sm:flex-row sm:items-center sm:justify-between">
+      <Container className="text-muted-foreground flex flex-wrap items-center justify-between gap-x-4 border-t py-4 text-xs">
         <p>© {new Date().getFullYear()} Alianza AROMA</p>
         <Link
           href={publicRoutes.admin}
