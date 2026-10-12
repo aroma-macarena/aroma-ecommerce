@@ -42,6 +42,12 @@ Copy `.env.example` to `.env.local` and fill in the required values:
 | ---------------------------- | ------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_MEDIA_BASE_URL` | Base URL for stored images (optional; products show a placeholder image when it is not set) |
 
+**Public site**
+
+| Variable               | Description                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL` | Public URL of the site, used for absolute links in link previews (optional; for example `https://…`) |
+
 ## Scripts
 
 | Command            | Action                            |

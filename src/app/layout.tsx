@@ -21,7 +21,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
 export const metadata: Metadata = {
+  metadataBase: siteUrl ? new URL(siteUrl) : undefined,
   title: {
     default: "Alianza AROMA",
     template: "%s | Alianza AROMA",
@@ -29,6 +32,17 @@ export const metadata: Metadata = {
   description:
     "Productos de las organizaciones de mujeres campesinas de la Alianza AROMA, en La Macarena, Meta.",
   applicationName: "Alianza AROMA",
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    siteName: "Alianza AROMA",
+    title: "Productos de La Macarena | Alianza AROMA",
+    description:
+      "Conoce los productos de las organizaciones de mujeres campesinas de la Alianza AROMA, en La Macarena, Meta.",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export const viewport: Viewport = {
