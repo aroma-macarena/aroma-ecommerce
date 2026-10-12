@@ -1,9 +1,10 @@
 import "./globals.css";
 
-import { esMX } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
+
+import { clerkLocalization } from "@/lib/clerk-localization";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,15 +48,6 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#fffdf8",
-};
-
-// Fixes a typo in Clerk's es-MX translation ("rquerido").
-const clerkLocalization = {
-  ...esMX,
-  unstable__errors: {
-    ...esMX.unstable__errors,
-    form_param_nil: "Este campo es obligatorio.",
-  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
