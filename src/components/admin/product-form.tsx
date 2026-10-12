@@ -110,7 +110,7 @@ function FormSection({
   children: ReactNode;
 }) {
   return (
-    <fieldset className="border-foreground grid gap-5 border-t pt-5 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10">
+    <fieldset className="border-foreground grid gap-5 border-t pt-5 first-of-type:border-t-0 first-of-type:pt-0 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10">
       <div className="space-y-1">
         <legend className="font-heading float-left text-xl font-semibold tracking-[-0.015em]">
           {title}
