@@ -12,7 +12,7 @@ export default async function Page() {
           aria-label="Volver al inicio de AROMA"
           className="mx-auto flex min-h-11 w-fit max-w-full items-center rounded-md"
         >
-          <AromaLogo className="w-44" sizes="176px" />
+          <AromaLogo className="w-44" />
         </Link>
         <SignIn
           appearance={{

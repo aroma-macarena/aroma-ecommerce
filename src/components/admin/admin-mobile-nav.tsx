@@ -41,7 +41,7 @@ function AdminMobileNav({ role, footer }: AdminMobileNavProps) {
       >
         <SheetHeader className="shrink-0 p-4">
           <div className="flex items-center justify-between gap-4">
-            <AromaLogo className="min-w-0 w-36" sizes="144px" />
+            <AromaLogo className="min-w-0 w-36" />
             <SheetClose render={<Button variant="secondary" size="icon" />}>
               <X aria-hidden="true" />
               <span className="sr-only">Cerrar menú</span>

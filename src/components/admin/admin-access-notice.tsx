@@ -17,7 +17,7 @@ function AdminAccessNotice({ title, description }: AdminAccessNoticeProps) {
     <main className="bg-background flex min-h-svh flex-1 items-center justify-center px-5 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4">
-          <AromaLogo className="w-36" sizes="144px" />
+          <AromaLogo className="w-36" />
           <h1 className="text-brand-burgundy text-2xl font-semibold tracking-tight">
             {title}
           </h1>

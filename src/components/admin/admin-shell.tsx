@@ -36,7 +36,7 @@ function AdminShell({ profile, children }: AdminShellProps) {
             aria-label="Inicio de administración"
             className="min-w-0"
           >
-            <AromaLogo className="w-40" sizes="160px" />
+            <AromaLogo className="w-40" />
           </Link>
         </div>
 
@@ -55,7 +55,7 @@ function AdminShell({ profile, children }: AdminShellProps) {
             aria-label="Inicio de administración"
             className="min-w-0"
           >
-            <AromaLogo className="w-28" sizes="112px" />
+            <AromaLogo className="w-28" />
           </Link>
         </header>
 

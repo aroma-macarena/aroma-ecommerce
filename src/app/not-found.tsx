@@ -8,7 +8,7 @@ export default function NotFound() {
   return (
     <main className="flex min-h-svh flex-1 items-center justify-center px-5 py-12">
       <div className="w-full max-w-lg space-y-6">
-        <AromaLogo className="w-40" sizes="160px" />
+        <AromaLogo className="w-40" />
         <h1 className="text-brand-burgundy text-3xl font-semibold tracking-tight">
           Esta página no está disponible
         </h1>

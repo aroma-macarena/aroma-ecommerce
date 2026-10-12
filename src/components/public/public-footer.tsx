@@ -9,7 +9,7 @@ function PublicFooter() {
     <footer className="bg-muted border-t">
       <Container className="flex flex-col gap-8 py-10 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm space-y-3">
-          <AromaLogo className="w-32" sizes="128px" />
+          <AromaLogo className="w-32" />
           <p className="text-muted-foreground text-sm leading-6">
             Productos de las asociaciones que forman parte de la Alianza AROMA.
           </p>

@@ -29,7 +29,6 @@ function ProductCard({ product }: ProductCardProps) {
               <AromaLogo
                 variant="symbol"
                 className="w-16 opacity-40 grayscale"
-                sizes="80px"
               />
               <span className="text-muted-foreground text-xs">
                 Imagen no disponible
