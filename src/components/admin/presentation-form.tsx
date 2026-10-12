@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { type ReactNode, useActionState, useEffect } from "react";
 
 import {
   controlClassName,
@@ -24,6 +24,8 @@ type PresentationFormProps = {
   defaultValues?: PresentationFormValues;
   submitLabel: string;
   cancelHref: string;
+  secondaryAction?: ReactNode;
+  actionsNote?: ReactNode;
 };
 
 const initialState: PresentationFormState = { status: "idle", attempt: 0 };
@@ -58,6 +60,8 @@ function PresentationForm({
   defaultValues = { isAvailable: "on" },
   submitLabel,
   cancelHref,
+  secondaryAction,
+  actionsNote,
 }: PresentationFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
   const values = state.values ?? defaultValues;
@@ -210,6 +214,8 @@ function PresentationForm({
         cancelHref={cancelHref}
         submitLabel={submitLabel}
         isPending={isPending}
+        secondaryAction={secondaryAction}
+        note={actionsNote}
       />
     </form>
   );

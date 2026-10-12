@@ -29,7 +29,13 @@ function ConfirmDeleteButton({
       <AlertDialog.Trigger
         disabled={disabled}
         aria-describedby={describedBy}
-        render={<Button variant="destructive" />}
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive w-full sm:w-auto"
+          />
+        }
       >
         <Trash2 aria-hidden />
         {label}

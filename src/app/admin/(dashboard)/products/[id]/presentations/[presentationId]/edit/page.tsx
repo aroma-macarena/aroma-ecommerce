@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { AdminSection } from "@/components/admin/admin-section";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
 import { PresentationForm } from "@/components/admin/presentation-form";
 import { toPresentationFormValues } from "@/lib/admin/presentation-form";
@@ -65,15 +64,7 @@ export default async function EditPresentationPage({
         defaultValues={toPresentationFormValues(presentation)}
         submitLabel="Guardar cambios"
         cancelHref={productHref}
-      />
-
-      <AdminSection
-        id="eliminar"
-        ruled
-        title="Eliminar"
-        description="Quita la presentación del producto de forma definitiva."
-      >
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+        secondaryAction={
           <ConfirmDeleteButton
             label="Eliminar presentación"
             title={`¿Eliminar «${presentation.name}»?`}
@@ -86,13 +77,20 @@ export default async function EditPresentationPage({
             disabled={isLastAvailable}
             aria-describedby={isLastAvailable ? "eliminar-nota" : undefined}
           />
-          {isLastAvailable ? (
-            <p id="eliminar-nota" className="text-muted-foreground text-sm">
-              {lastAvailableMessage}
+        }
+        actionsNote={
+          isLastAvailable ? (
+            <p
+              id="eliminar-nota"
+              className="text-muted-foreground max-w-xl text-center text-sm sm:text-left"
+            >
+              No se puede eliminar:{" "}
+              {lastAvailableMessage.charAt(0).toLowerCase()}
+              {lastAvailableMessage.slice(1)}
             </p>
-          ) : null}
-        </div>
-      </AdminSection>
+          ) : null
+        }
+      />
     </div>
   );
 }

@@ -118,22 +118,33 @@ export function FormActions({
   cancelHref,
   submitLabel,
   isPending,
+  secondaryAction,
+  note,
 }: {
   cancelHref: string;
   submitLabel: string;
   isPending: boolean;
+  /** A less frequent action, such as deleting, kept apart on the left. */
+  secondaryAction?: ReactNode;
+  note?: ReactNode;
 }) {
   return (
-    <div className="border-foreground flex flex-col-reverse gap-3 border-t-[1.5px] pt-5 sm:flex-row sm:justify-end">
-      <Link
-        href={cancelHref}
-        className={buttonVariants({ variant: "outline" })}
-      >
-        Cancelar
-      </Link>
-      <Button type="submit" disabled={isPending}>
-        {isPending ? "Guardando…" : submitLabel}
-      </Button>
+    <div className="border-foreground space-y-3 border-t-[1.5px] pt-5">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+        {secondaryAction ? (
+          <div className="sm:mr-auto">{secondaryAction}</div>
+        ) : null}
+        <Link
+          href={cancelHref}
+          className={buttonVariants({ variant: "outline" })}
+        >
+          Cancelar
+        </Link>
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Guardando…" : submitLabel}
+        </Button>
+      </div>
+      {note}
     </div>
   );
 }
