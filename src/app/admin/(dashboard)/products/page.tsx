@@ -1,5 +1,7 @@
+import { PackageOpen, Store } from "lucide-react";
 import type { Metadata } from "next";
 
+import { AdminEmptyState } from "@/components/admin/admin-empty-state";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminProductList } from "@/components/admin/admin-product-list";
 import { Button } from "@/components/ui/button";
@@ -9,21 +11,6 @@ import getCurrentProfile from "@/lib/auth/get-current-profile";
 export const metadata: Metadata = {
   title: "Productos",
 };
-
-function EmptyState({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="max-w-xl space-y-1 border-y py-6">
-      <p className="font-heading text-lg font-semibold">{title}</p>
-      <p className="text-muted-foreground leading-relaxed">{description}</p>
-    </div>
-  );
-}
 
 export default async function AdminProductsPage() {
   const result = await getCurrentProfile();
@@ -83,7 +70,8 @@ export default async function AdminProductsPage() {
             showAssociation={!isAssociationAdmin}
           />
         ) : (
-          <EmptyState
+          <AdminEmptyState
+            icon={PackageOpen}
             title={
               isAssociationAdmin
                 ? "Tu asociación aún no tiene productos"
@@ -114,9 +102,10 @@ export default async function AdminProductsPage() {
               showAssociation
             />
           ) : (
-            <EmptyState
-              title="Aún no hay productos publicados por otras asociaciones"
-              description="Aparecerán aquí cuando otras asociaciones de la alianza publiquen sus productos."
+            <AdminEmptyState
+              icon={Store}
+              title="Sin publicaciones todavía"
+              description="Cuando otras asociaciones de la alianza publiquen productos, aparecerán aquí como referencia."
             />
           )}
         </section>
