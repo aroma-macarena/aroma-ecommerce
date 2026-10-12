@@ -17,7 +17,7 @@ export default async function Page() {
           aria-label="Volver al inicio de AROMA"
           className="mx-auto flex min-h-11 w-fit max-w-full items-center rounded-md"
         >
-          <AromaLogo variant="descriptor" className="w-56" />
+          <AromaLogo className="w-40" />
         </Link>
         <SignIn
           appearance={{
@@ -39,7 +39,7 @@ export default async function Page() {
               formFieldInput:
                 "min-h-11! min-w-0! w-full! rounded-md! border! border-input! text-base! shadow-none! focus-visible:outline-2! focus-visible:outline-offset-4! focus-visible:outline-ring!",
               formButtonPrimary:
-                "h-auto! min-h-11! max-w-full! gap-2! px-3! py-3! whitespace-normal! rounded-md! bg-primary! shadow-none! text-sm! font-semibold! focus-visible:outline-2! focus-visible:outline-offset-4! focus-visible:outline-ring! [&::after]:shadow-none!",
+                "h-auto! min-h-11! max-w-full! gap-2! px-3! py-3! whitespace-normal! rounded-md! bg-primary! bg-none! hover:bg-primary/90! shadow-none! text-sm! font-semibold! focus-visible:outline-2! focus-visible:outline-offset-4! focus-visible:outline-ring! [&::after]:shadow-none! [&::after]:bg-none!",
               footer: "bg-muted! rounded-b-lg!",
             },
           }}
