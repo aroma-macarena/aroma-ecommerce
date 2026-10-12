@@ -7,8 +7,8 @@ import { publicRoutes } from "@/lib/public-routes";
 
 function PublicHeader() {
   return (
-    <header className="bg-background sticky top-0 z-40 border-b">
-      <Container className="flex min-h-20 flex-wrap items-center justify-between gap-3 py-3">
+    <header className="bg-card sticky top-0 z-40 border-b">
+      <Container className="flex min-h-16 flex-wrap items-center justify-between gap-3 py-3">
         <Link
           href={publicRoutes.home}
           aria-label="Inicio de AROMA"

@@ -24,8 +24,10 @@ function PublicNav() {
                   href={href}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "inline-flex min-h-11 max-w-full items-center rounded-md px-3 py-2 text-sm font-medium wrap-anywhere transition-colors hover:bg-muted",
-                    isActive && "bg-secondary text-primary",
+                    "inline-flex min-h-11 max-w-full items-center px-2 py-2 text-[0.9375rem] wrap-anywhere transition-colors focus-visible:outline-offset-[-2px] sm:px-3",
+                    isActive
+                      ? "text-foreground shadow-[inset_0_-3px_0_var(--brand-orange)] font-semibold"
+                      : "text-muted-foreground hover:text-foreground font-medium",
                   )}
                 >
                   {label}

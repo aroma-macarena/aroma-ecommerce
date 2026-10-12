@@ -12,7 +12,7 @@ export default async function Page() {
           aria-label="Volver al inicio de AROMA"
           className="mx-auto flex min-h-11 w-fit max-w-full items-center rounded-md"
         >
-          <AromaLogo className="w-44" />
+          <AromaLogo variant="descriptor" className="w-56" />
         </Link>
         <SignIn
           appearance={{
@@ -27,14 +27,15 @@ export default async function Page() {
             elements: {
               rootBox: "w-full! max-w-full!",
               cardBox:
-                "w-full! max-w-full! shadow-none! border! border-border! rounded-xl!",
-              card: "w-full! min-w-0! gap-6! px-4! py-6! shadow-none! border-0! rounded-xl!",
-              headerTitle: "text-brand-burgundy! text-2xl! font-semibold!",
+                "w-full! max-w-full! shadow-none! border! border-border! rounded-lg!",
+              card: "w-full! min-w-0! gap-6! px-4! py-6! shadow-none! border-0! rounded-lg!",
+              headerTitle:
+                "font-heading! text-foreground! text-2xl! font-semibold! tracking-[-0.02em]!",
               formFieldInput:
                 "min-h-11! min-w-0! w-full! rounded-md! border! border-input! text-base! shadow-none! focus-visible:outline-2! focus-visible:outline-offset-4! focus-visible:outline-ring!",
               formButtonPrimary:
                 "h-auto! min-h-11! max-w-full! gap-2! px-3! py-3! whitespace-normal! rounded-md! bg-primary! shadow-none! text-sm! font-semibold! focus-visible:outline-2! focus-visible:outline-offset-4! focus-visible:outline-ring! [&::after]:shadow-none!",
-              footer: "bg-muted! rounded-b-xl!",
+              footer: "bg-muted! rounded-b-lg!",
             },
           }}
         />

@@ -17,6 +17,7 @@ export default async function AdminPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader
+        eyebrow={associationName ?? "Alianza AROMA"}
         title={`Hola, ${name}`}
         description={
           associationName
@@ -25,7 +26,10 @@ export default async function AdminPage() {
         }
       />
       <section className="max-w-2xl space-y-4" aria-labelledby="estado-admin">
-        <h2 id="estado-admin" className="text-xl font-semibold">
+        <h2
+          id="estado-admin"
+          className="font-heading text-xl font-semibold tracking-[-0.015em]"
+        >
           La vitrina ya está disponible
         </h2>
         <p className="text-muted-foreground leading-relaxed">

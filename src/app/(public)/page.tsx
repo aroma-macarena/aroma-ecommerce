@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
+import territoryImage from "@/assets/territorio-rio-guayabero.jpg";
 import { CategoryFilter } from "@/components/catalog/category-filter";
 import { ProductCard } from "@/components/catalog/product-card";
 import { Container } from "@/components/public/container";
@@ -13,6 +15,7 @@ import {
   getCatalogProducts,
 } from "@/lib/catalog/queries";
 import { publicRoutes } from "@/lib/public-routes";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Vitrina comercial",
@@ -27,57 +30,105 @@ export default async function Home({ searchParams }: PageProps<"/">) {
     getCatalogCategories(),
     getCatalogProducts(categorySlug),
   ]);
-  const { hero, about } = homeContent;
+  const { hero, alliance } = homeContent;
+
+  const facts = [
+    { label: "organizaciones", value: alliance.organizations.length },
+    {
+      label: "mujeres productoras",
+      value: alliance.organizations.reduce(
+        (total, { women }) => total + women,
+        0,
+      ),
+    },
+    ...(categories.length > 0
+      ? [{ label: "categorías", value: categories.length }]
+      : []),
+  ];
 
   return (
     <>
-      <Section className="pt-8 pb-12 md:pt-12 md:pb-16">
-        <Container className="space-y-8">
-          <div className="max-w-2xl space-y-3">
-            <p className="text-primary text-sm font-medium">{hero.eyebrow}</p>
-            <SectionHeading
-              as="h1"
-              title={hero.title}
-              description={hero.description}
-            />
+      <Section className="pt-8 pb-16 md:pt-14 md:pb-24">
+        <Container className="space-y-16 md:space-y-24">
+          <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] md:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-16">
+            <div className="flex flex-col justify-between gap-8">
+              <SectionHeading
+                as="h1"
+                eyebrow={hero.eyebrow}
+                title={hero.title}
+                description={hero.description}
+                className="md:pt-6"
+              />
+
+              <dl
+                className={cn(
+                  "border-foreground grid border-t-[1.5px] border-b",
+                  facts.length === 3 ? "grid-cols-3" : "grid-cols-2",
+                )}
+              >
+                {facts.map(({ label, value }) => (
+                  <div
+                    key={label}
+                    className="flex min-w-0 flex-col-reverse gap-1 border-l py-3 pl-3 first:border-l-0 first:pl-0 sm:pl-5"
+                  >
+                    <dt className="text-muted-foreground text-sm leading-snug">
+                      {label}
+                    </dt>
+                    <dd className="font-heading text-3xl leading-none font-semibold md:text-[2.75rem]">
+                      {value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <figure className="space-y-2">
+              <Image
+                src={territoryImage}
+                alt={hero.image.alt}
+                placeholder="blur"
+                priority
+                sizes="(min-width: 1024px) 28rem, (min-width: 768px) 24rem, 100vw"
+                className="aspect-4/3 w-full rounded-sm object-cover md:aspect-4/5"
+              />
+              <figcaption className="text-muted-foreground font-mono text-xs">
+                {hero.image.caption}
+              </figcaption>
+            </figure>
           </div>
 
-          <section aria-labelledby="catalogo-titulo" className="space-y-6">
-            <h2
-              id="catalogo-titulo"
-              className="text-2xl font-semibold tracking-tight"
-            >
-              Explora los productos
-            </h2>
-            {categories.length > 0 ? (
-              <CategoryFilter
-                categories={categories}
-                activeSlug={categorySlug}
-              />
-            ) : null}
+          <section aria-labelledby="catalogo-titulo" className="space-y-8">
+            <div className="flex flex-col gap-2 border-b md:flex-row md:items-end md:justify-between md:gap-8">
+              <h2
+                id="catalogo-titulo"
+                className="font-heading text-3xl leading-tight font-semibold tracking-[-0.03em] md:pb-2 md:text-[2.5rem]"
+              >
+                Explora los productos
+              </h2>
+              {categories.length > 0 ? (
+                <CategoryFilter
+                  categories={categories}
+                  activeSlug={categorySlug}
+                />
+              ) : null}
+            </div>
 
             {products.length > 0 ? (
-              <>
-                <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {products.map((product) => (
-                    <li key={product.id} className="min-w-0">
-                      <ProductCard product={product} />
-                    </li>
-                  ))}
-                </ul>
-                <p className="text-muted-foreground max-w-xl text-sm leading-relaxed">
-                  Las fichas detalladas y el contacto directo con las
-                  asociaciones estarán disponibles próximamente.
-                </p>
-              </>
+              <ul className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+                {products.map((product) => (
+                  <li key={product.id} className="min-w-0">
+                    <ProductCard product={product} />
+                  </li>
+                ))}
+              </ul>
             ) : (
-              <div className="bg-muted rounded-xl border px-4 py-8 text-center">
-                <p className="font-heading text-lg font-medium">
+              <div className="max-w-xl space-y-2 py-4">
+                <p className="font-heading text-2xl font-medium">
                   {categorySlug
                     ? "No hay productos en esta categoría"
                     : "Aún no hay productos disponibles"}
                 </p>
-                <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   {categorySlug
                     ? "Prueba con otra categoría o consulta todos los productos disponibles."
                     : "Pronto encontrarás aquí los productos de las asociaciones de AROMA."}
@@ -87,7 +138,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
                     href={publicRoutes.products}
                     className={buttonVariants({
                       variant: "outline",
-                      className: "mt-6",
+                      className: "mt-4",
                     })}
                   >
                     Ver todos los productos
@@ -99,17 +150,45 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         </Container>
       </Section>
 
-      <Section id="alianza" className="bg-muted border-y scroll-mt-40">
-        <Container className="grid gap-8 md:grid-cols-2 md:gap-16">
-          <SectionHeading title={about.title} description={about.description} />
-          <ul className="space-y-6">
-            {about.highlights.map(({ title, description }) => (
-              <li key={title} className="space-y-2">
-                <h3 className="text-lg font-semibold tracking-tight">
-                  {title}
-                </h3>
-                <p className="text-muted-foreground max-w-prose text-sm leading-relaxed">
-                  {description}
+      <Section
+        id="alianza"
+        className="bg-brand-burgundy text-background scroll-mt-24"
+      >
+        <Container className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-16">
+          <div className="space-y-8">
+            <SectionHeading
+              eyebrow={alliance.eyebrow}
+              title={alliance.title}
+              description={alliance.description}
+              tone="inverse"
+            />
+            <Image
+              src="/brand/aroma-sello.svg"
+              alt="Sello: Producto de la Alianza AROMA, hecho por mujeres campesinas"
+              width={1525}
+              height={1525}
+              unoptimized
+              className="w-28 md:w-36"
+            />
+          </div>
+
+          <ul className="border-background/25 grid content-start border-b sm:grid-cols-2 sm:gap-x-8">
+            {alliance.organizations.map((organization) => (
+              <li
+                key={organization.acronym}
+                className="border-background/25 space-y-1 border-t py-3.5"
+              >
+                <p className="flex justify-between gap-3 font-mono text-[0.8125rem] font-medium">
+                  <span>{organization.acronym}</span>
+                  <span className="text-background/80 text-right">
+                    {organization.women} mujeres
+                    {"men" in organization
+                      ? ` y ${organization.men} hombres`
+                      : ""}
+                  </span>
+                </p>
+                <p className="text-background/80 text-sm leading-snug">
+                  {organization.name}
                 </p>
               </li>
             ))}

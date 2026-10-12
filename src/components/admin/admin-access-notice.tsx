@@ -1,11 +1,5 @@
 import { AdminSignOutButton } from "@/components/admin/admin-sign-out-button";
 import { AromaLogo } from "@/components/brand/aroma-logo";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card";
 
 type AdminAccessNoticeProps = {
   title: string;
@@ -15,18 +9,16 @@ type AdminAccessNoticeProps = {
 function AdminAccessNotice({ title, description }: AdminAccessNoticeProps) {
   return (
     <main className="bg-background flex min-h-svh flex-1 items-center justify-center px-5 py-12">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-4">
-          <AromaLogo className="w-36" />
-          <h1 className="text-brand-burgundy text-2xl font-semibold tracking-tight">
+      <div className="bg-card w-full max-w-md space-y-6 rounded-lg border p-6">
+        <AromaLogo variant="symbol" className="w-14" />
+        <div className="space-y-2">
+          <h1 className="font-heading text-3xl leading-tight font-semibold tracking-[-0.025em]">
             {title}
           </h1>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <AdminSignOutButton />
-        </CardContent>
-      </Card>
+          <p className="text-muted-foreground leading-7">{description}</p>
+        </div>
+        <AdminSignOutButton />
+      </div>
     </main>
   );
 }

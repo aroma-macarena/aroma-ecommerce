@@ -38,7 +38,7 @@ function AdminNav({ role, onNavigate }: AdminNavProps) {
                   >
                     <Icon className="size-4 shrink-0" aria-hidden="true" />
                     <span className="min-w-0">{label}</span>
-                    <span className="col-start-2 text-xs font-normal">
+                    <span className="col-start-2 font-mono text-[0.6875rem] font-normal tracking-[0.06em] uppercase">
                       Pronto
                     </span>
                   </span>
@@ -58,7 +58,7 @@ function AdminNav({ role, onNavigate }: AdminNavProps) {
                     itemClassName,
                     "transition-colors",
                     isActive
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_var(--primary)] font-semibold"
                       : "text-foreground hover:bg-muted",
                   )}
                 >
