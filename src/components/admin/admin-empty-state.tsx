@@ -16,17 +16,19 @@ function AdminEmptyState({
   action,
 }: AdminEmptyStateProps) {
   return (
-    <div className="bg-card/60 flex flex-col gap-4 rounded-lg border border-dashed px-5 py-6 sm:flex-row sm:items-start">
-      <span className="bg-muted text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded-md">
+    <div className="bg-card/60 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-2 rounded-lg sm:items-start sm:gap-y-1 border border-dashed px-5 py-6">
+      <span className="bg-muted text-muted-foreground flex size-10 items-center justify-center rounded-md sm:row-span-2">
         <Icon className="size-5" aria-hidden="true" />
       </span>
-      <div className="min-w-0 flex-1 space-y-1">
-        <p className="font-semibold">{title}</p>
-        <p className="text-muted-foreground text-sm leading-relaxed">
-          {description}
-        </p>
-        {action ? <div className="pt-3">{action}</div> : null}
-      </div>
+      <p className="font-semibold sm:pt-0.5">{title}</p>
+      <p className="text-muted-foreground col-span-2 text-sm leading-relaxed sm:col-span-1 sm:col-start-2">
+        {description}
+      </p>
+      {action ? (
+        <div className="col-span-2 pt-2 sm:col-span-1 sm:col-start-2">
+          {action}
+        </div>
+      ) : null}
     </div>
   );
 }
