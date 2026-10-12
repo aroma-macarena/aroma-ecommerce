@@ -65,10 +65,7 @@ function AdminAccessNotice({
   return (
     <main className="bg-background flex min-h-svh flex-1 items-center justify-center px-5 py-12">
       <div className="w-full max-w-md space-y-6">
-        <p className="font-heading flex items-center justify-center gap-2 text-lg font-semibold">
-          <AromaLogo variant="symbol" className="w-8" />
-          Alianza AROMA
-        </p>
+        <AromaLogo className="mx-auto w-36" />
 
         <div className="bg-card space-y-6 rounded-lg border p-6 text-center sm:p-8">
           <span className="bg-brand-orange/12 text-brand-orange mx-auto flex size-14 items-center justify-center rounded-full">

@@ -108,7 +108,7 @@ SVG oficiales en `public/brand`, servidos sin optimizar mediante `AromaLogo`. Pa
 
 - `horizontal` (sin descripción): cabeceras, pie y admin.
 - `descriptor` (con descripción): solo a 220 px o más, como en el acceso administrativo.
-- `symbol`: cabecera bajo 400 px, fichas sin foto y páginas de estado (404, acceso no habilitado).
+- `symbol`: cabecera bajo 400 px, fichas sin foto y la página 404. Los avisos de acceso al admin usan el logo sin descripción sobre la tarjeta.
 - `aroma-sello.svg`: una vez por pantalla y a 112 px o más (banda de la alianza, futuro detalle de producto).
 
 ## Componentes
