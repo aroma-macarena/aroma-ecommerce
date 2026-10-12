@@ -56,15 +56,28 @@ Copy `.env.example` to `.env.local` and fill in the required values:
 
 ## Scripts
 
-| Command            | Action                            |
-| ------------------ | --------------------------------- |
-| `pnpm dev`         | Start development server          |
-| `pnpm build`       | Production build                  |
-| `pnpm start`       | Start production server           |
-| `pnpm lint`        | Run ESLint                        |
-| `pnpm typecheck`   | Type-check without emitting       |
-| `pnpm db:generate` | Generate Drizzle migrations       |
-| `pnpm db:migrate`  | Apply pending migrations          |
-| `pnpm db:check`    | Validate migration consistency    |
-| `pnpm db:studio`   | Open Drizzle Studio               |
-| `pnpm db:seed`     | Seed the database (⚠ destructive) |
+| Command            | Action                               |
+| ------------------ | ------------------------------------ |
+| `pnpm dev`         | Start development server             |
+| `pnpm build`       | Production build                     |
+| `pnpm start`       | Start production server              |
+| `pnpm lint`        | Run ESLint                           |
+| `pnpm typecheck`   | Type-check without emitting          |
+| `pnpm test`        | Run tests (watch mode in a terminal) |
+| `pnpm test:ci`     | Run tests once, as in CI             |
+| `pnpm db:generate` | Generate Drizzle migrations          |
+| `pnpm db:migrate`  | Apply pending migrations             |
+| `pnpm db:check`    | Validate migration consistency       |
+| `pnpm db:studio`   | Open Drizzle Studio                  |
+| `pnpm db:seed`     | Seed the database (⚠ destructive)    |
+
+## Testing
+
+Automated tests use [Vitest](https://vitest.dev) and live next to the code they cover (`*.test.ts`). They focus on business rules such as authorization and product visibility, not on visual snapshots or a coverage target.
+
+- Database queries run against an in-memory PostgreSQL ([PGlite](https://pglite.dev)) with the project's migrations applied, so tests need no credentials or external services.
+- Clerk and other external services are mocked where a test needs them.
+- Shared helpers live in `src/test`: `createTestDatabase()` and fixtures for associations, categories, products and profiles.
+- CI runs `pnpm test:ci` on every pull request to `main`.
+
+End-to-end browser tests are not set up yet.
