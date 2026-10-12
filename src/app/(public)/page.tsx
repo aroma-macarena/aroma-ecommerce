@@ -42,7 +42,12 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       ),
     },
     ...(categories.length > 0
-      ? [{ label: "categorías", value: categories.length }]
+      ? [
+          {
+            label: categories.length === 1 ? "categoría" : "categorías",
+            value: categories.length,
+          },
+        ]
       : []),
   ];
 
@@ -50,14 +55,13 @@ export default async function Home({ searchParams }: PageProps<"/">) {
     <>
       <Section className="pt-8 pb-16 md:pt-14 md:pb-24">
         <Container className="space-y-16 md:space-y-24">
-          <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] md:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-16">
-            <div className="flex flex-col justify-between gap-8">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-16">
+            <div className="flex flex-col gap-8 lg:justify-center lg:gap-10">
               <SectionHeading
                 as="h1"
                 eyebrow={hero.eyebrow}
                 title={hero.title}
                 description={hero.description}
-                className="md:pt-6"
               />
 
               <dl
@@ -69,7 +73,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
                 {facts.map(({ label, value }) => (
                   <div
                     key={label}
-                    className="flex min-w-0 flex-col-reverse gap-1 border-l py-3 pl-3 first:border-l-0 first:pl-0 sm:pl-5"
+                    className="flex min-w-0 flex-col-reverse justify-end gap-1 border-l py-3 pl-3 first:border-l-0 first:pl-0 sm:pl-5"
                   >
                     <dt className="text-muted-foreground text-sm leading-snug">
                       {label}
@@ -88,8 +92,8 @@ export default async function Home({ searchParams }: PageProps<"/">) {
                 alt={hero.image.alt}
                 placeholder="blur"
                 priority
-                sizes="(min-width: 1024px) 28rem, (min-width: 768px) 24rem, 100vw"
-                className="aspect-4/3 w-full rounded-sm object-cover md:aspect-4/5"
+                sizes="(min-width: 1024px) 28rem, (min-width: 640px) 80vw, 100vw"
+                className="aspect-4/3 w-full rounded-sm object-cover lg:aspect-square"
               />
               <figcaption className="text-muted-foreground font-mono text-xs">
                 {hero.image.caption}
