@@ -27,7 +27,7 @@ function ProductCard({ product }: ProductCardProps) {
           />
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-2">
-            <AromaLogo variant="symbol" className="w-12 opacity-35 grayscale" />
+            <AromaLogo variant="symbol" className="w-20 opacity-35 grayscale" />
             <span className="text-muted-foreground font-mono text-xs tracking-[0.06em] uppercase">
               Sin fotografía
             </span>

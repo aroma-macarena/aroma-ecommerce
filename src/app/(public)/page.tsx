@@ -159,7 +159,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
         className="bg-brand-burgundy text-background scroll-mt-24"
       >
         <Container className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-16">
-          <div className="space-y-8">
+          <div className="flex flex-col gap-10">
             <SectionHeading
               eyebrow={alliance.eyebrow}
               title={alliance.title}
@@ -172,7 +172,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
               width={1525}
               height={1525}
               unoptimized
-              className="w-28 md:w-36"
+              className="mx-auto w-40 sm:w-48 lg:my-auto lg:w-56"
             />
           </div>
 
