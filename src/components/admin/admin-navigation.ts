@@ -45,7 +45,7 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     label: "Productos",
     icon: Package,
     roles: ["SUPER_ADMIN", "ASSOCIATION_ADMIN"],
-    available: false,
+    available: true,
   },
   {
     href: "/admin/content",

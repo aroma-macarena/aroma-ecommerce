@@ -116,6 +116,9 @@ SVG oficiales en `public/brand`, servidos sin optimizar mediante `AromaLogo`. Pa
 - **Navegación pública**: mismo subrayado para la página activa, anunciada con `aria-current`. En la entrada, «La alianza» se resalta mientras su sección ocupa el centro de la pantalla, y el ancla compensa la altura de la cabecera fija (`scroll-padding-top`).
 - **Banda de la alianza**: bordó a todo el ancho, lema, descripción, sello y lista de organizaciones con su número de integrantes. Los datos viven en `src/content/home.ts`.
 - **AdminPageHeader**: antetítulo opcional (asociación o alianza), título en display y regla en tinta.
+- **Lista administrativa de productos** (`/admin/products`): tabla en escritorio y filas apiladas en móvil, con producto, categoría, asociación cuando aplica, estado y acción. El superadmin ve una sola lista; el admin de asociación ve sus productos y, aparte, los publicados por otras asociaciones activas como «Solo lectura». La visibilidad y el permiso de gestión se calculan en el servidor. Categorías y asociaciones inactivas se señalan con una nota en mono.
+- **StatusBadge**: estado del producto con forma y texto, nunca solo color: círculo verde «Publicado», círculo vacío «Borrador», cuadrado naranja «Pausado».
+- **Acciones pendientes**: mientras no existan crear y editar, «Nuevo producto» y «Editar» se muestran deshabilitados con «Pronto», sin enlazar a rutas inexistentes.
 - **Navegación admin**: activo en verde claro con barra verde a la izquierda; las secciones pendientes muestran «Pronto» y están deshabilitadas.
 - **Estados**: la 404 y los avisos de acceso usan el símbolo, un título en display y una sola acción.
 - **Foco**: contorno de 2 px en verde acción con separación de 4 px; en pestañas, contorno interior para no recortarse.
