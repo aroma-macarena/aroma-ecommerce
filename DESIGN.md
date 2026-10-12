@@ -89,6 +89,8 @@ Cada página tiene un h1. `SectionHeading` permite elegir el nivel semántico, e
 
 - `Container` limita el contenido a 1152 px, con márgenes de 20, 32 y 40 px. Las secciones usan 48 px en móvil y 80 px en escritorio.
 - Se diseña desde 360–390 px, sin desplazamiento horizontal.
+- Ancho de texto: los párrafos largos se limitan a una medida cómoda de lectura; las frases cortas (descripciones de cabecera, estados vacíos) ocupan el ancho disponible para no partirse sin necesidad.
+- En el admin, el contexto de la asociación va en el antetítulo; títulos y textos usan «tu asociación» o «Tus productos» en lugar de repetir su nombre.
 - La entrada `/` es la vitrina: titular, cifras de la alianza y foto del territorio; después, productos con filtros; al final, la banda de la alianza con las organizaciones y el sello. `/productos` redirige a la entrada conservando la categoría.
 - La foto de la entrada es contenido institucional estático (`src/assets`), optimizada por `next/image`. Las fotos de productos vendrán del almacenamiento de medios.
 - No se inventa material: sin foto real, se muestra el espacio vacío con el símbolo.

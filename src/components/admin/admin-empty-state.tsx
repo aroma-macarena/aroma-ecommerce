@@ -20,9 +20,9 @@ function AdminEmptyState({
       <span className="bg-muted text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded-md">
         <Icon className="size-5" aria-hidden="true" />
       </span>
-      <div className="space-y-1">
+      <div className="min-w-0 flex-1 space-y-1">
         <p className="font-semibold">{title}</p>
-        <p className="text-muted-foreground max-w-prose text-sm leading-relaxed">
+        <p className="text-muted-foreground text-sm leading-relaxed">
           {description}
         </p>
         {action ? <div className="pt-3">{action}</div> : null}

@@ -32,7 +32,7 @@ export default async function AdminProductsPage() {
         title="Productos"
         description={
           isAssociationAdmin
-            ? `Consulta los productos de ${profile.associationName} y los publicados por otras asociaciones de la alianza.`
+            ? "Consulta los productos de tu asociación y los publicados por otras asociaciones de la alianza."
             : "Consulta los productos de todas las asociaciones de la alianza, en cualquier estado."
         }
         actions={
@@ -55,16 +55,14 @@ export default async function AdminProductsPage() {
           id="productos-gestionables"
           className="font-heading text-xl font-semibold tracking-[-0.015em]"
         >
-          {isAssociationAdmin
-            ? `Productos de ${profile.associationName}`
-            : "Todos los productos"}
+          {isAssociationAdmin ? "Tus productos" : "Todos los productos"}
         </h2>
         {manageableProducts.length > 0 ? (
           <AdminProductList
             products={manageableProducts}
             label={
               isAssociationAdmin
-                ? `Productos de ${profile.associationName}`
+                ? "Productos de tu asociación"
                 : "Todos los productos"
             }
             showAssociation={!isAssociationAdmin}
