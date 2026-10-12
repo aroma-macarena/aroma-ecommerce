@@ -1,7 +1,12 @@
 import { SignIn } from "@clerk/nextjs";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { AromaLogo } from "@/components/brand/aroma-logo";
+
+export const metadata: Metadata = {
+  title: "Acceso administrativo",
+};
 
 export default async function Page() {
   return (

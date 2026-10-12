@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { AromaLogo } from "@/components/brand/aroma-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { publicRoutes } from "@/lib/public-routes";
+
+export const metadata: Metadata = {
+  title: "Página no disponible",
+};
 
 export default function NotFound() {
   return (

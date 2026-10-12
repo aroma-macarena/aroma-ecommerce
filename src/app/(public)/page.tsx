@@ -18,7 +18,7 @@ import { publicRoutes } from "@/lib/public-routes";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Vitrina comercial",
+  title: { absolute: "Productos de La Macarena | Alianza AROMA" },
   description:
     "Conoce los productos de las organizaciones y mujeres productoras de la Alianza AROMA, en La Macarena, Meta.",
 };

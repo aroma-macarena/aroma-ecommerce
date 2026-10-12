@@ -2,7 +2,7 @@ import "./globals.css";
 
 import { esMX } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 
 const geistSans = Geist({
@@ -24,10 +24,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: {
     default: "Alianza AROMA",
-    template: "%s | AROMA",
+    template: "%s | Alianza AROMA",
   },
   description:
-    "Productos de las asociaciones que forman parte de la Alianza AROMA.",
+    "Productos de las organizaciones de mujeres campesinas de la Alianza AROMA, en La Macarena, Meta.",
+  applicationName: "Alianza AROMA",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#fffdf8",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
