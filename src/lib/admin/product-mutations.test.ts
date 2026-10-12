@@ -151,6 +151,21 @@ describe("createProduct", () => {
     expect(second.slug).toBe("cafe-artesanal-2");
   });
 
+  it("keeps long slugs unique when the suffix shortens them", async () => {
+    const name = "a".repeat(200);
+    const slugs = [];
+
+    for (let count = 0; count < 3; count++) {
+      slugs.push((await createOrFail(bosqueVivoAdmin, input({ name }))).slug);
+    }
+
+    expect(slugs).toEqual([
+      "a".repeat(200),
+      `${"a".repeat(198)}-2`,
+      `${"a".repeat(198)}-3`,
+    ]);
+  });
+
   it("allows the same slug in different associations", async () => {
     const own = await createOrFail(bosqueVivoAdmin, input());
     const other = await createOrFail(saboresAdmin, input());

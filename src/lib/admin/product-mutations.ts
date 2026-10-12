@@ -11,7 +11,7 @@ import type {
 } from "@/lib/admin/product-form";
 import { canManageAssociation, isSuperAdmin } from "@/lib/auth/authorization";
 import type { AdminProfile } from "@/lib/auth/get-current-profile";
-import { nextAvailableSlug, slugify } from "@/lib/slug";
+import { nextAvailableSlug, slugCandidatePrefix, slugify } from "@/lib/slug";
 
 export type ProductMutationResult =
   | { ok: true; productId: string }
@@ -42,7 +42,7 @@ async function findAvailableSlug(
     .where(
       and(
         eq(products.associationId, associationId),
-        like(products.slug, `${base || "producto"}%`),
+        like(products.slug, `${slugCandidatePrefix(base)}%`),
         excludeProductId ? ne(products.id, excludeProductId) : undefined,
       ),
     );

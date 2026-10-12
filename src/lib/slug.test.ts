@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { nextAvailableSlug, slugify } from "@/lib/slug";
+import { nextAvailableSlug, slugCandidatePrefix, slugify } from "@/lib/slug";
 
 describe("slugify", () => {
   it("removes accents, symbols and extra spaces", () => {
@@ -40,5 +40,23 @@ describe("nextAvailableSlug", () => {
     const base = "a".repeat(200);
 
     expect(nextAvailableSlug(base, [base])).toHaveLength(200);
+  });
+});
+
+describe("slugCandidatePrefix", () => {
+  it("is shared by suffixed candidates whose root was shortened", () => {
+    const base = "a".repeat(200);
+    const taken = [base, `${"a".repeat(198)}-2`];
+
+    expect(nextAvailableSlug(base, taken)).toMatch(
+      new RegExp(`^${slugCandidatePrefix(base)}`),
+    );
+    expect(
+      taken.every((slug) => slug.startsWith(slugCandidatePrefix(base))),
+    ).toBe(true);
+  });
+
+  it("falls back to the default root", () => {
+    expect(slugCandidatePrefix("")).toBe("producto");
   });
 });
