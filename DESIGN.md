@@ -123,7 +123,7 @@ SVG oficiales en `public/brand`, servidos sin optimizar mediante `AromaLogo`. Pa
 - **StatusBadge**: estado del producto con forma y texto, nunca solo color: círculo verde «Publicado», círculo vacío «Borrador», cuadrado naranja «Pausado».
 - **Acciones pendientes**: mientras no existan crear y editar, «Nuevo producto» y «Editar» se muestran deshabilitados con «Pronto», sin enlazar a rutas inexistentes.
 - **Navegación admin**: activo en verde claro con barra verde a la izquierda; las secciones pendientes muestran «Pronto» y están deshabilitadas.
-- **Estados**: la 404 y los avisos de acceso usan el símbolo, un título en display y una sola acción.
+- **Estados**: la 404 usa el símbolo, un título en display y una sola acción. Los avisos de acceso al admin (cuenta sin acceso, cuenta pausada, asociación pausada) explican qué pasó en un tono cercano, muestran la cuenta y la asociación afectadas y ofrecen contactar a la administración por WhatsApp (si `ALLIANCE_SUPPORT_WHATSAPP` está configurado), usar otra cuenta o volver al sitio público.
 - **Foco**: contorno de 2 px en verde acción con separación de 4 px; en pestañas, contorno interior para no recortarse.
 
 ## Hacer y evitar

@@ -48,6 +48,12 @@ Copy `.env.example` to `.env.local` and fill in the required values:
 | ---------------------- | ---------------------------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_SITE_URL` | Public URL of the site, used for absolute links in link previews (optional; for example `https://…`) |
 
+**Alliance support**
+
+| Variable                    | Description                                                                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `ALLIANCE_SUPPORT_WHATSAPP` | WhatsApp number of the alliance administration, with country code (optional; access notices hide the contact button without it) |
+
 ## Scripts
 
 | Command            | Action                            |

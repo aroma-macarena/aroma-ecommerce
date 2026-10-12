@@ -1,3 +1,4 @@
+import { currentUser } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -23,27 +24,23 @@ export default async function AdminLayout({
     case "UNAUTHENTICATED":
       redirect("/admin/sign-in");
 
-    case "PROFILE_NOT_FOUND":
+    case "PROFILE_NOT_FOUND": {
+      const user = await currentUser();
       return (
         <AdminAccessNotice
-          title="Acceso no habilitado"
-          description="Tu cuenta no tiene un perfil administrativo asociado."
+          reason="PROFILE_NOT_FOUND"
+          email={user?.primaryEmailAddress?.emailAddress}
         />
       );
+    }
 
     case "INACTIVE":
-      return (
-        <AdminAccessNotice
-          title="Cuenta inactiva"
-          description="Tu acceso administrativo está deshabilitado."
-        />
-      );
-
     case "ASSOCIATION_INACTIVE":
       return (
         <AdminAccessNotice
-          title="Asociación inactiva"
-          description="La asociación de tu cuenta está deshabilitada."
+          reason={result.status}
+          email={result.account.email}
+          associationName={result.account.associationName}
         />
       );
 
