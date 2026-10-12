@@ -17,11 +17,17 @@ export type AdminProfile = { id: string; name: string; email: string } & (
 
 export type AdminRole = AdminProfile["role"];
 
+/** Who is blocked, so access notices can show it. */
+export type InactiveAccount = {
+  email: string;
+  associationName: string | null;
+};
+
 export type CurrentProfileResult =
   | { status: "UNAUTHENTICATED" }
   | { status: "PROFILE_NOT_FOUND" }
-  | { status: "INACTIVE" }
-  | { status: "ASSOCIATION_INACTIVE" }
+  | { status: "INACTIVE"; account: InactiveAccount }
+  | { status: "ASSOCIATION_INACTIVE"; account: InactiveAccount }
   | { status: "ACTIVE"; currentProfile: AdminProfile };
 
 const getCurrentProfile = cache(async (): Promise<CurrentProfileResult> => {
@@ -52,7 +58,13 @@ const getCurrentProfile = cache(async (): Promise<CurrentProfileResult> => {
   }
 
   if (currentProfile.status !== "ACTIVE") {
-    return { status: "INACTIVE" };
+    return {
+      status: "INACTIVE",
+      account: {
+        email: currentProfile.email,
+        associationName: currentProfile.associationName,
+      },
+    };
   }
 
   if (currentProfile.role === "SUPER_ADMIN") {
@@ -70,11 +82,23 @@ const getCurrentProfile = cache(async (): Promise<CurrentProfileResult> => {
   }
 
   if (!currentProfile.associationId || !currentProfile.associationName) {
-    return { status: "INACTIVE" };
+    return {
+      status: "INACTIVE",
+      account: {
+        email: currentProfile.email,
+        associationName: currentProfile.associationName,
+      },
+    };
   }
 
   if (currentProfile.associationStatus !== "ACTIVE") {
-    return { status: "ASSOCIATION_INACTIVE" };
+    return {
+      status: "ASSOCIATION_INACTIVE",
+      account: {
+        email: currentProfile.email,
+        associationName: currentProfile.associationName,
+      },
+    };
   }
 
   return {

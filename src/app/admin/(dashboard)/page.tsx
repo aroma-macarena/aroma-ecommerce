@@ -30,19 +30,25 @@ export default async function AdminPage() {
           id="estado-admin"
           className="font-heading text-xl font-semibold tracking-[-0.015em]"
         >
-          La vitrina ya está disponible
+          Productos y vitrina
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Puedes consultar los productos publicados en el sitio público. Las
-          herramientas para gestionar el contenido están en preparación y
-          aparecerán en este menú cuando estén disponibles.
+          Consulta los productos y su estado desde el menú de productos, o
+          revisa cómo se ven en la vitrina pública. Las herramientas para crear
+          y editar contenido están en preparación y aparecerán en este menú
+          cuando estén disponibles.
         </p>
-        <Link
-          href={publicRoutes.products}
-          className={buttonVariants({ variant: "outline" })}
-        >
-          Ver vitrina comercial
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/admin/products" className={buttonVariants()}>
+            Ver productos
+          </Link>
+          <Link
+            href={publicRoutes.products}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Ver vitrina comercial
+          </Link>
+        </div>
       </section>
     </div>
   );

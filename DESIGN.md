@@ -89,6 +89,8 @@ Cada página tiene un h1. `SectionHeading` permite elegir el nivel semántico, e
 
 - `Container` limita el contenido a 1152 px, con márgenes de 20, 32 y 40 px. Las secciones usan 48 px en móvil y 80 px en escritorio.
 - Se diseña desde 360–390 px, sin desplazamiento horizontal.
+- Ancho de texto: los párrafos largos se limitan a una medida cómoda de lectura; las frases cortas (descripciones de cabecera, estados vacíos) ocupan el ancho disponible para no partirse sin necesidad.
+- En el admin, el contexto de la asociación va en el antetítulo; títulos y textos usan «tu asociación» o «Tus productos» en lugar de repetir su nombre.
 - La entrada `/` es la vitrina: titular, cifras de la alianza y foto del territorio; después, productos con filtros; al final, la banda de la alianza con las organizaciones y el sello. `/productos` redirige a la entrada conservando la categoría.
 - La foto de la entrada es contenido institucional estático (`src/assets`), optimizada por `next/image`. Las fotos de productos vendrán del almacenamiento de medios.
 - No se inventa material: sin foto real, se muestra el espacio vacío con el símbolo.
@@ -106,7 +108,7 @@ SVG oficiales en `public/brand`, servidos sin optimizar mediante `AromaLogo`. Pa
 
 - `horizontal` (sin descripción): cabeceras, pie y admin.
 - `descriptor` (con descripción): solo a 220 px o más, como en el acceso administrativo.
-- `symbol`: cabecera bajo 400 px, fichas sin foto y páginas de estado (404, acceso no habilitado).
+- `symbol`: cabecera bajo 400 px, fichas sin foto y la página 404. Los avisos de acceso al admin usan el logo sin descripción sobre la tarjeta.
 - `aroma-sello.svg`: una vez por pantalla y a 112 px o más (banda de la alianza, futuro detalle de producto).
 
 ## Componentes
@@ -116,8 +118,12 @@ SVG oficiales en `public/brand`, servidos sin optimizar mediante `AromaLogo`. Pa
 - **Navegación pública**: mismo subrayado para la página activa, anunciada con `aria-current`. En la entrada, «La alianza» se resalta mientras su sección ocupa el centro de la pantalla, y el ancla compensa la altura de la cabecera fija (`scroll-padding-top`).
 - **Banda de la alianza**: bordó a todo el ancho, lema, descripción, sello y lista de organizaciones con su número de integrantes. Los datos viven en `src/content/home.ts`.
 - **AdminPageHeader**: antetítulo opcional (asociación o alianza), título en display y regla en tinta.
+- **Lista administrativa de productos** (`/admin/products`): tabla en escritorio y filas apiladas en móvil, con producto, categoría, asociación cuando aplica, estado y acción. El superadmin ve una sola lista; el admin de asociación ve sus productos y, aparte, los publicados por otras asociaciones activas como «Solo lectura». La visibilidad y el permiso de gestión se calculan en el servidor. Categorías y asociaciones inactivas se señalan con una nota en mono.
+- **AdminEmptyState**: lista vacía como un espacio con borde discontinuo, icono, título breve que no repite el de la sección y texto que explica cuándo aparecerá contenido. Admite una acción opcional.
+- **StatusBadge**: estado del producto con forma y texto, nunca solo color: círculo verde «Publicado», círculo vacío «Borrador», cuadrado naranja «Pausado».
+- **Acciones pendientes**: mientras no existan crear y editar, «Nuevo producto» y «Editar» se muestran deshabilitados con «Pronto», sin enlazar a rutas inexistentes.
 - **Navegación admin**: activo en verde claro con barra verde a la izquierda; las secciones pendientes muestran «Pronto» y están deshabilitadas.
-- **Estados**: la 404 y los avisos de acceso usan el símbolo, un título en display y una sola acción.
+- **Estados**: la 404 usa el símbolo, un título en display y una sola acción. Los avisos de acceso al admin (cuenta sin acceso, cuenta pausada, asociación pausada) explican qué pasó en un tono cercano, muestran la cuenta y la asociación afectadas y ofrecen contactar a la administración por WhatsApp (si `ALLIANCE_SUPPORT_WHATSAPP` está configurado), usar otra cuenta o volver al sitio público.
 - **Foco**: contorno de 2 px en verde acción con separación de 4 px; en pestañas, contorno interior para no recortarse.
 
 ## Hacer y evitar
