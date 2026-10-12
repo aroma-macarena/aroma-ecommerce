@@ -49,6 +49,15 @@ export const viewport: Viewport = {
   themeColor: "#fffdf8",
 };
 
+// Fixes a typo in Clerk's es-MX translation ("rquerido").
+const clerkLocalization = {
+  ...esMX,
+  unstable__errors: {
+    ...esMX.unstable__errors,
+    form_param_nil: "Este campo es obligatorio.",
+  },
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -56,7 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ClerkProvider afterSignOutUrl="/" localization={esMX}>
+        <ClerkProvider afterSignOutUrl="/" localization={clerkLocalization}>
           {children}
         </ClerkProvider>
       </body>

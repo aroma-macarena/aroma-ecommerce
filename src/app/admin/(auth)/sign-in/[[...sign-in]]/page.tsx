@@ -45,6 +45,10 @@ export default async function Page() {
               // element, so the reset action gets the primary button style.
               alternativeMethodsBlockButton:
                 "min-h-11! rounded-md! shadow-none! bg-none! focus-visible:outline-2! focus-visible:outline-offset-4! focus-visible:outline-ring! [&::after]:shadow-none! [&::after]:bg-none! [&:not(:has(.cl-alternativeMethodsBlockButtonText))]:bg-primary! [&:not(:has(.cl-alternativeMethodsBlockButtonText))]:text-primary-foreground! [&:not(:has(.cl-alternativeMethodsBlockButtonText))]:hover:bg-primary/90! [&:not(:has(.cl-alternativeMethodsBlockButtonText))]:font-semibold!",
+              // Generic Clerk buttons, such as "Soporte de correo electrónico":
+              // keep their colors and only drop the gradient and shine.
+              button:
+                "rounded-md! shadow-none! bg-none! [&::after]:shadow-none! [&::after]:bg-none!",
               footer: "bg-muted! rounded-b-lg!",
             },
           }}
