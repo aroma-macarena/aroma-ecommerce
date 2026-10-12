@@ -3,25 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
+import { getActionProfile } from "@/lib/admin/action-profile";
 import {
   parseProductForm,
   type ProductFormState,
   readProductFormValues,
 } from "@/lib/admin/product-form";
 import { createProduct, updateProduct } from "@/lib/admin/product-mutations";
-import getCurrentProfile from "@/lib/auth/get-current-profile";
 
 const invalidFormMessage = "Revisa los campos marcados para continuar.";
-
-async function getActiveProfile() {
-  const result = await getCurrentProfile();
-
-  if (result.status === "UNAUTHENTICATED") {
-    redirect("/admin/sign-in");
-  }
-
-  return result.status === "ACTIVE" ? result.currentProfile : null;
-}
 
 /** Authorization is checked again here: actions are public endpoints. */
 async function saveProduct(
@@ -37,7 +27,7 @@ async function saveProduct(
     ...state,
   });
 
-  const profile = await getActiveProfile();
+  const profile = await getActionProfile();
 
   if (!profile) {
     return failed({
@@ -71,8 +61,11 @@ async function saveProduct(
   }
 
   revalidatePath("/admin/products");
+  revalidatePath(`/admin/products/${result.productId}`);
   revalidatePath("/");
-  redirect(`/admin/products?estado=${productId ? "actualizado" : "creado"}`);
+  redirect(
+    `/admin/products/${result.productId}?estado=${productId ? "actualizado" : "creado"}`,
+  );
 }
 
 export async function createProductAction(

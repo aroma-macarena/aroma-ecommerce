@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { Settings2 } from "lucide-react";
 import Link from "next/link";
 
 import { StatusBadge } from "@/components/admin/status-badge";
@@ -29,11 +29,11 @@ function ProductAction({ product }: { product: AdminProduct }) {
 
   return (
     <Link
-      href={`/admin/products/${product.id}/edit`}
+      href={`/admin/products/${product.id}`}
       className={buttonVariants({ variant: "outline", size: "sm" })}
     >
-      <Pencil aria-hidden />
-      Editar
+      <Settings2 aria-hidden />
+      Gestionar
       <span className="sr-only">{product.name}</span>
     </Link>
   );

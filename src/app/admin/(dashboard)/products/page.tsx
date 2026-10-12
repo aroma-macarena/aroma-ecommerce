@@ -1,4 +1,4 @@
-import { CircleCheck, PackageOpen, Plus, Store } from "lucide-react";
+import { PackageOpen, Plus, Store } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -13,19 +13,7 @@ export const metadata: Metadata = {
   title: "Productos",
 };
 
-const savedMessages = {
-  creado: "Producto creado como borrador.",
-  actualizado: "Cambios guardados.",
-} as const;
-
-export default async function AdminProductsPage({
-  searchParams,
-}: PageProps<"/admin/products">) {
-  const { estado } = await searchParams;
-  const savedMessage =
-    estado === "creado" || estado === "actualizado"
-      ? savedMessages[estado]
-      : null;
+export default async function AdminProductsPage() {
   const result = await getCurrentProfile();
 
   if (result.status !== "ACTIVE") {
@@ -58,16 +46,6 @@ export default async function AdminProductsPage({
           </Link>
         }
       />
-
-      {savedMessage ? (
-        <p
-          role="status"
-          className="border-primary bg-accent flex items-center gap-2 border-l-[3px] px-4 py-3 text-sm font-medium"
-        >
-          <CircleCheck aria-hidden className="text-primary size-4 shrink-0" />
-          {savedMessage}
-        </p>
-      ) : null}
 
       <section aria-labelledby="productos-gestionables" className="space-y-4">
         <h2

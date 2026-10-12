@@ -1,8 +1,8 @@
-import { Info } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { AdminBackLink } from "@/components/admin/admin-back-link";
+import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { ProductForm } from "@/components/admin/product-form";
 import { StatusBadge } from "@/components/admin/status-badge";
@@ -40,14 +40,15 @@ export default async function EditProductPage({
     product.categoryId,
   );
   const isDraft = product.status === "DRAFT";
+  const productHref = `/admin/products/${product.id}`;
 
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <AdminBackLink href="/admin/products">Productos</AdminBackLink>
+        <AdminBackLink href={productHref}>{product.name}</AdminBackLink>
         <AdminPageHeader
           eyebrow={product.associationName}
-          title={product.name}
+          title="Editar información"
           description="Edita la información del producto. La asociación no se puede cambiar."
           actions={<StatusBadge status={product.status} />}
         />
@@ -68,14 +69,10 @@ export default async function EditProductPage({
       </dl>
 
       {product.status === "PUBLISHED" ? (
-        <p className="border-brand-orange bg-card flex items-start gap-2 border-l-[3px] px-4 py-3 text-sm font-medium">
-          <Info
-            aria-hidden
-            className="text-brand-orange mt-0.5 size-4 shrink-0"
-          />
+        <AdminNotice tone="warning">
           Este producto está publicado: los cambios se verán en la vitrina al
           guardar.
-        </p>
+        </AdminNotice>
       ) : null}
 
       <ProductForm
@@ -91,7 +88,7 @@ export default async function EditProductPage({
         }}
         categoryOptions={categoryOptions}
         submitLabel="Guardar cambios"
-        cancelHref="/admin/products"
+        cancelHref={productHref}
       />
     </div>
   );
