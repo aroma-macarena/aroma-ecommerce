@@ -102,7 +102,7 @@ Cada página tiene un h1. `SectionHeading` permite elegir el nivel semántico, e
 
 ## Marca
 
-SVG oficiales en `public/brand`, servidos sin optimizar mediante `AromaLogo`:
+SVG oficiales en `public/brand`, servidos sin optimizar mediante `AromaLogo`. Para pantalla se les quitó el contorno negro fino de las formas: a tamaños de interfaz medía menos de un píxel y dejaba bordes irregulares. Los originales para impresión los conserva la alianza.
 
 - `horizontal` (sin descripción): cabeceras, pie y admin.
 - `descriptor` (con descripción): solo a 220 px o más, como en el acceso administrativo.
