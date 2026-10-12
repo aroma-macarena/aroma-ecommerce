@@ -1,10 +1,11 @@
-import { PackageOpen, Store } from "lucide-react";
+import { CircleCheck, PackageOpen, Plus, Store } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { AdminEmptyState } from "@/components/admin/admin-empty-state";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminProductList } from "@/components/admin/admin-product-list";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { getAdminProducts } from "@/lib/admin/products";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
 
@@ -12,7 +13,19 @@ export const metadata: Metadata = {
   title: "Productos",
 };
 
-export default async function AdminProductsPage() {
+const savedMessages = {
+  creado: "Producto creado como borrador.",
+  actualizado: "Cambios guardados.",
+} as const;
+
+export default async function AdminProductsPage({
+  searchParams,
+}: PageProps<"/admin/products">) {
+  const { estado } = await searchParams;
+  const savedMessage =
+    estado === "creado" || estado === "actualizado"
+      ? savedMessages[estado]
+      : null;
   const result = await getCurrentProfile();
 
   if (result.status !== "ACTIVE") {
@@ -36,19 +49,22 @@ export default async function AdminProductsPage() {
             : "Consulta los productos de todas las asociaciones de la alianza, en cualquier estado."
         }
         actions={
-          <div className="flex flex-col gap-1 md:items-end">
-            <Button disabled aria-describedby="nuevo-producto-estado">
-              Nuevo producto
-            </Button>
-            <span
-              id="nuevo-producto-estado"
-              className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase"
-            >
-              Disponible pronto
-            </span>
-          </div>
+          <Link href="/admin/products/new" className={buttonVariants()}>
+            <Plus aria-hidden />
+            Nuevo producto
+          </Link>
         }
       />
+
+      {savedMessage ? (
+        <p
+          role="status"
+          className="border-primary bg-accent flex items-center gap-2 border-l-[3px] px-4 py-3 text-sm font-medium"
+        >
+          <CircleCheck aria-hidden className="text-primary size-4 shrink-0" />
+          {savedMessage}
+        </p>
+      ) : null}
 
       <section aria-labelledby="productos-gestionables" className="space-y-4">
         <h2
@@ -75,7 +91,15 @@ export default async function AdminProductsPage() {
                 ? "Tu asociación aún no tiene productos"
                 : "Aún no hay productos registrados"
             }
-            description="Cuando la creación de productos esté disponible, podrás agregarlos desde esta página."
+            description="Crea el primero: se guardará como borrador hasta que lo publiques."
+            action={
+              <Link
+                href="/admin/products/new"
+                className={buttonVariants({ variant: "outline" })}
+              >
+                Nuevo producto
+              </Link>
+            }
           />
         )}
       </section>

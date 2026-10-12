@@ -12,5 +12,7 @@ export default defineConfig({
     environment: "node",
     include: ["src/**/*.test.ts"],
     clearMocks: true,
+    // Each test file starts PGlite and runs the migrations.
+    hookTimeout: 30_000,
   },
 });

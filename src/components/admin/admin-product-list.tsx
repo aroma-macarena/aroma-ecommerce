@@ -1,4 +1,8 @@
+import { Pencil } from "lucide-react";
+import Link from "next/link";
+
 import { StatusBadge } from "@/components/admin/status-badge";
+import { buttonVariants } from "@/components/ui/button";
 import type { AdminProduct } from "@/lib/admin/products";
 
 const dateFormatter = new Intl.DateTimeFormat("es-CO", {
@@ -14,8 +18,8 @@ type AdminProductListProps = {
   showAssociation?: boolean;
 };
 
-function ProductAction({ canManage }: { canManage: boolean }) {
-  if (!canManage) {
+function ProductAction({ product }: { product: AdminProduct }) {
+  if (!product.canManage) {
     return (
       <span className="text-muted-foreground font-mono text-xs">
         Solo lectura
@@ -24,15 +28,14 @@ function ProductAction({ canManage }: { canManage: boolean }) {
   }
 
   return (
-    <span
-      aria-disabled="true"
-      className="text-muted-foreground inline-flex min-h-9 items-center gap-2 rounded-md border px-3 text-sm font-medium"
+    <Link
+      href={`/admin/products/${product.id}/edit`}
+      className={buttonVariants({ variant: "outline", size: "sm" })}
     >
+      <Pencil aria-hidden />
       Editar
-      <span className="font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
-        Pronto
-      </span>
-    </span>
+      <span className="sr-only">{product.name}</span>
+    </Link>
   );
 }
 
@@ -102,7 +105,7 @@ function AdminProductList({
                 <StatusBadge status={product.status} />
               </td>
               <td className="py-3 text-right">
-                <ProductAction canManage={product.canManage} />
+                <ProductAction product={product} />
               </td>
             </tr>
           ))}
@@ -131,7 +134,7 @@ function AdminProductList({
                 Actualizado el{" "}
                 {dateFormatter.format(new Date(product.updatedAt))}
               </span>
-              <ProductAction canManage={product.canManage} />
+              <ProductAction product={product} />
             </div>
           </li>
         ))}
