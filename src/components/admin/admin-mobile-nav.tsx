@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { type ReactNode, useState } from "react";
 
 import { AdminNav } from "@/components/admin/admin-nav";
@@ -8,6 +8,7 @@ import { AromaLogo } from "@/components/brand/aroma-logo";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -33,20 +34,30 @@ function AdminMobileNav({ role, footer }: AdminMobileNavProps) {
         <Menu />
       </SheetTrigger>
 
-      <SheetContent side="left" className="w-72">
-        <SheetHeader>
-          <AromaLogo className="w-36" sizes="144px" />
+      <SheetContent
+        side="left"
+        showCloseButton={false}
+        className="w-[calc(100%-1rem)]! max-w-sm overflow-y-auto overscroll-contain"
+      >
+        <SheetHeader className="shrink-0 p-4">
+          <div className="flex items-center justify-between gap-4">
+            <AromaLogo className="min-w-0 w-36" />
+            <SheetClose render={<Button variant="secondary" size="icon" />}>
+              <X aria-hidden="true" />
+              <span className="sr-only">Cerrar menú</span>
+            </SheetClose>
+          </div>
           <SheetTitle className="sr-only">Menú de administración</SheetTitle>
           <SheetDescription className="sr-only">
             Navegación del panel administrativo de AROMA.
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-4">
+        <div className="px-4">
           <AdminNav role={role} onNavigate={() => setOpen(false)} />
         </div>
 
-        <SheetFooter>{footer}</SheetFooter>
+        <SheetFooter className="shrink-0 p-4 pt-8">{footer}</SheetFooter>
       </SheetContent>
     </Sheet>
   );

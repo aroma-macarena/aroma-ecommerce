@@ -1,38 +1,72 @@
 export const homeContent = {
   hero: {
-    eyebrow: "La Macarena, Meta",
-    title: "Productos locales con historia",
+    eyebrow: "La Macarena · Meta · Colombia",
+    title: "Productos de La Macarena",
     description:
-      "AROMA reúne a asociaciones de la región para dar a conocer sus productos y facilitar el contacto directo con quienes los elaboran.",
-    primaryAction: "Ver productos",
-    secondaryAction: "Conocer asociaciones",
+      "Conoce la oferta de las organizaciones y mujeres productoras de la Alianza AROMA.",
+    image: {
+      alt: "Atardecer sobre el río Guayabero, con la selva reflejada en el agua",
+      caption: "Río Guayabero, La Macarena",
+    },
   },
-  about: {
-    title: "¿Qué es AROMA?",
+  alliance: {
+    eyebrow: "La alianza",
+    title: "Mujeres con raíces de paz, frutos de vida",
     description:
-      "Una alianza de asociaciones locales que comparten un mismo espacio para mostrar lo que producen.",
-    highlights: [
+      "AROMA es la Alianza Rural de Organizaciones de Mujeres Activas del Territorio de La Macarena: organizaciones campesinas que dan a conocer lo que producen y lo acercan a nuevos compradores.",
+    supporter: "CORPOREFUGIO",
+    organizations: [
       {
-        title: "Productos de la región",
-        description:
-          "Café, conservas, artesanías y otros productos elaborados por las asociaciones.",
+        acronym: "ASCAGY",
+        name: "Asociación Campesina Agropecuaria Ambiental y Turística Guayabero – Yarumales",
+        women: 80,
       },
       {
-        title: "Asociaciones participantes",
-        description:
-          "Cada producto está vinculado a la asociación que lo elabora y a su historia.",
+        acronym: "ASMUCACD",
+        name: "Asociación de Mujeres Campesinas Ambientalistas de la Cristalina del Losada por sus Derechos",
+        women: 65,
       },
       {
-        title: "Contacto directo",
-        description:
-          "Comunícate directamente con las asociaciones para conocer la disponibilidad de sus productos.",
+        acronym: "AAMPY",
+        name: "Asociación Ambiental de Mujeres Trabajadoras por el Desarrollo del Yarí",
+        women: 52,
+      },
+      {
+        acronym: "ASMUJSANJUAN",
+        name: "Asociación de Mujeres por el Progreso y Desarrollo de San Juan de Losada",
+        women: 32,
+      },
+      {
+        acronym: "ASMUPALMAR",
+        name: "Asociación de Mujeres Campesinas de la vereda El Palmar",
+        women: 20,
+      },
+      {
+        acronym: "ASOMACARENA",
+        name: "Asociación de Mujeres Gestoras de Paz y de los Derechos del Territorio Sierra de La Macarena",
+        women: 17,
+        men: 8,
+      },
+      {
+        acronym: "Las Guacamayas",
+        name: "Colectivo de Mujeres Campesinas de la vereda El Jordán",
+        women: 8,
+      },
+      {
+        acronym: "Las Luchadoras",
+        name: "Colectivo de Mujeres Firmantes de Paz",
+        women: 8,
+      },
+      {
+        acronym: "ASMURA",
+        name: "Alianza de Mujeres dentro de los Parques Nacionales Naturales Tinigua y Sierra de La Macarena",
+        women: 8,
+      },
+      {
+        acronym: "FUNMAFO",
+        name: "Fundación Cultural Memoria, Arte y Folclor",
+        women: 6,
       },
     ],
-  },
-  associations: {
-    title: "Conoce a quienes hacen posible AROMA",
-    description:
-      "Descubre las asociaciones que forman parte de la alianza, su trabajo y los productos que ofrecen.",
-    action: "Ver asociaciones",
   },
 } as const;

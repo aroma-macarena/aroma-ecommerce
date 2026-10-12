@@ -19,8 +19,11 @@ function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) {
   ];
 
   return (
-    <nav aria-label="Filtrar por categoría">
-      <ul className="flex flex-wrap gap-2">
+    <nav
+      aria-label="Filtrar por categoría"
+      className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0"
+    >
+      <ul className="flex gap-6 whitespace-nowrap">
         {options.map(({ label, href, isActive }) => (
           <li key={href}>
             <Link
@@ -28,10 +31,10 @@ function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) {
               scroll={false}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "focus-visible:ring-ring/30 inline-flex h-9 items-center rounded-4xl border px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-3",
+                "inline-flex min-h-12 items-center text-[0.9375rem] transition-colors focus-visible:outline-offset-[-2px]",
                 isActive
-                  ? "bg-primary text-primary-foreground border-transparent"
-                  : "bg-background hover:bg-muted",
+                  ? "text-foreground shadow-[inset_0_-3px_0_var(--brand-orange)] font-semibold"
+                  : "text-muted-foreground hover:text-foreground font-medium",
               )}
             >
               {label}
