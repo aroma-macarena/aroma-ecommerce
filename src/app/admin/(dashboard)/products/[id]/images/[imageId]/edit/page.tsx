@@ -57,7 +57,7 @@ export default async function EditProductImagePage({
           alt={image.altText ?? product.name}
           sizes="(min-width: 640px) 14rem, 100vw"
           eager
-          className="max-w-xs sm:max-w-none"
+          className="w-full max-w-64 sm:max-w-none"
         />
         <div className="space-y-3">
           {image.isPrimary ? (
