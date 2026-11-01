@@ -9,6 +9,7 @@ import type {
   ProductFieldErrors,
   ProductFormInput,
 } from "@/lib/admin/product-form";
+import { withUniqueSlug } from "@/lib/admin/unique-slug";
 import { canManageAssociation, isSuperAdmin } from "@/lib/auth/authorization";
 import type { AdminProfile } from "@/lib/auth/get-current-profile";
 import { nextAvailableSlug, slugCandidatePrefix, slugify } from "@/lib/slug";
@@ -18,16 +19,8 @@ export type ProductMutationResult =
   | { ok: false; reason: "INVALID"; fieldErrors: ProductFieldErrors }
   | { ok: false; reason: "NOT_FOUND" };
 
-const MAX_SLUG_ATTEMPTS = 3;
-
 function isUuid(value: string | undefined): value is string {
   return z.uuid().safeParse(value).success;
-}
-
-function isUniqueViolation(error: unknown) {
-  const code = (error as { code?: string; cause?: { code?: string } })?.code;
-  const causeCode = (error as { cause?: { code?: string } })?.cause?.code;
-  return code === "23505" || causeCode === "23505";
 }
 
 async function findAvailableSlug(
@@ -51,19 +44,6 @@ async function findAvailableSlug(
     base,
     rows.map(({ slug }) => slug),
   );
-}
-
-/** Retries when another save takes the same slug at the same time. */
-async function withUniqueSlug<T>(save: () => Promise<T>) {
-  for (let attempt = 1; ; attempt++) {
-    try {
-      return await save();
-    } catch (error) {
-      if (!isUniqueViolation(error) || attempt >= MAX_SLUG_ATTEMPTS) {
-        throw error;
-      }
-    }
-  }
 }
 
 async function isSelectableCategory(

@@ -15,6 +15,13 @@
       "when": 1788574473423,
       "tag": "0001_workable_lord_hawal",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793547269156,
+      "tag": "0002_lush_reaper",
+      "breakpoints": true
     }
   ]
 }
