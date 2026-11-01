@@ -31,7 +31,7 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     label: "Asociaciones",
     icon: Building2,
     roles: ["SUPER_ADMIN"],
-    available: false,
+    available: true,
   },
   {
     href: "/admin/categories",

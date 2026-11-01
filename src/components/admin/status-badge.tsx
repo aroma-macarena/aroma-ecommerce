@@ -59,5 +59,61 @@ function StatusBadge({ status, className }: StatusBadgeProps) {
   );
 }
 
-export { StatusBadge };
+const associationStatuses: Record<
+  "ACTIVE" | "INACTIVE",
+  { label: string; className: string; marker: ReactNode }
+> = {
+  ACTIVE: {
+    label: "Activa",
+    className: "text-primary",
+    marker: <circle cx="4" cy="4" r="4" className="fill-primary" />,
+  },
+  INACTIVE: {
+    label: "Inactiva",
+    className: "text-muted-foreground",
+    marker: (
+      <rect
+        x="0.75"
+        y="0.75"
+        width="6.5"
+        height="6.5"
+        fill="none"
+        strokeWidth="1.5"
+        className="stroke-muted-foreground"
+      />
+    ),
+  },
+};
+
+/** Association status, with the same shape-and-label rule. */
+function AssociationStatusBadge({
+  status,
+  className,
+}: {
+  status: "ACTIVE" | "INACTIVE";
+  className?: string;
+}) {
+  const {
+    label,
+    className: toneClassName,
+    marker,
+  } = associationStatuses[status];
+
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 font-mono text-xs font-medium whitespace-nowrap",
+        toneClassName,
+        className,
+      )}
+    >
+      <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
+        {marker}
+      </svg>
+      {label}
+    </span>
+  );
+}
+
+export { AssociationStatusBadge, StatusBadge };
 export type { ProductStatus };

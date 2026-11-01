@@ -18,17 +18,22 @@ export function slugify(text: string) {
  * Prefix shared by every candidate `nextAvailableSlug` can return for `base`,
  * including suffixed ones whose root was shortened to fit the maximum length.
  */
-export function slugCandidatePrefix(base: string) {
-  return (base || "producto").slice(0, MAX_SLUG_LENGTH - MAX_SUFFIX_LENGTH);
+export function slugCandidatePrefix(base: string, fallback = "producto") {
+  return (base || fallback).slice(0, MAX_SLUG_LENGTH - MAX_SUFFIX_LENGTH);
 }
 
 /**
  * First free slug among `base`, `base-2`, `base-3`… given the slugs already
- * taken. Suffixes keep the result within the maximum slug length.
+ * taken; `fallback` stands in when the name leaves no usable characters.
+ * Suffixes keep the result within the maximum slug length.
  */
-export function nextAvailableSlug(base: string, takenSlugs: Iterable<string>) {
+export function nextAvailableSlug(
+  base: string,
+  takenSlugs: Iterable<string>,
+  fallback = "producto",
+) {
   const taken = new Set(takenSlugs);
-  const root = base || "producto";
+  const root = base || fallback;
 
   if (!taken.has(root)) {
     return root;
