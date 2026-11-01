@@ -13,11 +13,21 @@ export const publicNavigation = [
     // Product details live under /productos/ but belong to this section.
     sectionPrefix: "/productos/",
   },
+  {
+    href: publicRoutes.associations,
+    label: "Asociaciones",
+    available: true,
+    sectionPrefix: "/asociaciones/",
+  },
   { href: "/#alianza", label: "La alianza", available: true },
 ] as const;
 
 export function getProductsByCategoryHref(categorySlug: string) {
   return `${publicRoutes.products}?categoria=${encodeURIComponent(categorySlug)}`;
+}
+
+export function getAssociationHref(associationSlug: string) {
+  return `${publicRoutes.associations}/${associationSlug}`;
 }
 
 export function getProductDetailHref(

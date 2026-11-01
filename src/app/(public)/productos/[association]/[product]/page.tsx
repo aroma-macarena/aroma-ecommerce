@@ -2,9 +2,9 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache } from "react";
+import { cache, type ReactNode } from "react";
 
-import { ProductContact } from "@/components/catalog/product-contact";
+import { AssociationContact } from "@/components/catalog/association-contact";
 import { ProductGallery } from "@/components/catalog/product-gallery";
 import { ProductPresentations } from "@/components/catalog/product-presentations";
 import { Container } from "@/components/public/container";
@@ -12,10 +12,12 @@ import { getPublicProduct } from "@/lib/catalog/queries";
 import { getMediaUrl } from "@/lib/media";
 import {
   getAbsoluteUrl,
+  getAssociationHref,
   getProductDetailHref,
   getProductsByCategoryHref,
   publicRoutes,
 } from "@/lib/public-routes";
+import { getProductInquiryMessage } from "@/lib/whatsapp";
 
 type ProductPageProps = PageProps<"/productos/[association]/[product]">;
 
@@ -43,7 +45,13 @@ export async function generateMetadata({
   };
 }
 
-function OriginRow({ label, value }: { label: string; value: string | null }) {
+function OriginRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: ReactNode | null;
+}) {
   if (!value) {
     return null;
   }
@@ -92,6 +100,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
+  const associationHref = getAssociationHref(product.association.slug);
   const productUrl = getAbsoluteUrl(
     getProductDetailHref(product.association.slug, product.slug),
   );
@@ -141,7 +150,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   {product.name}
                 </h1>
                 <p className="font-mono text-[0.8125rem]">
-                  {product.association.name}
+                  <Link
+                    href={associationHref}
+                    className="decoration-foreground/40 hover:decoration-foreground underline underline-offset-4"
+                  >
+                    {product.association.name}
+                  </Link>
                   {product.association.location
                     ? ` · ${product.association.location}`
                     : null}
@@ -155,11 +169,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               <ProductPresentations presentations={product.presentations} />
 
-              <ProductContact
-                productName={product.name}
+              <AssociationContact
                 associationName={product.association.name}
                 whatsappNumber={product.association.whatsappNumber}
-                productUrl={productUrl}
+                message={getProductInquiryMessage({
+                  productName: product.name,
+                  associationName: product.association.name,
+                  productUrl,
+                })}
+                note="Se abre WhatsApp con un mensaje listo sobre este producto. La conversación sigue directamente con la asociación: AROMA no procesa pagos ni pedidos."
               />
             </div>
           </div>
@@ -179,7 +197,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <dl className="border-foreground mt-3 border-t-[1.5px]">
               <OriginRow
                 label="Organización"
-                value={product.association.name}
+                value={
+                  <Link
+                    href={associationHref}
+                    className="decoration-foreground/40 hover:decoration-foreground underline underline-offset-4"
+                  >
+                    {product.association.name}
+                  </Link>
+                }
               />
               <OriginRow label="Origen" value={product.origin} />
               <OriginRow label="Categoría" value={product.categoryName} />

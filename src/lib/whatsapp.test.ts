@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getAssociationInquiryMessage,
   getProductInquiryMessage,
   getWhatsAppHref,
   normalizeWhatsAppNumber,
@@ -61,5 +62,19 @@ describe("getProductInquiryMessage", () => {
         associationName: "AAMPY",
       }),
     ).not.toContain("http");
+  });
+});
+
+describe("getAssociationInquiryMessage", () => {
+  it("asks about the association's products and links to its profile", () => {
+    const message = getAssociationInquiryMessage({
+      associationName: "ASCAGY",
+      associationUrl: "https://aroma.example/asociaciones/ascagy",
+    });
+
+    expect(message).toContain("conocí a ASCAGY");
+    expect(message).toContain("sus productos");
+    expect(message).toContain("https://aroma.example/asociaciones/ascagy");
+    expect(message).not.toMatch(/pedido|orden/i);
   });
 });

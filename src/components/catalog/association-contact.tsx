@@ -1,30 +1,27 @@
 import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { buttonVariants } from "@/components/ui/button";
 import { getSupportWhatsAppHref } from "@/lib/support";
-import { getProductInquiryMessage, getWhatsAppHref } from "@/lib/whatsapp";
+import { getWhatsAppHref } from "@/lib/whatsapp";
 
-type ProductContactProps = {
-  productName: string;
+type AssociationContactProps = {
   associationName: string;
   whatsappNumber: string | null;
-  productUrl: string | null;
+  /** Prefilled first message, about a product or the association. */
+  message: string;
+  /** What happens after the click, shown under the button. */
+  note: string;
 };
 
 /**
  * The commercial handoff: a WhatsApp conversation with the association, or
  * with the alliance when the association has no number published yet.
  */
-function ProductContact({
-  productName,
+function AssociationContact({
   associationName,
   whatsappNumber,
-  productUrl,
-}: ProductContactProps) {
-  const message = getProductInquiryMessage({
-    productName,
-    associationName,
-    productUrl,
-  });
+  message,
+  note,
+}: AssociationContactProps) {
   const associationHref = getWhatsAppHref(whatsappNumber, message);
   const allianceHref = associationHref
     ? null
@@ -48,11 +45,7 @@ function ProductContact({
           Consultar por WhatsApp
           <span className="sr-only">(se abre en una nueva pestaña)</span>
         </a>
-        <p className="text-muted-foreground text-sm leading-relaxed">
-          Se abre WhatsApp con un mensaje listo sobre este producto. La
-          conversación sigue directamente con la asociación: AROMA no procesa
-          pagos ni pedidos.
-        </p>
+        <p className="text-muted-foreground text-sm leading-relaxed">{note}</p>
       </div>
     );
   }
@@ -87,4 +80,4 @@ function ProductContact({
   );
 }
 
-export { ProductContact };
+export { AssociationContact };

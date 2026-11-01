@@ -27,7 +27,10 @@ export async function getCatalogCategories() {
     .orderBy(asc(categories.name));
 }
 
-export async function getCatalogProducts(categorySlug?: string) {
+export async function getCatalogProducts({
+  categorySlug,
+  associationSlug,
+}: { categorySlug?: string; associationSlug?: string } = {}) {
   return db
     .select({
       id: products.id,
@@ -54,6 +57,7 @@ export async function getCatalogProducts(categorySlug?: string) {
       and(
         isPubliclyVisible,
         categorySlug ? eq(categories.slug, categorySlug) : undefined,
+        associationSlug ? eq(associations.slug, associationSlug) : undefined,
       ),
     )
     .orderBy(
@@ -149,4 +153,67 @@ export async function getPublicProduct(
 
 export type PublicProduct = NonNullable<
   Awaited<ReturnType<typeof getPublicProduct>>
+>;
+
+/** Active associations for the public directory, with their product counts. */
+export async function getPublicAssociations() {
+  return db
+    .select({
+      name: associations.name,
+      slug: associations.slug,
+      description: associations.description,
+      location: associations.location,
+      logoObjectKey: associations.logoObjectKey,
+      // Explicit aliases: in a single-table select Drizzle leaves columns
+      // unqualified, which would be ambiguous inside this subquery.
+      productCount: sql<number>`(
+        select count(*)::int from products as p
+        inner join categories as c on c.id = p.category_id
+        where p.association_id = "associations"."id"
+          and p.status = 'PUBLISHED'
+          and c.is_active
+      )`,
+    })
+    .from(associations)
+    .where(eq(associations.status, "ACTIVE"))
+    .orderBy(asc(associations.name));
+}
+
+export type PublicAssociationSummary = Awaited<
+  ReturnType<typeof getPublicAssociations>
+>[number];
+
+/**
+ * An active association's public profile with its public products, or null
+ * for inactive or unknown slugs. The contact person's name stays private;
+ * only the WhatsApp number is used, to open a chat.
+ */
+export async function getPublicAssociation(slug: string) {
+  const [association] = await db
+    .select({
+      name: associations.name,
+      slug: associations.slug,
+      description: associations.description,
+      history: associations.history,
+      location: associations.location,
+      whatsappNumber: associations.whatsappNumber,
+      logoObjectKey: associations.logoObjectKey,
+      coverObjectKey: associations.coverObjectKey,
+    })
+    .from(associations)
+    .where(and(eq(associations.slug, slug), eq(associations.status, "ACTIVE")))
+    .limit(1);
+
+  if (!association) {
+    return null;
+  }
+
+  return {
+    ...association,
+    products: await getCatalogProducts({ associationSlug: association.slug }),
+  };
+}
+
+export type PublicAssociation = NonNullable<
+  Awaited<ReturnType<typeof getPublicAssociation>>
 >;

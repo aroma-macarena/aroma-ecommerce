@@ -1,7 +1,12 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { productImagesTable } from "@/db/schema/productImages";
-import { getPublicProduct } from "@/lib/catalog/queries";
+import {
+  getCatalogProducts,
+  getPublicAssociation,
+  getPublicAssociations,
+  getPublicProduct,
+} from "@/lib/catalog/queries";
 import { createTestDatabase, type TestDatabase } from "@/test/database";
 import {
   ids,
@@ -107,5 +112,47 @@ describe("getPublicProduct", () => {
       "principal.webp",
       "a.webp",
     ]);
+  });
+});
+
+describe("getPublicAssociations", () => {
+  it("lists active associations by name with their public product counts", async () => {
+    await expect(getPublicAssociations()).resolves.toMatchObject([
+      { slug: "bosque-vivo", productCount: 1 },
+      { slug: "sabores-macarena", productCount: 0 },
+    ]);
+  });
+});
+
+describe("getPublicAssociation", () => {
+  it("returns an active association with only its public products", async () => {
+    const association = await getPublicAssociation("bosque-vivo");
+
+    expect(association).toMatchObject({ name: "Asociación Bosque Vivo" });
+    expect(association?.products.map(({ slug }) => slug)).toEqual(["cafe"]);
+  });
+
+  it("keeps the contact person's name private", async () => {
+    const association = await getPublicAssociation("bosque-vivo");
+
+    expect(association).not.toHaveProperty("contactName");
+  });
+
+  it("does not find inactive or unknown associations", async () => {
+    await expect(
+      getPublicAssociation("asociacion-inactiva"),
+    ).resolves.toBeNull();
+    await expect(getPublicAssociation("no-existe")).resolves.toBeNull();
+  });
+});
+
+describe("getCatalogProducts", () => {
+  it("filters public products by association", async () => {
+    await expect(
+      getCatalogProducts({ associationSlug: "sabores-macarena" }),
+    ).resolves.toEqual([]);
+    await expect(
+      getCatalogProducts({ associationSlug: "bosque-vivo" }),
+    ).resolves.toMatchObject([{ slug: "cafe" }]);
   });
 });

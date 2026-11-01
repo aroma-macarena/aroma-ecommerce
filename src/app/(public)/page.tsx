@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,7 +29,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
   const categorySlug = typeof categoria === "string" ? categoria : undefined;
   const [categories, products] = await Promise.all([
     getCatalogCategories(),
-    getCatalogProducts(categorySlug),
+    getCatalogProducts({ categorySlug }),
   ]);
   const { hero, alliance } = homeContent;
 
@@ -163,6 +164,13 @@ export default async function Home({ searchParams }: PageProps<"/">) {
               description={alliance.description}
               tone="inverse"
             />
+            <Link
+              href={publicRoutes.associations}
+              className="decoration-background/40 hover:decoration-background inline-flex min-h-11 w-fit items-center gap-2 font-semibold underline underline-offset-4 transition-colors"
+            >
+              Conoce las asociaciones
+              <ArrowRight aria-hidden className="size-4" />
+            </Link>
             <Image
               src="/brand/aroma-sello.svg"
               alt="Sello: Producto de la Alianza AROMA, hecho por mujeres campesinas"
