@@ -10,7 +10,6 @@ import {
   createAssociation,
   parseAssociationForm,
   setAssociationStatus,
-  updateAssociation,
 } from "@/lib/admin/associations";
 
 /** Public pages and the admin depend on an association's status. */
@@ -20,10 +19,9 @@ function revalidateAssociations() {
   revalidatePath("/");
 }
 
-async function saveAssociation(
+export async function createAssociationAction(
   previousState: AssociationFormState,
   formData: FormData,
-  associationId?: string,
 ): Promise<AssociationFormState> {
   const values = {
     name: String(formData.get("name") ?? ""),
@@ -54,9 +52,7 @@ async function saveAssociation(
     });
   }
 
-  const result = associationId
-    ? await updateAssociation(profile, associationId, parsed.data)
-    : await createAssociation(profile, parsed.data);
+  const result = await createAssociation(profile, parsed.data);
 
   if (!result.ok) {
     if (result.reason !== "INVALID") {
@@ -70,24 +66,7 @@ async function saveAssociation(
   }
 
   revalidateAssociations();
-  redirect(
-    `/admin/associations?estado=${associationId ? "actualizada" : "creada"}`,
-  );
-}
-
-export async function createAssociationAction(
-  previousState: AssociationFormState,
-  formData: FormData,
-) {
-  return saveAssociation(previousState, formData);
-}
-
-export async function updateAssociationAction(
-  associationId: string,
-  previousState: AssociationFormState,
-  formData: FormData,
-) {
-  return saveAssociation(previousState, formData, associationId);
+  redirect("/admin/associations?estado=creada");
 }
 
 export async function setAssociationStatusAction(

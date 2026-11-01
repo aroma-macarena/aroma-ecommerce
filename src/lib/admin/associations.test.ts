@@ -7,10 +7,8 @@ import { productsTable } from "@/db/schema/products";
 import {
   createAssociation,
   getAdminAssociations,
-  getEditableAssociation,
   parseAssociationForm,
   setAssociationStatus,
-  updateAssociation,
 } from "@/lib/admin/associations";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
 import {
@@ -37,7 +35,7 @@ vi.mock("@/db", () => ({
 
 vi.mock("@clerk/nextjs/server", () => ({ auth: vi.fn() }));
 
-const { bosqueVivo, sabores } = ids.associations;
+const { bosqueVivo } = ids.associations;
 
 function testDatabase() {
   return database.current as TestDatabase;
@@ -201,81 +199,6 @@ describe("setAssociationStatus", () => {
   });
 });
 
-describe("updateAssociation", () => {
-  const original = { name: "Asociación Bosque Vivo", location: "La Macarena" };
-
-  beforeEach(async () => {
-    await updateAssociation(superAdmin, bosqueVivo, original);
-  });
-
-  it("renames an association without changing its public address", async () => {
-    await expect(
-      updateAssociation(superAdmin, bosqueVivo, {
-        name: "Bosque Vivo del Guayabero",
-        location: "Vereda Yarumales",
-      }),
-    ).resolves.toEqual({ ok: true, slug: "bosque-vivo" });
-
-    await expect(getPublicAssociation("bosque-vivo")).resolves.toMatchObject({
-      name: "Bosque Vivo del Guayabero",
-      location: "Vereda Yarumales",
-    });
-  });
-
-  it("keeps its own name but not another association's", async () => {
-    await expect(
-      updateAssociation(superAdmin, bosqueVivo, {
-        ...original,
-        location: "Otra vereda",
-      }),
-    ).resolves.toMatchObject({ ok: true });
-    await expect(
-      updateAssociation(superAdmin, bosqueVivo, {
-        name: "ASOCIACIÓN SABORES DE LA MACARENA",
-        location: null,
-      }),
-    ).resolves.toMatchObject({
-      ok: false,
-      reason: "INVALID",
-      fieldErrors: { name: expect.any(String) },
-    });
-  });
-
-  it("is only for super administrators", async () => {
-    await expect(
-      updateAssociation(bosqueVivoAdmin, bosqueVivo, {
-        name: "Renombrada",
-        location: null,
-      }),
-    ).resolves.toEqual({ ok: false, reason: "FORBIDDEN" });
-    await expect(
-      getEditableAssociation(bosqueVivoAdmin, bosqueVivo),
-    ).resolves.toBeNull();
-  });
-
-  it("reports unknown associations", async () => {
-    await expect(
-      updateAssociation(superAdmin, "00000000-0000-4000-8000-00000000ffff", {
-        name: "Nadie",
-        location: null,
-      }),
-    ).resolves.toEqual({ ok: false, reason: "NOT_FOUND" });
-    await expect(
-      getEditableAssociation(superAdmin, "no-es-un-id"),
-    ).resolves.toBeNull();
-  });
-
-  it("loads an association for editing", async () => {
-    await expect(
-      getEditableAssociation(superAdmin, sabores),
-    ).resolves.toMatchObject({
-      name: "Asociación Sabores de La Macarena",
-      slug: "sabores-macarena",
-      status: "ACTIVE",
-    });
-  });
-});
-
 describe("name uniqueness in the database", () => {
   // Simulates a concurrent request: the duplicate check sees no conflict
   // because the other association commits right after it.
@@ -301,24 +224,6 @@ describe("name uniqueness in the database", () => {
       ok: false,
       reason: "INVALID",
       fieldErrors: { name: "Ya existe una asociación con ese nombre." },
-    });
-  });
-
-  it("rejects a duplicate name the earlier check missed when renaming", async () => {
-    skipNextDuplicateCheck();
-
-    await expect(
-      updateAssociation(superAdmin, bosqueVivo, {
-        name: "asociación sabores de la macarena",
-        location: null,
-      }),
-    ).resolves.toMatchObject({
-      ok: false,
-      reason: "INVALID",
-      fieldErrors: { name: expect.any(String) },
-    });
-    await expect(getPublicAssociation("bosque-vivo")).resolves.toMatchObject({
-      name: "Asociación Bosque Vivo",
     });
   });
 });

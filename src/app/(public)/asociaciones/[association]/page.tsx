@@ -5,10 +5,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-import { AssociationContact } from "@/components/catalog/association-contact";
+import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { AssociationLogo } from "@/components/catalog/association-logo";
 import { ProductCard } from "@/components/catalog/product-card";
 import { Container } from "@/components/public/container";
+import { buttonVariants } from "@/components/ui/button";
 import { getPublicAssociation } from "@/lib/catalog/queries";
 import { getMediaUrl } from "@/lib/media";
 import {
@@ -16,7 +17,7 @@ import {
   getAssociationHref,
   publicRoutes,
 } from "@/lib/public-routes";
-import { getAssociationInquiryMessage } from "@/lib/whatsapp";
+import { getAssociationInquiryMessage, getWhatsAppHref } from "@/lib/whatsapp";
 
 type AssociationPageProps = PageProps<"/asociaciones/[association]">;
 
@@ -55,6 +56,14 @@ export default async function AssociationPage({
   }
 
   const coverUrl = getMediaUrl(association.coverObjectKey);
+  // Secondary on the profile: the product pages carry the main contact.
+  const whatsappHref = getWhatsAppHref(
+    association.whatsappNumber,
+    getAssociationInquiryMessage({
+      associationName: association.name,
+      associationUrl: getAbsoluteUrl(getAssociationHref(association.slug)),
+    }),
+  );
   const productCount = association.products.length;
 
   return (
@@ -82,15 +91,20 @@ export default async function AssociationPage({
             </div>
           ) : null}
 
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-16">
-            <div className="space-y-8">
-              <div className="border-foreground flex items-start gap-4 border-b-[1.5px] pb-6 sm:gap-6">
-                <AssociationLogo
-                  name={association.name}
-                  objectKey={association.logoObjectKey}
-                  sizes="6rem"
-                  className="w-16 sm:w-24"
-                />
+          <div className="space-y-8">
+            {/* On phones the contact button runs under the whole header; on
+                wider screens it closes the name's line, out of the way. */}
+            <div className="border-foreground flex flex-col gap-6 border-b-[1.5px] pb-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex min-w-0 items-start gap-4 sm:gap-6 lg:flex-1">
+                {/* Without a logo the name leads alone, with no empty tile. */}
+                {association.logoObjectKey ? (
+                  <AssociationLogo
+                    name={association.name}
+                    objectKey={association.logoObjectKey}
+                    sizes="6rem"
+                    className="w-16 sm:w-24"
+                  />
+                ) : null}
                 <div className="min-w-0 space-y-2 wrap-anywhere">
                   <p className="text-primary font-mono text-xs font-medium tracking-[0.08em] uppercase">
                     Asociación de la Alianza AROMA
@@ -108,51 +122,44 @@ export default async function AssociationPage({
                   ) : null}
                 </div>
               </div>
-
-              {association.description ? (
-                <p className="max-w-prose text-lg leading-relaxed whitespace-pre-line">
-                  {association.description}
-                </p>
-              ) : null}
-
-              {association.history ? (
-                <section
-                  aria-labelledby="historia-titulo"
-                  className="space-y-3"
+              {whatsappHref ? (
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonVariants({
+                    variant: "outline",
+                    className: "w-full shrink-0 lg:w-auto",
+                  })}
                 >
-                  <h2
-                    id="historia-titulo"
-                    className="font-heading text-2xl font-semibold tracking-[-0.02em]"
-                  >
-                    Historia
-                  </h2>
-                  <p className="text-muted-foreground max-w-prose leading-relaxed whitespace-pre-line">
-                    {association.history}
-                  </p>
-                </section>
+                  <WhatsAppIcon />
+                  Escribir por WhatsApp
+                  <span className="sr-only">
+                    (se abre en una nueva pestaña)
+                  </span>
+                </a>
               ) : null}
             </div>
 
-            <aside
-              aria-label="Contacto"
-              className="border-foreground bg-card space-y-4 self-start rounded-md border-[1.5px] p-5 md:p-6 lg:sticky lg:top-24"
-            >
-              <p className="font-mono text-xs font-medium tracking-[0.08em] uppercase">
-                Contacto
+            {association.description ? (
+              <p className="max-w-3xl text-lg leading-relaxed whitespace-pre-line">
+                {association.description}
               </p>
-              <AssociationContact
-                associationName={association.name}
-                whatsappNumber={association.whatsappNumber}
-                message={getAssociationInquiryMessage({
-                  associationName: association.name,
-                  associationUrl: getAbsoluteUrl(
-                    getAssociationHref(association.slug),
-                  ),
-                })}
-                note="Se abre WhatsApp con un mensaje listo. La conversación sigue directamente con la asociación: AROMA no procesa pagos ni pedidos."
-                fullWidth
-              />
-            </aside>
+            ) : null}
+
+            {association.history ? (
+              <section aria-labelledby="historia-titulo" className="space-y-3">
+                <h2
+                  id="historia-titulo"
+                  className="font-heading text-2xl font-semibold tracking-[-0.02em]"
+                >
+                  Historia
+                </h2>
+                <p className="text-muted-foreground max-w-3xl leading-relaxed whitespace-pre-line">
+                  {association.history}
+                </p>
+              </section>
+            ) : null}
           </div>
         </div>
 

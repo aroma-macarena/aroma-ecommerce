@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  formatWhatsAppNumber,
   getAssociationInquiryMessage,
   getProductInquiryMessage,
   getWhatsAppHref,
@@ -76,5 +77,16 @@ describe("getAssociationInquiryMessage", () => {
     expect(message).toContain("sus productos");
     expect(message).toContain("https://aroma.example/asociaciones/ascagy");
     expect(message).not.toMatch(/pedido|orden/i);
+  });
+});
+
+describe("formatWhatsAppNumber", () => {
+  it("writes stored numbers for people, and back as the same number", () => {
+    expect(formatWhatsAppNumber("573001112233")).toBe("+57 300 111 2233");
+    expect(normalizeWhatsAppNumber(formatWhatsAppNumber("573001112233"))).toBe(
+      "573001112233",
+    );
+    expect(formatWhatsAppNumber("14155550123")).toBe("+14155550123");
+    expect(formatWhatsAppNumber(null)).toBe("");
   });
 });

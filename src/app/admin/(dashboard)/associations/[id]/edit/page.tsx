@@ -3,13 +3,12 @@ import { notFound } from "next/navigation";
 
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { AssociationForm } from "@/components/admin/association-form";
 import { ActiveStatusBadge } from "@/components/admin/status-badge";
-import { getEditableAssociation } from "@/lib/admin/associations";
+import { getAssociationProfile } from "@/lib/admin/association-profile";
+import { isSuperAdmin } from "@/lib/auth/authorization";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
-import { getAssociationHref } from "@/lib/public-routes";
 
-import { updateAssociationAction } from "../../actions";
+import { AssociationProfileEditor } from "../../association-profile-editor";
 
 export const metadata: Metadata = {
   title: "Editar asociación",
@@ -17,6 +16,7 @@ export const metadata: Metadata = {
 
 export default async function EditAssociationPage({
   params,
+  searchParams,
 }: PageProps<"/admin/associations/[id]/edit">) {
   const result = await getCurrentProfile();
 
@@ -24,15 +24,21 @@ export default async function EditAssociationPage({
     return null;
   }
 
-  const association = await getEditableAssociation(
+  // Alliance-level page: association administrators use their own page.
+  if (!isSuperAdmin(result.currentProfile)) {
+    notFound();
+  }
+
+  const association = await getAssociationProfile(
     result.currentProfile,
     (await params).id,
   );
 
-  // Missing, or not a super administrator.
   if (!association) {
     notFound();
   }
+
+  const { estado, aviso } = await searchParams;
 
   return (
     <div className="space-y-8">
@@ -41,31 +47,17 @@ export default async function EditAssociationPage({
         <AdminPageHeader
           eyebrow="Alianza AROMA"
           title={association.name}
-          description="Cambia el nombre o la ubicación. Se actualizan en el panel, la vitrina, el directorio y los mensajes de WhatsApp."
+          description="Edita su perfil público: nombre, información, contacto, logo y portada."
           actions={<ActiveStatusBadge status={association.status} />}
         />
       </div>
 
-      <dl className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-sm">
-        <dt className="font-mono text-xs tracking-[0.06em] uppercase">
-          Dirección pública
-        </dt>
-        <dd className="text-foreground font-mono text-xs break-all">
-          {getAssociationHref(association.slug)}
-        </dd>
-        <dd className="w-full">
-          No cambia al renombrarla, para no romper los enlaces ya compartidos.
-        </dd>
-      </dl>
-
-      <AssociationForm
-        action={updateAssociationAction.bind(null, association.id)}
+      <AssociationProfileEditor
+        association={association}
+        canEditName
         cancelHref="/admin/associations"
-        submitLabel="Guardar cambios"
-        defaultValues={{
-          name: association.name,
-          location: association.location ?? "",
-        }}
+        estado={estado}
+        aviso={aviso}
       />
     </div>
   );

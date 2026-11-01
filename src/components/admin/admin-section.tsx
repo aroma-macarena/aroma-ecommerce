@@ -1,9 +1,13 @@
 import type { ReactNode } from "react";
 
+import { cn } from "@/lib/utils";
+
 type AdminSectionProps = {
   id: string;
   title: string;
   description?: string;
+  /** Keep the top rule even when it is the page's first section. */
+  ruled?: boolean;
   children: ReactNode;
 };
 
@@ -11,11 +15,20 @@ type AdminSectionProps = {
  * A titled group on an admin page: title and purpose on the left on desktop,
  * above on mobile. The first one rests on the page header's rule.
  */
-function AdminSection({ id, title, description, children }: AdminSectionProps) {
+function AdminSection({
+  id,
+  title,
+  description,
+  ruled = false,
+  children,
+}: AdminSectionProps) {
   return (
     <section
       aria-labelledby={id}
-      className="border-foreground grid gap-5 border-t pt-5 first-of-type:border-t-0 first-of-type:pt-0 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10"
+      className={cn(
+        "border-foreground grid gap-5 border-t pt-5 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10",
+        !ruled && "first-of-type:border-t-0 first-of-type:pt-0",
+      )}
     >
       <div className="space-y-1">
         <h2

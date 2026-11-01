@@ -17,17 +17,16 @@ import {
   FormActions,
   FormAlert,
 } from "@/components/admin/form-fields";
+import {
+  formatFileSize,
+  useImageSelection,
+} from "@/components/admin/use-image-selection";
 import { buttonVariants } from "@/components/ui/button";
 import {
   ALT_TEXT_HINT,
   type ImageFormState,
   MAX_ALT_TEXT_LENGTH,
 } from "@/lib/admin/image-form";
-import {
-  ImageReductionError,
-  type ReducedImage,
-  reduceImage,
-} from "@/lib/image-reduction";
 
 type ImageUploadFormProps = {
   action: (
@@ -37,50 +36,13 @@ type ImageUploadFormProps = {
   cancelHref: string;
 };
 
-type Selection =
-  | { status: "empty" }
-  | { status: "preparing" }
-  | {
-      status: "ready";
-      image: ReducedImage;
-      previewUrl: string;
-      sourceName: string;
-    }
-  | { status: "error"; message: string };
-
 const initialState: ImageFormState = { status: "idle", attempt: 0 };
-
-const reductionMessages = {
-  TOO_LARGE: "La foto pesa más de 20 MB. Elige una más liviana.",
-  UNREADABLE: "No pudimos leer esta imagen. Usa una foto en JPG, PNG o WebP.",
-};
-
-function formatSize(bytes: number) {
-  return bytes < 1024 * 1024
-    ? `${Math.max(1, Math.round(bytes / 1024))} KB`
-    : `${(bytes / (1024 * 1024)).toLocaleString("es-CO", {
-        maximumFractionDigits: 1,
-      })} MB`;
-}
 
 function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
-  const [selection, setSelection] = useState<Selection>({ status: "empty" });
+  const { selection, selectFile } = useImageSelection();
   const [selectionError, setSelectionError] = useState<string>();
-  const previewUrl = useRef<string | null>(null);
-  // Counts selections so a slower reduction of an earlier file cannot
-  // replace the latest one.
-  const latestSelection = useRef(0);
   const fileInput = useRef<HTMLInputElement>(null);
-
-  useEffect(
-    () => () => {
-      if (previewUrl.current) {
-        URL.revokeObjectURL(previewUrl.current);
-      }
-    },
-    [],
-  );
 
   useEffect(() => {
     if (state.fieldErrors?.file) {
@@ -90,48 +52,9 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
     }
   }, [state]);
 
-  async function handleFile(file: File | undefined) {
-    const selectionId = ++latestSelection.current;
-    const isStale = () => selectionId !== latestSelection.current;
+  function handleFile(file: File | undefined) {
     setSelectionError(undefined);
-
-    if (previewUrl.current) {
-      URL.revokeObjectURL(previewUrl.current);
-      previewUrl.current = null;
-    }
-
-    if (!file) {
-      setSelection({ status: "empty" });
-      return;
-    }
-
-    setSelection({ status: "preparing" });
-
-    try {
-      const image = await reduceImage(file);
-
-      if (isStale()) {
-        return;
-      }
-
-      previewUrl.current = URL.createObjectURL(image.file);
-      setSelection({
-        status: "ready",
-        image,
-        previewUrl: previewUrl.current,
-        sourceName: file.name,
-      });
-    } catch (error) {
-      if (isStale()) {
-        return;
-      }
-
-      const message =
-        error instanceof ImageReductionError
-          ? reductionMessages[error.code]
-          : reductionMessages.UNREADABLE;
-      setSelection({ status: "error", message });
-    }
+    void selectFile(file);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -228,7 +151,7 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
                 {selection.status === "preparing"
                   ? "Preparando la foto…"
                   : selection.status === "ready"
-                    ? `Lista para subir · ${selection.image.width} × ${selection.image.height} px · ${formatSize(selection.image.file.size)}`
+                    ? `Lista para subir · ${selection.image.width} × ${selection.image.height} px · ${formatFileSize(selection.image.file.size)}`
                     : null}
               </p>
             </div>
