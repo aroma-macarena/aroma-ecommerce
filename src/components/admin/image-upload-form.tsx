@@ -68,6 +68,9 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
   const [selection, setSelection] = useState<Selection>({ status: "empty" });
   const [selectionError, setSelectionError] = useState<string>();
   const previewUrl = useRef<string | null>(null);
+  // Counts selections so a slower reduction of an earlier file cannot
+  // replace the latest one.
+  const latestSelection = useRef(0);
   const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(
@@ -88,6 +91,8 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
   }, [state]);
 
   async function handleFile(file: File | undefined) {
+    const selectionId = ++latestSelection.current;
+    const isStale = () => selectionId !== latestSelection.current;
     setSelectionError(undefined);
 
     if (previewUrl.current) {
@@ -104,6 +109,11 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
 
     try {
       const image = await reduceImage(file);
+
+      if (isStale()) {
+        return;
+      }
+
       previewUrl.current = URL.createObjectURL(image.file);
       setSelection({
         status: "ready",
@@ -112,6 +122,10 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
         sourceName: file.name,
       });
     } catch (error) {
+      if (isStale()) {
+        return;
+      }
+
       const message =
         error instanceof ImageReductionError
           ? reductionMessages[error.code]
