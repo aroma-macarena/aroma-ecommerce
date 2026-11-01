@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { db } from "@/db";
 import { associationsTable as associations } from "@/db/schema/associations";
-import { withUniqueSlug } from "@/lib/admin/unique-slug";
+import { isUniqueViolation, withUniqueSlug } from "@/lib/admin/unique-slug";
 import { isSuperAdmin } from "@/lib/auth/authorization";
 import type { AdminProfile } from "@/lib/auth/get-current-profile";
 import { nextAvailableSlug, slugCandidatePrefix, slugify } from "@/lib/slug";
@@ -123,6 +123,10 @@ async function findAvailableAssociationSlug(name: string) {
   );
 }
 
+/** Database names of the constraints that keep associations unique. */
+const NAME_INDEX = "uq_associations_name_lower";
+const SLUG_CONSTRAINT = "associations_slug_unique";
+
 const duplicateNameError = {
   ok: false,
   reason: "INVALID",
@@ -189,16 +193,29 @@ export async function createAssociation(
     return duplicateNameError;
   }
 
-  const [created] = await withUniqueSlug(async () =>
-    db
-      .insert(associations)
-      .values({
-        name: input.name,
-        location: input.location,
-        slug: await findAvailableAssociationSlug(input.name),
-      })
-      .returning({ slug: associations.slug }),
-  );
+  // The index also covers two requests creating the same name at once,
+  // which the check above cannot see.
+  let created: { slug: string };
+
+  try {
+    [created] = await withUniqueSlug(
+      async () =>
+        db
+          .insert(associations)
+          .values({
+            name: input.name,
+            location: input.location,
+            slug: await findAvailableAssociationSlug(input.name),
+          })
+          .returning({ slug: associations.slug }),
+      SLUG_CONSTRAINT,
+    );
+  } catch (error) {
+    if (isUniqueViolation(error, NAME_INDEX)) {
+      return duplicateNameError;
+    }
+    throw error;
+  }
 
   return { ok: true, slug: created.slug };
 }
@@ -224,15 +241,24 @@ export async function updateAssociation(
     return duplicateNameError;
   }
 
-  const [updated] = await db
-    .update(associations)
-    .set({
-      name: input.name,
-      location: input.location,
-      updatedAt: sql`now()`,
-    })
-    .where(eq(associations.id, associationId))
-    .returning({ slug: associations.slug });
+  let updated: { slug: string } | undefined;
+
+  try {
+    [updated] = await db
+      .update(associations)
+      .set({
+        name: input.name,
+        location: input.location,
+        updatedAt: sql`now()`,
+      })
+      .where(eq(associations.id, associationId))
+      .returning({ slug: associations.slug });
+  } catch (error) {
+    if (isUniqueViolation(error, NAME_INDEX)) {
+      return duplicateNameError;
+    }
+    throw error;
+  }
 
   return updated
     ? { ok: true, slug: updated.slug }

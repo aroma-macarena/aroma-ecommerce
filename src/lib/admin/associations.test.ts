@@ -275,3 +275,50 @@ describe("updateAssociation", () => {
     });
   });
 });
+
+describe("name uniqueness in the database", () => {
+  // Simulates a concurrent request: the duplicate check sees no conflict
+  // because the other association commits right after it.
+  function skipNextDuplicateCheck() {
+    const { db } = testDatabase();
+    vi.spyOn(db, "select").mockImplementationOnce(
+      () =>
+        ({
+          from: () => ({ where: () => ({ limit: async () => [] }) }),
+        }) as unknown as ReturnType<typeof db.select>,
+    );
+  }
+
+  it("rejects a duplicate name the earlier check missed when creating", async () => {
+    skipNextDuplicateCheck();
+
+    await expect(
+      createAssociation(superAdmin, {
+        name: "ASOCIACIÓN SABORES DE LA MACARENA",
+        location: null,
+      }),
+    ).resolves.toMatchObject({
+      ok: false,
+      reason: "INVALID",
+      fieldErrors: { name: "Ya existe una asociación con ese nombre." },
+    });
+  });
+
+  it("rejects a duplicate name the earlier check missed when renaming", async () => {
+    skipNextDuplicateCheck();
+
+    await expect(
+      updateAssociation(superAdmin, bosqueVivo, {
+        name: "asociación sabores de la macarena",
+        location: null,
+      }),
+    ).resolves.toMatchObject({
+      ok: false,
+      reason: "INVALID",
+      fieldErrors: { name: expect.any(String) },
+    });
+    await expect(getPublicAssociation("bosque-vivo")).resolves.toMatchObject({
+      name: "Asociación Bosque Vivo",
+    });
+  });
+});
