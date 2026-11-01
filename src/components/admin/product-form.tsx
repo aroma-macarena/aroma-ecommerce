@@ -1,15 +1,16 @@
 "use client";
 
-import { ChevronDown, CircleAlert } from "lucide-react";
-import Link from "next/link";
-import {
-  type ComponentProps,
-  type ReactNode,
-  useActionState,
-  useEffect,
-} from "react";
+import { useActionState, useEffect } from "react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  controlClassName,
+  describedBy,
+  Field,
+  FormActions,
+  FormAlert,
+  FormSection,
+  SelectControl,
+} from "@/components/admin/form-fields";
 import {
   type ProductFormField,
   productFormFields,
@@ -34,95 +35,6 @@ type ProductFormProps = {
 };
 
 const initialState: ProductFormState = { status: "idle", attempt: 0 };
-
-const controlClassName =
-  "border-input bg-card w-full rounded-md border px-3 py-2.5 text-base leading-6 transition-colors placeholder:text-muted-foreground/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring aria-invalid:border-destructive";
-
-function describedBy(name: ProductFormField, hint?: string, error?: string) {
-  return (
-    [hint && `${name}-ayuda`, error && `${name}-error`]
-      .filter(Boolean)
-      .join(" ") || undefined
-  );
-}
-
-type FieldProps = {
-  name: ProductFormField;
-  label: string;
-  hint?: string;
-  error?: string;
-  optional?: boolean;
-  children: ReactNode;
-};
-
-function Field({ name, label, hint, error, optional, children }: FieldProps) {
-  return (
-    <div className="space-y-1.5">
-      <label htmlFor={name} className="flex items-baseline gap-2 font-medium">
-        {label}
-        {optional ? (
-          <span className="text-muted-foreground font-mono text-[0.6875rem] font-normal tracking-[0.06em] uppercase">
-            Opcional
-          </span>
-        ) : null}
-      </label>
-      {children}
-      {hint ? (
-        <p id={`${name}-ayuda`} className="text-muted-foreground text-sm">
-          {hint}
-        </p>
-      ) : null}
-      {error ? (
-        <p
-          id={`${name}-error`}
-          className="text-destructive flex items-start gap-1.5 text-sm font-medium"
-        >
-          <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
-          {error}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
-function SelectControl(props: ComponentProps<"select">) {
-  return (
-    <div className="relative">
-      <select
-        {...props}
-        className={cn(controlClassName, "min-h-11 appearance-none pr-10")}
-      />
-      <ChevronDown
-        aria-hidden
-        className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2"
-      />
-    </div>
-  );
-}
-
-function FormSection({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description: string;
-  children: ReactNode;
-}) {
-  return (
-    <fieldset className="border-foreground grid gap-5 border-t pt-5 first-of-type:border-t-0 first-of-type:pt-0 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10">
-      <div className="space-y-1">
-        <legend className="font-heading float-left text-xl font-semibold tracking-[-0.015em]">
-          {title}
-        </legend>
-        <p className="text-muted-foreground clear-left text-sm leading-6">
-          {description}
-        </p>
-      </div>
-      <div className="max-w-2xl space-y-6">{children}</div>
-    </fieldset>
-  );
-}
 
 function ProductForm({
   action,
@@ -177,15 +89,7 @@ function ProductForm({
       noValidate
       className="space-y-10"
     >
-      {state.message ? (
-        <div
-          role="alert"
-          className="border-destructive/40 bg-destructive/5 text-destructive flex items-start gap-2 rounded-md border px-4 py-3 text-sm font-medium"
-        >
-          <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
-          {state.message}
-        </div>
-      ) : null}
+      <FormAlert message={state.message} />
 
       <FormSection
         title="Información básica"
@@ -332,17 +236,11 @@ function ProductForm({
         </Field>
       </FormSection>
 
-      <div className="border-foreground flex flex-col-reverse gap-3 border-t-[1.5px] pt-5 sm:flex-row sm:justify-end">
-        <Link
-          href={cancelHref}
-          className={buttonVariants({ variant: "outline" })}
-        >
-          Cancelar
-        </Link>
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Guardando…" : submitLabel}
-        </Button>
-      </div>
+      <FormActions
+        cancelHref={cancelHref}
+        submitLabel={submitLabel}
+        isPending={isPending}
+      />
     </form>
   );
 }

@@ -1,5 +1,6 @@
 import { associationsTable } from "@/db/schema/associations";
 import { categoriesTable } from "@/db/schema/categories";
+import { productPresentationsTable } from "@/db/schema/productPresentations";
 import { productsTable } from "@/db/schema/products";
 import { profilesTable } from "@/db/schema/profiles";
 import type { AdminProfile } from "@/lib/auth/get-current-profile";
@@ -81,21 +82,28 @@ type ProductSeed = {
   associationId: string;
   status: "DRAFT" | "PUBLISHED" | "PAUSED";
   categoryId?: string;
+  publishedAt?: Date;
 };
 
 export async function seedProducts(
   { db }: TestDatabase,
   products: ProductSeed[],
 ) {
-  await db.insert(productsTable).values(
-    products.map(({ slug, associationId, status, categoryId }) => ({
-      name: slug,
-      slug,
-      associationId,
-      status,
-      categoryId: categoryId ?? ids.categories.coffee,
-    })),
-  );
+  return db
+    .insert(productsTable)
+    .values(
+      products.map(
+        ({ slug, associationId, status, categoryId, publishedAt }) => ({
+          name: slug,
+          slug,
+          associationId,
+          status,
+          categoryId: categoryId ?? ids.categories.coffee,
+          publishedAt,
+        }),
+      ),
+    )
+    .returning({ id: productsTable.id });
 }
 
 export async function seedProfiles(
@@ -103,4 +111,31 @@ export async function seedProfiles(
   profiles: (typeof profilesTable.$inferInsert)[],
 ) {
   await db.insert(profilesTable).values(profiles);
+}
+
+/** Profiles for `superAdmin`, `bosqueVivoAdmin` and `saboresAdmin`. */
+export async function seedAdminProfiles(database: TestDatabase) {
+  await seedProfiles(
+    database,
+    [superAdmin, bosqueVivoAdmin, saboresAdmin].map(
+      ({ id, name, email, role, associationId }) => ({
+        id,
+        authUserId: `user_${id}`,
+        name,
+        email,
+        role,
+        associationId,
+      }),
+    ),
+  );
+}
+
+export async function seedPresentations(
+  { db }: TestDatabase,
+  presentations: (typeof productPresentationsTable.$inferInsert)[],
+) {
+  return db
+    .insert(productPresentationsTable)
+    .values(presentations)
+    .returning({ id: productPresentationsTable.id });
 }

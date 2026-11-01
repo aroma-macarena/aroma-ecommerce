@@ -14,8 +14,8 @@ import {
   bosqueVivoAdmin,
   ids,
   saboresAdmin,
+  seedAdminProfiles,
   seedCatalog,
-  seedProfiles,
   superAdmin,
 } from "@/test/fixtures";
 
@@ -66,19 +66,7 @@ beforeAll(async () => {
   const testDatabase = await createTestDatabase();
   database.current = testDatabase;
   await seedCatalog(testDatabase);
-  await seedProfiles(
-    testDatabase,
-    [superAdmin, bosqueVivoAdmin, saboresAdmin].map(
-      ({ id, name, email, role, associationId }) => ({
-        id,
-        authUserId: `user_${id}`,
-        name,
-        email,
-        role,
-        associationId,
-      }),
-    ),
-  );
+  await seedAdminProfiles(testDatabase);
 });
 
 beforeEach(async () => {
