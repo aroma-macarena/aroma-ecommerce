@@ -79,7 +79,9 @@ function AdminUserForm({
   const [state, formAction, isPending] = useActionState(action, initialState);
   const values = state.values ?? initialValues ?? emptyValues;
   const errors = state.fieldErrors ?? {};
-  const isEditing = Boolean(initialValues);
+  // When editing, the email is not submitted, so it comes from the saved
+  // values even after a failed submission.
+  const savedEmail = initialValues?.email;
 
   useEffect(() => {
     const firstInvalid = focusOrder.find((field) => errors[field]);
@@ -122,10 +124,10 @@ function AdminUserForm({
           />
         </Field>
 
-        {isEditing ? (
+        {savedEmail !== undefined ? (
           <div className="space-y-1.5">
             <p className="font-medium">Correo</p>
-            <p className="wrap-anywhere">{values.email}</p>
+            <p className="wrap-anywhere">{savedEmail}</p>
             <p className="text-muted-foreground text-sm">
               Es el correo de su cuenta de acceso y no se cambia desde aquí.
             </p>
