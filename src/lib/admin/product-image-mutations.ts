@@ -1,4 +1,4 @@
-import { and, asc, count, eq, inArray, ne, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { productImagesTable as productImages } from "@/db/schema/productImages";
@@ -26,7 +26,10 @@ export type ImageMutationResult =
 
 import { MAX_ALT_TEXT_LENGTH } from "@/lib/admin/image-form";
 
+// The primary image always comes first. Sorting by it too keeps that true
+// for images saved before this rule existed.
 const imageOrder = [
+  desc(productImages.isPrimary),
   asc(productImages.displayOrder),
   asc(productImages.createdAt),
   asc(productImages.id),
@@ -199,10 +202,39 @@ export async function updateImageAltText(
 }
 
 /**
- * Makes an image the product's primary one. The previous primary is cleared
- * first, in the same transaction, so the unique index on primary images is
- * never violated, not even for a moment.
+ * Saves the images in the given order and makes the first one primary: the
+ * primary image is always the first. The previous primary is cleared first,
+ * in the same transaction, so the unique index on primary images is never
+ * violated, not even for a moment.
  */
+async function saveImageOrder(productId: string, ids: string[]) {
+  await withProductLock(productId, (executor) => [
+    executor
+      .update(productImages)
+      .set({ isPrimary: false, updatedAt: sql`now()` })
+      .where(
+        and(
+          eq(productImages.productId, productId),
+          eq(productImages.isPrimary, true),
+          ne(productImages.id, ids[0]),
+        ),
+      ),
+    executor
+      .update(productImages)
+      .set({
+        displayOrder: displayOrderByPosition(productImages.id, ids),
+        isPrimary: sql`${productImages.id} = ${ids[0]}::uuid`,
+      })
+      .where(
+        and(
+          eq(productImages.productId, productId),
+          inArray(productImages.id, ids),
+        ),
+      ),
+  ]);
+}
+
+/** Makes an image primary by moving it to the first place. */
 export async function setPrimaryImage(
   profile: AdminProfile,
   productId: string,
@@ -215,27 +247,11 @@ export async function setPrimaryImage(
   }
 
   const { product, image } = editable;
+  const ids = (await getProductImages(product.id)).map(({ id }) => id);
 
-  await withProductLock(product.id, (executor) => [
-    executor
-      .update(productImages)
-      .set({ isPrimary: false, updatedAt: sql`now()` })
-      .where(
-        and(
-          eq(productImages.productId, product.id),
-          eq(productImages.isPrimary, true),
-          ne(productImages.id, image.id),
-        ),
-      ),
-    executor
-      .update(productImages)
-      .set({ isPrimary: true, updatedAt: sql`now()` })
-      .where(
-        and(
-          eq(productImages.id, image.id),
-          eq(productImages.productId, product.id),
-        ),
-      ),
+  await saveImageOrder(product.id, [
+    image.id,
+    ...ids.filter((id) => id !== image.id),
   ]);
   await recordProductChange(profile, product.id);
 
@@ -327,15 +343,8 @@ export async function moveProductImage(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
-  await db
-    .update(productImages)
-    .set({ displayOrder: displayOrderByPosition(productImages.id, ids) })
-    .where(
-      and(
-        eq(productImages.productId, product.id),
-        inArray(productImages.id, ids),
-      ),
-    );
+  // Moving an image to the first place makes it the primary one.
+  await saveImageOrder(product.id, ids);
   await recordProductChange(profile, product.id);
 
   return { ok: true };

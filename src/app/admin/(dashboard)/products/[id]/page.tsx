@@ -390,7 +390,7 @@ export default async function ProductPage({
       <AdminSection
         id="imagenes"
         title="Imágenes"
-        description="La principal es la que se ve en la vitrina; las demás siguen el orden de la lista."
+        description="La primera es la principal: la que se ve en la vitrina. Las demás se mostrarán en este orden en la ficha del producto."
       >
         <ProductImagesPanel
           productId={product.id}

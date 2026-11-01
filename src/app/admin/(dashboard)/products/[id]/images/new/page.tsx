@@ -50,7 +50,7 @@ export default async function NewProductImagePage({
           description={
             images.length === 0
               ? `Será la imagen principal de ${product.name}: la que se ve en la vitrina.`
-              : `Una foto más de ${product.name}. Puedes elegir cuál es la principal desde la página del producto.`
+              : `Una foto más de ${product.name}. Se agregará al final; la primera es la principal y puedes cambiar el orden desde la página del producto.`
           }
         />
       </div>

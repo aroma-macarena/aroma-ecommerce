@@ -212,16 +212,18 @@ describe("uploadProductImage", () => {
 });
 
 describe("setPrimaryImage", () => {
-  it("moves the primary mark to the chosen image", async () => {
+  it("moves the chosen image to the first place as the primary one", async () => {
     const { productId, images } = await productWithImages(3);
 
     await expect(
       setPrimaryImage(bosqueVivoAdmin, productId, images[2].id),
     ).resolves.toEqual({ ok: true });
 
-    expect(
-      (await getProductImages(productId)).map(({ isPrimary }) => isPrimary),
-    ).toEqual([false, false, true]);
+    expect(await getProductImages(productId)).toMatchObject([
+      { id: images[2].id, isPrimary: true, displayOrder: 0 },
+      { id: images[0].id, isPrimary: false, displayOrder: 1 },
+      { id: images[1].id, isPrimary: false, displayOrder: 2 },
+    ]);
   });
 });
 
@@ -287,15 +289,46 @@ describe("image details and order", () => {
     expect((await getProductImages(productId))[0].altText).toBeNull();
   });
 
-  it("reorders images without changing the primary one", async () => {
+  it("reorders images after the first without changing the primary one", async () => {
     const { productId, images } = await productWithImages(3);
 
     await moveProductImage(bosqueVivoAdmin, productId, images[2].id, "up");
 
     expect(await getProductImages(productId)).toMatchObject([
       { id: images[0].id, isPrimary: true, displayOrder: 0 },
-      { id: images[2].id, displayOrder: 1 },
-      { id: images[1].id, displayOrder: 2 },
+      { id: images[2].id, isPrimary: false, displayOrder: 1 },
+      { id: images[1].id, isPrimary: false, displayOrder: 2 },
+    ]);
+  });
+
+  it("makes the image moved to the first place the primary one", async () => {
+    const { productId, images } = await productWithImages(2);
+
+    await moveProductImage(bosqueVivoAdmin, productId, images[1].id, "up");
+
+    expect(await getProductImages(productId)).toMatchObject([
+      { id: images[1].id, isPrimary: true, displayOrder: 0 },
+      { id: images[0].id, isPrimary: false, displayOrder: 1 },
+    ]);
+  });
+
+  it("lists the primary image first even if it was saved elsewhere", async () => {
+    const { productId, images } = await productWithImages(2);
+    const { db } = testDatabase();
+
+    // Images saved before the primary image had to be the first.
+    await db
+      .update(productImagesTable)
+      .set({ isPrimary: false })
+      .where(eq(productImagesTable.id, images[0].id));
+    await db
+      .update(productImagesTable)
+      .set({ isPrimary: true })
+      .where(eq(productImagesTable.id, images[1].id));
+
+    expect((await getProductImages(productId)).map(({ id }) => id)).toEqual([
+      images[1].id,
+      images[0].id,
     ]);
   });
 

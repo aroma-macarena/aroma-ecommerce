@@ -80,7 +80,8 @@ export default async function EditProductImagePage({
                 Usar como principal
               </SubmitButton>
               <p className="text-muted-foreground text-sm">
-                La imagen principal es la que se ve en la vitrina.
+                Pasará al primer lugar: la principal es la que se ve en la
+                vitrina.
               </p>
             </form>
           )}
