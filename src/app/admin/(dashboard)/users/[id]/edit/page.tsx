@@ -35,6 +35,8 @@ const notices: Record<string, string> = {
     "No pudimos comunicarnos con el servicio de acceso. La invitación no se reenvió; intenta de nuevo en unos minutos.",
   "sin-conexion-cancelar":
     "No pudimos comunicarnos con el servicio de acceso. La invitación sigue vigente; intenta cancelarla de nuevo en unos minutos.",
+  "reenviada-mientras":
+    "Alguien reenvió la invitación mientras la cancelabas, así que la nueva sigue vigente. Si aún quieres cancelarla, inténtalo de nuevo.",
   "ya-aceptada":
     "La persona ya aceptó la invitación, así que no hay nada que reenviar ni cancelar.",
 };

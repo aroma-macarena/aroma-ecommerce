@@ -431,6 +431,23 @@ describe("pending invitations", () => {
     );
   });
 
+  it("keeps the profile when the invitation is resent during cancellation", async () => {
+    const pending = await invite();
+    // Another session resends while this one revokes the previous invitation.
+    mockRevokeInvitation.mockImplementationOnce(async () => {
+      await testDatabase()
+        .db.update(profilesTable)
+        .set({ invitationId: "inv_resent" })
+        .where(eq(profilesTable.id, pending.id));
+    });
+
+    await expect(cancelInvitation(superAdmin, pending.id)).resolves.toEqual({
+      ok: false,
+      reason: "CHANGED",
+    });
+    expect((await stored("lucia@aroma.test")).invitationId).toBe("inv_resent");
+  });
+
   it("does not resend or cancel for an account that is already linked", async () => {
     await expect(
       resendInvitation(superAdmin, bosqueVivoAdmin.id),

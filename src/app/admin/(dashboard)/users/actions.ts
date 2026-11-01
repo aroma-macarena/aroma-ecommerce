@@ -176,6 +176,9 @@ export async function cancelInvitationAction(userId: string) {
     if (result.reason === "PROVIDER_ERROR") {
       redirect(`/admin/users/${userId}/edit?aviso=sin-conexion-cancelar`);
     }
+    if (result.reason === "CHANGED") {
+      redirect(`/admin/users/${userId}/edit?aviso=reenviada-mientras`);
+    }
     if (result.reason === "NOT_PENDING") {
       redirect(`/admin/users/${userId}/edit?aviso=ya-aceptada`);
     }

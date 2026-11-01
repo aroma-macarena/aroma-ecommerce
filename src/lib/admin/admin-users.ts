@@ -1,4 +1,4 @@
-import { and, asc, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, asc, eq, isNotNull, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "@/db";
@@ -28,7 +28,12 @@ export type AdminUserResult =
   | {
       ok: false;
       reason:
-        "FORBIDDEN" | "NOT_FOUND" | "SELF" | "NOT_PENDING" | "PROVIDER_ERROR";
+        | "FORBIDDEN"
+        | "NOT_FOUND"
+        | "SELF"
+        | "NOT_PENDING"
+        | "CHANGED"
+        | "PROVIDER_ERROR";
     };
 
 export type CreateAdminUserResult =
@@ -426,12 +431,30 @@ export async function cancelInvitation(
     throw error;
   }
 
+  // Only the invitation that was revoked: if it was resent meanwhile, the
+  // profile now holds a live one and stays.
   const deleted = await db
     .delete(profiles)
-    .where(and(eq(profiles.id, userId), isNull(profiles.authUserId)))
+    .where(
+      and(
+        eq(profiles.id, userId),
+        eq(profiles.invitationId, pending.invitationId),
+      ),
+    )
     .returning({ id: profiles.id });
 
-  return deleted.length > 0
-    ? { ok: true }
-    : { ok: false, reason: "NOT_PENDING" };
+  if (deleted.length > 0) {
+    return { ok: true };
+  }
+
+  const [current] = await db
+    .select({ invitationId: profiles.invitationId })
+    .from(profiles)
+    .where(eq(profiles.id, userId))
+    .limit(1);
+
+  return {
+    ok: false,
+    reason: current?.invitationId ? "CHANGED" : "NOT_PENDING",
+  };
 }
