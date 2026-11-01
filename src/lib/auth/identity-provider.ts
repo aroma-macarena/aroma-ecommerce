@@ -1,5 +1,6 @@
 import "server-only";
 
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { clerkClient } from "@clerk/nextjs/server";
 
 import { getAbsoluteUrl } from "@/lib/public-routes";
@@ -84,14 +85,41 @@ export async function createInvitation(email: string) {
   return invitation.id;
 }
 
-/** Revokes an invitation; one already used, revoked or expired is ignored. */
+/**
+ * Whether Clerk refused because the invitation can no longer be used:
+ * already accepted, revoked or expired, or unknown. Outages, rate limits
+ * and network errors are not, so the caller can retry.
+ */
+function isUnusableInvitationError(error: unknown) {
+  return (
+    isClerkAPIResponseError(error) &&
+    error.status >= 400 &&
+    error.status < 500 &&
+    error.status !== 429
+  );
+}
+
+/**
+ * Revokes an invitation. One that is already unusable counts as revoked;
+ * any other failure raises `IdentityProviderError`, so nothing that depends
+ * on the revocation happens and it can be retried.
+ */
 export async function revokeInvitation(invitationId: string) {
   const client = await clerkClient();
 
   try {
     await client.invitations.revokeInvitation(invitationId);
-  } catch {
-    // Revoking is cleanup: an invitation that cannot be revoked any more no
-    // longer lets anyone in without a matching AROMA profile.
+  } catch (error) {
+    if (isUnusableInvitationError(error)) {
+      return;
+    }
+    throw new IdentityProviderError("No pudimos anular la invitación.", {
+      cause: error,
+    });
   }
+}
+
+/** Cleanup after a failed save: a leftover invitation is not worth an error. */
+export async function revokeInvitationQuietly(invitationId: string) {
+  await revokeInvitation(invitationId).catch(() => undefined);
 }

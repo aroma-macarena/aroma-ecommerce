@@ -19,6 +19,7 @@ import {
   findUserIdByEmail,
   IdentityProviderError,
   revokeInvitation,
+  revokeInvitationQuietly,
 } from "@/lib/auth/identity-provider";
 import { createTestDatabase, type TestDatabase } from "@/test/database";
 import {
@@ -47,6 +48,7 @@ vi.mock("@/lib/auth/identity-provider", async (importOriginal) => {
     findUserIdByEmail: vi.fn(async () => null),
     createInvitation: vi.fn(async () => `inv_${++invitations}`),
     revokeInvitation: vi.fn(async () => undefined),
+    revokeInvitationQuietly: vi.fn(async () => undefined),
     getVerifiedEmails: vi.fn(async () => []),
   };
 });
@@ -54,6 +56,7 @@ vi.mock("@/lib/auth/identity-provider", async (importOriginal) => {
 const mockFindUser = vi.mocked(findUserIdByEmail);
 const mockCreateInvitation = vi.mocked(createInvitation);
 const mockRevokeInvitation = vi.mocked(revokeInvitation);
+const mockRevokeQuietly = vi.mocked(revokeInvitationQuietly);
 
 const { bosqueVivo, sabores } = ids.associations;
 
@@ -253,7 +256,7 @@ describe("createAdminUser", () => {
     await expect(createAdminUser(superAdmin, newUser())).resolves.toMatchObject(
       { ok: false, reason: "INVALID" },
     );
-    expect(mockRevokeInvitation).toHaveBeenCalledWith("inv_race");
+    expect(mockRevokeQuietly).toHaveBeenCalledWith("inv_race");
     await testDatabase()
       .db.delete(profilesTable)
       .where(eq(profilesTable.email, "LUCIA@aroma.test"));
@@ -394,6 +397,38 @@ describe("pending invitations", () => {
 
     expect(mockRevokeInvitation).toHaveBeenCalledWith(pending.invitationId);
     expect(await stored("lucia@aroma.test")).toBeUndefined();
+  });
+
+  it("keeps the pending profile when Clerk cannot revoke on cancel", async () => {
+    const pending = await invite();
+    mockRevokeInvitation.mockRejectedValueOnce(
+      new IdentityProviderError("No pudimos anular la invitación."),
+    );
+
+    await expect(cancelInvitation(superAdmin, pending.id)).resolves.toEqual({
+      ok: false,
+      reason: "PROVIDER_ERROR",
+    });
+    expect(await stored("lucia@aroma.test")).toMatchObject({
+      invitationId: pending.invitationId,
+    });
+  });
+
+  it("sends no new invitation when Clerk cannot revoke the previous one", async () => {
+    const pending = await invite();
+    mockCreateInvitation.mockClear();
+    mockRevokeInvitation.mockRejectedValueOnce(
+      new IdentityProviderError("No pudimos anular la invitación."),
+    );
+
+    await expect(resendInvitation(superAdmin, pending.id)).resolves.toEqual({
+      ok: false,
+      reason: "PROVIDER_ERROR",
+    });
+    expect(mockCreateInvitation).not.toHaveBeenCalled();
+    expect((await stored("lucia@aroma.test")).invitationId).toBe(
+      pending.invitationId,
+    );
   });
 
   it("does not resend or cancel for an account that is already linked", async () => {

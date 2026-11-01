@@ -33,6 +33,8 @@ const confirmations: Record<string, string> = {
 const notices: Record<string, string> = {
   "sin-conexion":
     "No pudimos comunicarnos con el servicio de acceso. La invitación no se reenvió; intenta de nuevo en unos minutos.",
+  "sin-conexion-cancelar":
+    "No pudimos comunicarnos con el servicio de acceso. La invitación sigue vigente; intenta cancelarla de nuevo en unos minutos.",
   "ya-aceptada":
     "La persona ya aceptó la invitación, así que no hay nada que reenviar ni cancelar.",
 };

@@ -173,6 +173,9 @@ export async function cancelInvitationAction(userId: string) {
   const result = await cancelInvitation(profile, userId);
 
   if (!result.ok) {
+    if (result.reason === "PROVIDER_ERROR") {
+      redirect(`/admin/users/${userId}/edit?aviso=sin-conexion-cancelar`);
+    }
     if (result.reason === "NOT_PENDING") {
       redirect(`/admin/users/${userId}/edit?aviso=ya-aceptada`);
     }

@@ -17,6 +17,7 @@ import {
   findUserIdByEmail,
   IdentityProviderError,
   revokeInvitation,
+  revokeInvitationQuietly,
 } from "@/lib/auth/identity-provider";
 
 export type AdminUserStatus = "ACTIVE" | "INACTIVE";
@@ -243,7 +244,7 @@ export async function createAdminUser(
     await db.insert(profiles).values({ ...values, invitationId });
   } catch (error) {
     // No profile, no invitation: the email can be invited again.
-    await revokeInvitation(invitationId);
+    await revokeInvitationQuietly(invitationId);
 
     if (isUniqueViolation(error, EMAIL_INDEX)) {
       return duplicateEmail;
@@ -358,12 +359,12 @@ export async function resendInvitation(
     return { ok: false, reason: "NOT_PENDING" };
   }
 
-  // Clerk keeps one pending invitation per email.
-  await revokeInvitation(pending.invitationId);
-
   let invitationId: string;
 
   try {
+    // Clerk keeps one pending invitation per email, and the previous link
+    // must stop working before a new one goes out.
+    await revokeInvitation(pending.invitationId);
     invitationId = await createInvitation(pending.email);
   } catch (error) {
     if (error instanceof IdentityProviderError) {
@@ -384,7 +385,7 @@ export async function resendInvitation(
     .returning({ id: profiles.id });
 
   if (updated.length === 0) {
-    await revokeInvitation(invitationId);
+    await revokeInvitationQuietly(invitationId);
     return { ok: false, reason: "NOT_PENDING" };
   }
 
@@ -404,18 +405,33 @@ export async function cancelInvitation(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
-  const deleted = await db
-    .delete(profiles)
-    .where(and(eq(profiles.id, userId), isNull(profiles.authUserId)))
-    .returning({ invitationId: profiles.invitationId });
+  const [pending] = await db
+    .select({ invitationId: profiles.invitationId })
+    .from(profiles)
+    .where(and(eq(profiles.id, userId), isNotNull(profiles.invitationId)))
+    .limit(1);
 
-  if (deleted.length === 0) {
+  if (!pending?.invitationId) {
     return { ok: false, reason: "NOT_PENDING" };
   }
 
-  if (deleted[0].invitationId) {
-    await revokeInvitation(deleted[0].invitationId);
+  // Revoked first: if Clerk fails, the profile stays pending and keeps the
+  // invitation id, so cancelling can be retried.
+  try {
+    await revokeInvitation(pending.invitationId);
+  } catch (error) {
+    if (error instanceof IdentityProviderError) {
+      return { ok: false, reason: "PROVIDER_ERROR" };
+    }
+    throw error;
   }
 
-  return { ok: true };
+  const deleted = await db
+    .delete(profiles)
+    .where(and(eq(profiles.id, userId), isNull(profiles.authUserId)))
+    .returning({ id: profiles.id });
+
+  return deleted.length > 0
+    ? { ok: true }
+    : { ok: false, reason: "NOT_PENDING" };
 }
