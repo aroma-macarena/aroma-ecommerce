@@ -14,8 +14,8 @@ function PublicHeader() {
           aria-label="Inicio de AROMA"
           className="inline-flex min-h-11 min-w-11 shrink-0 items-center rounded-md"
         >
-          <AromaLogo variant="symbol" className="w-10 min-[400px]:hidden" />
-          <AromaLogo className="hidden w-28 min-[400px]:block sm:w-36" />
+          <AromaLogo variant="symbol" className="w-10 min-[480px]:hidden" />
+          <AromaLogo className="hidden w-28 min-[480px]:block sm:w-36" />
         </Link>
 
         <PublicNav />

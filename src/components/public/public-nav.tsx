@@ -49,7 +49,7 @@ function PublicNav() {
 
   return (
     <nav aria-label="Navegación principal" className="max-w-full">
-      <ul className="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
+      <ul className="flex flex-wrap items-center justify-end gap-0.5 min-[480px]:gap-2 sm:gap-4">
         {publicNavigation.map((item) => {
           const { href, label, available } = item;
           const [path, sectionId] = href.split("#");
@@ -57,10 +57,7 @@ function PublicNav() {
             "sectionPrefix" in item && pathname.startsWith(item.sectionPrefix);
           const isActive = sectionId
             ? pathname === (path || "/") && visibleSectionId === sectionId
-            : isInSection ||
-              (!visibleSectionId &&
-                (pathname === href ||
-                  (href !== "/" && pathname.startsWith(`${href}/`))));
+            : isInSection || (!visibleSectionId && pathname === href);
           return (
             <li key={href} className="max-w-full">
               {available ? (
@@ -76,7 +73,8 @@ function PublicNav() {
                       : undefined
                   }
                   className={cn(
-                    "inline-flex min-h-11 max-w-full items-center px-2 py-2 text-[0.9375rem] wrap-anywhere transition-colors focus-visible:outline-offset-[-2px] sm:px-3",
+                    // Tighter below 480 px so the three links fit beside the symbol.
+                    "inline-flex min-h-11 max-w-full items-center px-1.5 py-2 text-sm wrap-anywhere max-[359px]:px-1 max-[359px]:text-[0.8125rem] transition-colors focus-visible:outline-offset-[-2px] min-[480px]:px-2 min-[480px]:text-[0.9375rem] sm:px-3",
                     isActive
                       ? "text-foreground shadow-[inset_0_-3px_0_var(--brand-orange)] font-semibold"
                       : "text-muted-foreground hover:text-foreground font-medium",

@@ -45,3 +45,19 @@ export function getProductInquiryMessage({
     .filter(Boolean)
     .join("\n\n");
 }
+
+/** First message to an association about what it offers. */
+export function getAssociationInquiryMessage({
+  associationName,
+  associationUrl,
+}: {
+  associationName: string;
+  associationUrl?: string | null;
+}) {
+  return [
+    `Hola, conocí a ${associationName} en la vitrina de AROMA y me gustaría saber más sobre sus productos.`,
+    associationUrl,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}

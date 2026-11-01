@@ -8,9 +8,11 @@ import { getProductDetailHref } from "@/lib/public-routes";
 
 type ProductCardProps = {
   product: CatalogProduct;
+  /** Off on the association's own profile, where it would repeat. */
+  showAssociation?: boolean;
 };
 
-function ProductCard({ product }: ProductCardProps) {
+function ProductCard({ product, showAssociation = true }: ProductCardProps) {
   const imageUrl = getMediaUrl(product.imageObjectKey);
 
   return (
@@ -61,9 +63,11 @@ function ProductCard({ product }: ProductCardProps) {
         ) : null}
       </div>
 
-      <p className="border-foreground border-t pt-2.5 font-mono text-xs">
-        {product.associationName}
-      </p>
+      {showAssociation ? (
+        <p className="border-foreground border-t pt-2.5 font-mono text-xs">
+          {product.associationName}
+        </p>
+      ) : null}
     </article>
   );
 }
