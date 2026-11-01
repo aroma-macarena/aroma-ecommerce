@@ -281,3 +281,17 @@ export async function updateProduct(
 
   return { ok: true, productId: product.id };
 }
+
+/**
+ * Records who changed the product, and when, after a change to something
+ * that belongs to it, such as its presentations or images.
+ */
+export async function recordProductChange(
+  profile: AdminProfile,
+  productId: string,
+) {
+  await db
+    .update(products)
+    .set({ updatedBy: profile.id, updatedAt: sql`now()` })
+    .where(eq(products.id, productId));
+}

@@ -50,11 +50,6 @@ const ids = {
     jam250g: "55555555-5555-4555-8555-444444444444",
   },
 
-  images: {
-    coffeePrimary: "66666666-6666-4666-8666-111111111111",
-    coffeeSecondary: "66666666-6666-4666-8666-222222222222",
-  },
-
   siteContent: {
     homeIntro: "77777777-7777-4777-8777-111111111111",
     aboutAroma: "77777777-7777-4777-8777-222222222222",
@@ -253,25 +248,8 @@ async function main() {
     },
   ]);
 
-  console.log("Creating product images...");
-  await db.insert(productImages).values([
-    {
-      id: ids.images.coffeePrimary,
-      productId: ids.products.publishedCoffee,
-      objectKey: "seed/products/cafe-artesanal/primary.webp",
-      altText: "Café artesanal - imagen principal de prueba",
-      displayOrder: 0,
-      isPrimary: true,
-    },
-    {
-      id: ids.images.coffeeSecondary,
-      productId: ids.products.publishedCoffee,
-      objectKey: "seed/products/cafe-artesanal/secondary.webp",
-      altText: "Café artesanal - imagen secundaria de prueba",
-      displayOrder: 1,
-      isPrimary: false,
-    },
-  ]);
+  // No product images: their keys would point to objects missing from the
+  // media bucket. Upload real photos from the admin instead.
 
   console.log("Creating institutional content...");
   await db.insert(siteContent).values([
