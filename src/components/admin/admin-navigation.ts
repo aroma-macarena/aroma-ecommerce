@@ -66,7 +66,7 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     label: "Usuarios",
     icon: Users,
     roles: ["SUPER_ADMIN"],
-    available: false,
+    available: true,
   },
 ];
 

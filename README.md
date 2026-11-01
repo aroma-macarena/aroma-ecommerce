@@ -35,6 +35,15 @@ Copy `.env.example` to `.env.local` and fill in the required values:
 | `CLERK_SECRET_KEY`                                | Clerk secret key (server-side)                |
 | `NEXT_PUBLIC_CLERK_SIGN_IN_URL`                   | Sign-in page path (default: `/admin/sign-in`) |
 | `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | Post sign-in redirect (default: `/admin`)     |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_URL`                   | Invitation sign-up path (`/admin/sign-up`)    |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL` | Post sign-up redirect (default: `/admin`)     |
+
+Administrative access is by invitation only. Super admins invite people from **Usuarios** (`/admin/users`): AROMA creates a pending profile and Clerk emails an invitation that leads to `/admin/sign-up`. On the person's first sign-in, the profile is linked to their Clerk user through their verified email. If the email already has a Clerk account, the profile is linked right away and no invitation is sent.
+
+To set up Clerk for this:
+
+1. In the Clerk dashboard, set **Configure → Restrictions → Sign-up mode** to **Restricted**, so only invited people can create an account.
+2. Set `NEXT_PUBLIC_SITE_URL`: invitations link to `{NEXT_PUBLIC_SITE_URL}/admin/sign-up`. Without it, Clerk uses its own sign-up page.
 
 **Media storage (Cloudflare R2)**
 
