@@ -150,6 +150,7 @@ export default async function AssociationPage({
                   ),
                 })}
                 note="Se abre WhatsApp con un mensaje listo. La conversación sigue directamente con la asociación: AROMA no procesa pagos ni pedidos."
+                fullWidth
               />
             </aside>
           </div>

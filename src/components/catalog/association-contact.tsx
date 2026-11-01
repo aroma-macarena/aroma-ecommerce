@@ -10,6 +10,8 @@ type AssociationContactProps = {
   message: string;
   /** What happens after the click, shown under the button. */
   note: string;
+  /** Fill the container at every size, as inside a narrow panel. */
+  fullWidth?: boolean;
 };
 
 /**
@@ -21,7 +23,9 @@ function AssociationContact({
   whatsappNumber,
   message,
   note,
+  fullWidth = false,
 }: AssociationContactProps) {
+  const width = fullWidth ? "w-full" : "w-full sm:w-auto";
   const associationHref = getWhatsAppHref(whatsappNumber, message);
   const allianceHref = associationHref
     ? null
@@ -38,7 +42,7 @@ function AssociationContact({
           rel="noopener noreferrer"
           className={buttonVariants({
             size: "lg",
-            className: "w-full sm:w-auto",
+            className: width,
           })}
         >
           <WhatsAppIcon />
@@ -68,7 +72,7 @@ function AssociationContact({
           className={buttonVariants({
             variant: "outline",
             size: "lg",
-            className: "w-full sm:w-auto",
+            className: width,
           })}
         >
           <WhatsAppIcon />

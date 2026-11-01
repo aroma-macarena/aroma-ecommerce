@@ -164,13 +164,6 @@ export default async function Home({ searchParams }: PageProps<"/">) {
               description={alliance.description}
               tone="inverse"
             />
-            <Link
-              href={publicRoutes.associations}
-              className="decoration-background/40 hover:decoration-background inline-flex min-h-11 w-fit items-center gap-2 font-semibold underline underline-offset-4 transition-colors"
-            >
-              Conoce las asociaciones
-              <ArrowRight aria-hidden className="size-4" />
-            </Link>
             <Image
               src="/brand/aroma-sello.svg"
               alt="Sello: Producto de la Alianza AROMA, hecho por mujeres campesinas"
@@ -181,27 +174,36 @@ export default async function Home({ searchParams }: PageProps<"/">) {
             />
           </div>
 
-          <ul className="border-background/25 grid content-start border-b sm:grid-cols-2 sm:gap-x-8">
-            {alliance.organizations.map((organization) => (
-              <li
-                key={organization.acronym}
-                className="border-background/25 space-y-1 border-t py-3.5"
-              >
-                <p className="flex justify-between gap-3 font-mono text-[0.8125rem] font-medium">
-                  <span>{organization.acronym}</span>
-                  <span className="text-background/80 text-right">
-                    {organization.women} mujeres
-                    {"men" in organization
-                      ? ` y ${organization.men} hombres`
-                      : ""}
-                  </span>
-                </p>
-                <p className="text-background/80 text-sm leading-snug">
-                  {organization.name}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-6">
+            <ul className="border-background/25 grid content-start border-b sm:grid-cols-2 sm:gap-x-8">
+              {alliance.organizations.map((organization) => (
+                <li
+                  key={organization.acronym}
+                  className="border-background/25 space-y-1 border-t py-3.5"
+                >
+                  <p className="flex justify-between gap-3 font-mono text-[0.8125rem] font-medium">
+                    <span>{organization.acronym}</span>
+                    <span className="text-background/80 text-right">
+                      {organization.women} mujeres
+                      {"men" in organization
+                        ? ` y ${organization.men} hombres`
+                        : ""}
+                    </span>
+                  </p>
+                  <p className="text-background/80 text-sm leading-snug">
+                    {organization.name}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href={publicRoutes.associations}
+              className="decoration-background/40 hover:decoration-background inline-flex min-h-11 w-fit items-center gap-2 font-semibold underline underline-offset-4 transition-colors"
+            >
+              Conoce las asociaciones
+              <ArrowRight aria-hidden className="size-4" />
+            </Link>
+          </div>
         </Container>
       </Section>
     </>
