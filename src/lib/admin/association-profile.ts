@@ -78,7 +78,7 @@ export type AssociationProfile = NonNullable<
 
 /**
  * Saves the public profile. Only a super administrator renames an
- * association; for anyone else the current name is kept. The slug never
+ * association; for anyone else the name is left as it is. The slug never
  * changes, so public links keep working.
  */
 export async function updateAssociationProfile(
@@ -92,14 +92,16 @@ export async function updateAssociationProfile(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
-  const name = isSuperAdmin(profile) ? input.name : current.name;
+  // Anyone else leaves the column untouched: writing back the name read
+  // above would undo a rename committed meanwhile.
+  const rename = isSuperAdmin(profile) ? { name: input.name } : {};
   const duplicate = {
     ok: false,
     reason: "INVALID",
     fieldErrors: { name: DUPLICATE_ASSOCIATION_NAME },
   } as const;
 
-  if (await isAssociationNameTaken(name, current.id)) {
+  if (rename.name && (await isAssociationNameTaken(rename.name, current.id))) {
     return duplicate;
   }
 
@@ -107,7 +109,7 @@ export async function updateAssociationProfile(
     await db
       .update(associations)
       .set({
-        name,
+        ...rename,
         location: input.location,
         description: input.description,
         history: input.history,

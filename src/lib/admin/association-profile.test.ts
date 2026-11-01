@@ -180,6 +180,32 @@ describe("updateAssociationProfile", () => {
     expect((await stored(bosqueVivo)).name).toBe("Asociación Bosque Vivo");
   });
 
+  it("keeps a rename committed while an association administrator saves", async () => {
+    // A super administrator renames right before the administrator's write.
+    const { db } = testDatabase();
+    const update = db.update.bind(db);
+    vi.spyOn(db, "update").mockImplementationOnce(
+      (table) =>
+        ({
+          set: (values: Record<string, unknown>) => ({
+            where: async (condition: unknown) => {
+              await update(associationsTable)
+                .set({ name: "Bosque Vivo del Guayabero" })
+                .where(eq(associationsTable.id, bosqueVivo));
+              return update(table)
+                .set(values)
+                .where(condition as never);
+            },
+          }),
+        }) as unknown as ReturnType<typeof db.update>,
+    );
+
+    await expect(
+      updateAssociationProfile(bosqueVivoAdmin, bosqueVivo, input()),
+    ).resolves.toEqual({ ok: true });
+    expect((await stored(bosqueVivo)).name).toBe("Bosque Vivo del Guayabero");
+  });
+
   it("lets a super administrator rename without changing the slug", async () => {
     await updateAssociationProfile(
       superAdmin,

@@ -109,7 +109,10 @@ function AssociationProfileEditor({
         description="Aparece en el directorio y en el perfil. Cada imagen se guarda con su propio botón, aparte de la información."
         ruled
       >
+        {/* Keyed by the stored image, so saving or removing one starts a
+            fresh form instead of keeping the local preview. */}
         <AssociationImageForm
+          key={association.logoObjectKey ?? "none"}
           kind="logo"
           associationName={association.name}
           currentUrl={getMediaUrl(association.logoObjectKey)}
@@ -133,6 +136,7 @@ function AssociationProfileEditor({
         description="La foto ancha con la que empieza el perfil público."
       >
         <AssociationImageForm
+          key={association.coverObjectKey ?? "none"}
           kind="cover"
           associationName={association.name}
           currentUrl={getMediaUrl(association.coverObjectKey)}
