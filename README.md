@@ -44,6 +44,7 @@ To set up Clerk for this:
 
 1. In the Clerk dashboard, set **Configure → Restrictions → Sign-up mode** to **Restricted**, so only invited people can create an account.
 2. Set `NEXT_PUBLIC_SITE_URL`: invitations link to `{NEXT_PUBLIC_SITE_URL}/admin/sign-up`. Without it, Clerk uses its own sign-up page.
+3. Optionally, turn off first and last name under **Configure → User & authentication**: AROMA keeps the name given when inviting, so sign-up only needs a password.
 
 **Media storage (Cloudflare R2)**
 
