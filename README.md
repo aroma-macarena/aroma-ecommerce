@@ -59,15 +59,15 @@ Product images are stored as `products/{productId}/{uuid}.{webp|jpg|png}`. The d
 
 **Public site**
 
-| Variable               | Description                                                                                          |
-| ---------------------- | ---------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL` | Public URL of the site, used for absolute links in link previews (optional; for example `https://…`) |
+| Variable               | Description                                                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL` | Public URL of the site, used for absolute links in link previews and in the product link of WhatsApp messages (optional; for example `https://…`) |
 
 **Alliance support**
 
-| Variable                    | Description                                                                                                                     |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `ALLIANCE_SUPPORT_WHATSAPP` | WhatsApp number of the alliance administration, with country code (optional; access notices hide the contact button without it) |
+| Variable                    | Description                                                                                                                                                                                           |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ALLIANCE_SUPPORT_WHATSAPP` | WhatsApp number of the alliance administration, with country code (optional; access notices hide the contact button without it, and product pages use it when the association has no WhatsApp number) |
 
 ## Scripts
 
