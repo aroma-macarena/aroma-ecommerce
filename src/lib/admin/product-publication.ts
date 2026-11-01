@@ -5,6 +5,7 @@ import { associationsTable as associations } from "@/db/schema/associations";
 import { categoriesTable as categories } from "@/db/schema/categories";
 import { productPresentationsTable as productPresentations } from "@/db/schema/productPresentations";
 import { productsTable as products } from "@/db/schema/products";
+import { withProductLock } from "@/lib/admin/product-lock";
 import { getEditableProduct } from "@/lib/admin/product-mutations";
 import type { AdminProfile } from "@/lib/auth/get-current-profile";
 
@@ -167,26 +168,32 @@ export async function changeProductStatus(
     return { ok: false, reason: "REQUIREMENTS_NOT_MET" };
   }
 
-  // The status and presentation checks repeat in the update so a concurrent
-  // change cannot slip in between the read above and this write.
-  const updated = await db
-    .update(products)
-    .set({
-      status: target,
-      ...(publishing && {
-        publishedAt: sql`coalesce(${products.publishedAt}, now())`,
-      }),
-      updatedBy: profile.id,
-      updatedAt: sql`now()`,
-    })
-    .where(
-      and(
-        eq(products.id, productId),
-        eq(products.status, publication.status),
-        publishing ? hasAvailablePresentation : undefined,
-      ),
-    )
-    .returning({ id: products.id });
+  // The status and presentation checks repeat in the update, under the
+  // product lock, so a concurrent change cannot slip in between the read
+  // above and this write.
+  const updated = await withProductLock<{ id: string }[]>(
+    productId,
+    (executor) => [
+      executor
+        .update(products)
+        .set({
+          status: target,
+          ...(publishing && {
+            publishedAt: sql`coalesce(${products.publishedAt}, now())`,
+          }),
+          updatedBy: profile.id,
+          updatedAt: sql`now()`,
+        })
+        .where(
+          and(
+            eq(products.id, productId),
+            eq(products.status, publication.status),
+            publishing ? hasAvailablePresentation : undefined,
+          ),
+        )
+        .returning({ id: products.id }),
+    ],
+  );
 
   return updated.length > 0 ? { ok: true } : { ok: false, reason: "CONFLICT" };
 }

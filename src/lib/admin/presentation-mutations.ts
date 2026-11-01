@@ -7,6 +7,7 @@ import type {
   PresentationFieldErrors,
   PresentationFormInput,
 } from "@/lib/admin/presentation-form";
+import { withProductLock } from "@/lib/admin/product-lock";
 import { getEditableProduct } from "@/lib/admin/product-mutations";
 import type { AdminProfile } from "@/lib/auth/get-current-profile";
 
@@ -36,8 +37,9 @@ const presentationOrder = [
 
 /**
  * True when removing this presentation from the available ones would leave
- * a published product without any. Written as SQL so it can guard the write
- * itself and not only a previous read.
+ * a published product without any. Written as SQL so it guards the write
+ * itself; `withProductLock` keeps concurrent writes from each relying on a
+ * presentation the other is removing.
  */
 const leavesPublishedProductUnavailable = sql`(
   ${productPresentations.isAvailable}
@@ -152,19 +154,24 @@ export async function updatePresentation(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
-  const updated = await db
-    .update(productPresentations)
-    .set({ ...input, updatedAt: sql`now()` })
-    .where(
-      and(
-        eq(productPresentations.id, presentationId),
-        eq(productPresentations.productId, editable.product.id),
-        input.isAvailable
-          ? undefined
-          : sql`not ${leavesPublishedProductUnavailable}`,
-      ),
-    )
-    .returning({ id: productPresentations.id });
+  const updated = await withProductLock<{ id: string }[]>(
+    editable.product.id,
+    (executor) => [
+      executor
+        .update(productPresentations)
+        .set({ ...input, updatedAt: sql`now()` })
+        .where(
+          and(
+            eq(productPresentations.id, presentationId),
+            eq(productPresentations.productId, editable.product.id),
+            input.isAvailable
+              ? undefined
+              : sql`not ${leavesPublishedProductUnavailable}`,
+          ),
+        )
+        .returning({ id: productPresentations.id }),
+    ],
+  );
 
   if (updated.length === 0) {
     return {
@@ -194,16 +201,21 @@ export async function deletePresentation(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
-  const deleted = await db
-    .delete(productPresentations)
-    .where(
-      and(
-        eq(productPresentations.id, presentationId),
-        eq(productPresentations.productId, editable.product.id),
-        sql`not ${leavesPublishedProductUnavailable}`,
-      ),
-    )
-    .returning({ id: productPresentations.id });
+  const deleted = await withProductLock<{ id: string }[]>(
+    editable.product.id,
+    (executor) => [
+      executor
+        .delete(productPresentations)
+        .where(
+          and(
+            eq(productPresentations.id, presentationId),
+            eq(productPresentations.productId, editable.product.id),
+            sql`not ${leavesPublishedProductUnavailable}`,
+          ),
+        )
+        .returning({ id: productPresentations.id }),
+    ],
+  );
 
   if (deleted.length === 0) {
     return { ok: false, reason: "LAST_AVAILABLE" };
