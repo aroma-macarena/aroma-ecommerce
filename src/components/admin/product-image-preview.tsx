@@ -8,6 +8,8 @@ type ProductImagePreviewProps = {
   objectKey: string;
   alt: string;
   sizes: string;
+  /** Load right away, for a preview that is the page's main content. */
+  eager?: boolean;
   className?: string;
 };
 
@@ -16,6 +18,7 @@ function ProductImagePreview({
   objectKey,
   alt,
   sizes,
+  eager = false,
   className,
 }: ProductImagePreviewProps) {
   const url = getMediaUrl(objectKey);
@@ -33,6 +36,7 @@ function ProductImagePreview({
           alt={alt}
           fill
           sizes={sizes}
+          loading={eager ? "eager" : undefined}
           className="object-cover"
         />
       ) : (

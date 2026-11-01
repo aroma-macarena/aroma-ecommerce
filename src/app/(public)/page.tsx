@@ -91,7 +91,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
                 src={territoryImage}
                 alt={hero.image.alt}
                 placeholder="blur"
-                priority
+                preload
                 sizes="(min-width: 1024px) 28rem, (min-width: 640px) 80vw, 100vw"
                 className="aspect-4/3 w-full rounded-sm object-cover lg:aspect-square"
               />
