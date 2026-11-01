@@ -19,6 +19,7 @@ import {
 } from "@/components/admin/form-fields";
 import { buttonVariants } from "@/components/ui/button";
 import {
+  ALT_TEXT_HINT,
   type ImageFormState,
   MAX_ALT_TEXT_LENGTH,
 } from "@/lib/admin/image-form";
@@ -53,9 +54,6 @@ const reductionMessages = {
   TOO_LARGE: "La foto pesa más de 20 MB. Elige una más liviana.",
   UNREADABLE: "No pudimos leer esta imagen. Usa una foto en JPG, PNG o WebP.",
 };
-
-const altTextHint =
-  "Describe lo que se ve, por ejemplo «Bolsa de café de 250 g sobre una mesa de madera». Si lo dejas vacío, se usa el nombre del producto.";
 
 function formatSize(bytes: number) {
   return bytes < 1024 * 1024
@@ -226,7 +224,7 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
         <Field
           name="altText"
           label="Texto alternativo"
-          hint={altTextHint}
+          hint={ALT_TEXT_HINT}
           error={state.fieldErrors?.altText}
           optional
         >
@@ -240,7 +238,7 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
             aria-invalid={state.fieldErrors?.altText ? true : undefined}
             aria-describedby={describedBy(
               "altText",
-              altTextHint,
+              ALT_TEXT_HINT,
               state.fieldErrors?.altText,
             )}
             className={controlClassName}

@@ -10,6 +10,7 @@ import {
   FormAlert,
 } from "@/components/admin/form-fields";
 import {
+  ALT_TEXT_HINT,
   type ImageFormState,
   MAX_ALT_TEXT_LENGTH,
 } from "@/lib/admin/image-form";
@@ -25,9 +26,6 @@ type ImageAltTextFormProps = {
 };
 
 const initialState: ImageFormState = { status: "idle", attempt: 0 };
-
-const hint =
-  "Describe lo que se ve para quien no puede ver la imagen. Si lo dejas vacío, se usa el nombre del producto.";
 
 function ImageAltTextForm({
   action,
@@ -57,7 +55,7 @@ function ImageAltTextForm({
         <Field
           name="altText"
           label="Texto alternativo"
-          hint={hint}
+          hint={ALT_TEXT_HINT}
           error={error}
           optional
         >
@@ -68,7 +66,7 @@ function ImageAltTextForm({
             maxLength={MAX_ALT_TEXT_LENGTH}
             defaultValue={state.values?.altText ?? defaultAltText}
             aria-invalid={error ? true : undefined}
-            aria-describedby={describedBy("altText", hint, error)}
+            aria-describedby={describedBy("altText", ALT_TEXT_HINT, error)}
             className={controlClassName}
           />
         </Field>
