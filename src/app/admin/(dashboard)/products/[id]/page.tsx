@@ -16,6 +16,7 @@ import { AdminEmptyState } from "@/components/admin/admin-empty-state";
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminSection } from "@/components/admin/admin-section";
+import { ProductImagesPanel } from "@/components/admin/product-images-panel";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { SubmitButton } from "@/components/admin/submit-button";
 import { buttonVariants } from "@/components/ui/button";
@@ -24,6 +25,7 @@ import {
   lastAvailableMessage,
   type ProductPresentation,
 } from "@/lib/admin/presentation-mutations";
+import { getProductImages } from "@/lib/admin/product-image-mutations";
 import {
   getEditableProduct,
   getProductFormOptions,
@@ -34,9 +36,14 @@ import {
 } from "@/lib/admin/product-publication";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
 import { formatPresentationDetails } from "@/lib/presentation-format";
+import { isMediaStorageConfigured } from "@/lib/storage/r2";
 import { cn } from "@/lib/utils";
 
-import { changeProductStatusAction, movePresentationAction } from "./actions";
+import {
+  changeProductStatusAction,
+  movePresentationAction,
+  moveProductImageAction,
+} from "./actions";
 
 export const metadata: Metadata = {
   title: "Producto",
@@ -48,6 +55,10 @@ const confirmations: Record<string, string> = {
   "presentacion-creada": "Presentación agregada.",
   "presentacion-actualizada": "Presentación actualizada.",
   "presentacion-eliminada": "Presentación eliminada.",
+  "imagen-agregada": "Imagen agregada.",
+  "imagen-actualizada": "Imagen actualizada.",
+  "imagen-principal": "Imagen principal actualizada.",
+  "imagen-eliminada": "Imagen eliminada.",
   publicado: "Producto publicado.",
   pausado: "Producto pausado: ya no aparece en la vitrina.",
 };
@@ -56,6 +67,8 @@ const warnings: Record<string, string> = {
   "ultima-presentacion": lastAvailableMessage,
   requisitos:
     "No se pudo publicar: el producto no cumple todos los requisitos.",
+  "imagen-no-eliminada":
+    "No pudimos eliminar la imagen del almacenamiento. Intenta de nuevo en unos minutos.",
   "estado-cambiado":
     "El estado del producto cambió mientras tanto. Revisa la información actual.",
 };
@@ -283,11 +296,13 @@ export default async function ProductPage({
     notFound();
   }
 
-  const [publication, presentations, { categoryOptions }] = await Promise.all([
-    getProductPublication(profile, product.id),
-    getProductPresentations(product.id),
-    getProductFormOptions(profile, product.categoryId),
-  ]);
+  const [publication, presentations, images, { categoryOptions }] =
+    await Promise.all([
+      getProductPublication(profile, product.id),
+      getProductPresentations(product.id),
+      getProductImages(product.id),
+      getProductFormOptions(profile, product.categoryId),
+    ]);
 
   if (!publication) {
     notFound();
@@ -308,7 +323,7 @@ export default async function ProductPage({
         <AdminPageHeader
           eyebrow={product.associationName}
           title={product.name}
-          description="Gestiona su publicación, su información y sus presentaciones."
+          description="Gestiona su publicación, sus presentaciones, sus imágenes y su información."
         />
       </div>
 
@@ -370,6 +385,22 @@ export default async function ProductPage({
             }
           />
         )}
+      </AdminSection>
+
+      <AdminSection
+        id="imagenes"
+        title="Imágenes"
+        description="La principal es la que se ve en la vitrina; las demás siguen el orden de la lista."
+      >
+        <ProductImagesPanel
+          productId={product.id}
+          productName={product.name}
+          images={images}
+          canUpload={isMediaStorageConfigured()}
+          moveAction={(imageId, direction) =>
+            moveProductImageAction.bind(null, product.id, imageId, direction)
+          }
+        />
       </AdminSection>
 
       <AdminSection

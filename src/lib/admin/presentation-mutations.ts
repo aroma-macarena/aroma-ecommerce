@@ -3,12 +3,16 @@ import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { productPresentationsTable as productPresentations } from "@/db/schema/productPresentations";
 import { productsTable as products } from "@/db/schema/products";
+import { displayOrderByPosition, moveInOrder } from "@/lib/admin/display-order";
 import type {
   PresentationFieldErrors,
   PresentationFormInput,
 } from "@/lib/admin/presentation-form";
 import { withProductLock } from "@/lib/admin/product-lock";
-import { getEditableProduct } from "@/lib/admin/product-mutations";
+import {
+  getEditableProduct,
+  recordProductChange,
+} from "@/lib/admin/product-mutations";
 import type { AdminProfile } from "@/lib/auth/get-current-profile";
 
 export type PresentationMutationResult =
@@ -105,14 +109,6 @@ export async function getEditablePresentation(
   };
 }
 
-/** Records who changed the product through its presentations, and when. */
-async function touchProduct(profile: AdminProfile, productId: string) {
-  await db
-    .update(products)
-    .set({ updatedBy: profile.id, updatedAt: sql`now()` })
-    .where(eq(products.id, productId));
-}
-
 export async function createPresentation(
   profile: AdminProfile,
   productId: string,
@@ -133,7 +129,7 @@ export async function createPresentation(
       where ${productPresentations.productId} = ${product.id}
     )`,
   });
-  await touchProduct(profile, product.id);
+  await recordProductChange(profile, product.id);
 
   return { ok: true };
 }
@@ -181,7 +177,7 @@ export async function updatePresentation(
     };
   }
 
-  await touchProduct(profile, editable.product.id);
+  await recordProductChange(profile, editable.product.id);
 
   return { ok: true };
 }
@@ -221,7 +217,7 @@ export async function deletePresentation(
     return { ok: false, reason: "LAST_AVAILABLE" };
   }
 
-  await touchProduct(profile, editable.product.id);
+  await recordProductChange(profile, editable.product.id);
 
   return { ok: true };
 }
@@ -242,28 +238,20 @@ export async function movePresentation(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
-  const ids = (await getProductPresentations(product.id)).map(({ id }) => id);
-  const index = ids.indexOf(presentationId);
+  const ids = moveInOrder(
+    (await getProductPresentations(product.id)).map(({ id }) => id),
+    presentationId,
+    direction,
+  );
 
-  if (index === -1) {
+  if (!ids) {
     return { ok: false, reason: "NOT_FOUND" };
   }
-
-  const target = direction === "up" ? index - 1 : index + 1;
-
-  if (target < 0 || target >= ids.length) {
-    return { ok: true };
-  }
-
-  [ids[index], ids[target]] = [ids[target], ids[index]];
 
   await db
     .update(productPresentations)
     .set({
-      displayOrder: sql`case ${productPresentations.id} ${sql.join(
-        ids.map((id, order) => sql`when ${id}::uuid then ${order}::integer`),
-        sql` `,
-      )} end`,
+      displayOrder: displayOrderByPosition(productPresentations.id, ids),
     })
     .where(
       and(
@@ -271,7 +259,7 @@ export async function movePresentation(
         inArray(productPresentations.id, ids),
       ),
     );
-  await touchProduct(profile, product.id);
+  await recordProductChange(profile, product.id);
 
   return { ok: true };
 }

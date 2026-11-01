@@ -36,11 +36,26 @@ Copy `.env.example` to `.env.local` and fill in the required values:
 | `NEXT_PUBLIC_CLERK_SIGN_IN_URL`                   | Sign-in page path (default: `/admin/sign-in`) |
 | `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | Post sign-in redirect (default: `/admin`)     |
 
-**Media storage**
+**Media storage (Cloudflare R2)**
 
-| Variable                     | Description                                                                                 |
-| ---------------------------- | ------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_MEDIA_BASE_URL` | Base URL for stored images (optional; products show a placeholder image when it is not set) |
+| Variable                     | Description                                                                                                          |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_MEDIA_BASE_URL` | Public URL of the bucket, such as its custom domain (optional; products show a placeholder image when it is not set) |
+| `R2_ACCOUNT_ID`              | Cloudflare account ID (server-side)                                                                                  |
+| `R2_ACCESS_KEY_ID`           | R2 API token access key ID (server-side)                                                                             |
+| `R2_SECRET_ACCESS_KEY`       | R2 API token secret access key (server-side)                                                                         |
+| `R2_BUCKET`                  | Bucket name (server-side)                                                                                            |
+
+Image uploads are available only when all five are set; otherwise the admin explains that uploads are not configured. The `R2_*` values are read only on the server and are never sent to the browser.
+
+To set up R2:
+
+1. Create a bucket in Cloudflare R2.
+2. Give it public access, preferably through a custom domain (R2 → bucket → Settings → Public access), and use that URL as `NEXT_PUBLIC_MEDIA_BASE_URL`. The `r2.dev` URL works for testing but is rate limited.
+3. Create an R2 API token with **Object Read & Write** permission limited to that bucket, and copy its access key ID and secret into `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`.
+4. Rebuild after changing `NEXT_PUBLIC_MEDIA_BASE_URL`: Next.js reads it at build time to allow its images.
+
+Product images are stored as `products/{productId}/{uuid}.{webp|jpg|png}`. The database keeps only that key; `getMediaUrl` in `src/lib/media.ts` builds every public URL from it.
 
 **Public site**
 
