@@ -1,9 +1,12 @@
+/**
+ * Fixed parts of the home page. Its title, presentation and the alliance
+ * text are institutional content edited from the admin
+ * (`src/lib/site-content/blocks.ts`); the organizations stay here as
+ * structured data, not free text.
+ */
 export const homeContent = {
   hero: {
     eyebrow: "La Macarena · Meta · Colombia",
-    title: "Productos de La Macarena",
-    description:
-      "Conoce la oferta de las organizaciones y mujeres productoras de la Alianza AROMA.",
     image: {
       alt: "Atardecer sobre el río Guayabero, con la selva reflejada en el agua",
       caption: "Río Guayabero, La Macarena",
@@ -11,10 +14,6 @@ export const homeContent = {
   },
   alliance: {
     eyebrow: "La alianza",
-    title: "Mujeres con raíces de paz, frutos de vida",
-    description:
-      "AROMA es la Alianza Rural de Organizaciones de Mujeres Activas del Territorio de La Macarena: organizaciones campesinas que dan a conocer lo que producen y lo acercan a nuevos compradores.",
-    supporter: "CORPOREFUGIO",
     organizations: [
       {
         acronym: "ASCAGY",

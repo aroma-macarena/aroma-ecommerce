@@ -1,5 +1,6 @@
 import { reset } from "drizzle-seed";
 
+import { getSiteContentBlock } from "../lib/site-content/blocks";
 import { db } from "./index";
 import { associationsTable as associations } from "./schema/associations";
 import { categoriesTable as categories } from "./schema/categories";
@@ -51,8 +52,8 @@ const ids = {
   },
 
   siteContent: {
-    homeIntro: "77777777-7777-4777-8777-111111111111",
-    aboutAroma: "77777777-7777-4777-8777-222222222222",
+    homeHero: "77777777-7777-4777-8777-111111111111",
+    homeAlliance: "77777777-7777-4777-8777-222222222222",
   },
 } as const;
 
@@ -252,24 +253,24 @@ async function main() {
   // media bucket. Upload real photos from the admin instead.
 
   console.log("Creating institutional content...");
-  await db.insert(siteContent).values([
-    {
-      id: ids.siteContent.homeIntro,
-      key: "home_intro",
-      title: "Alianza AROMA",
-      content:
-        "Contenido institucional ficticio utilizado durante el desarrollo de la página principal.",
-      updatedBy: ids.profiles.superAdmin,
-    },
-    {
-      id: ids.siteContent.aboutAroma,
-      key: "about_aroma",
-      title: "Sobre AROMA",
-      content:
-        "Texto provisional utilizado para desarrollar y probar las secciones institucionales de la plataforma.",
-      updatedBy: ids.profiles.superAdmin,
-    },
-  ]);
+  // Saved as the super administrator; the other blocks use their fallback.
+  await db.insert(siteContent).values(
+    (
+      [
+        [ids.siteContent.homeHero, "home_hero"],
+        [ids.siteContent.homeAlliance, "home_alliance"],
+      ] as const
+    ).map(([id, key]) => {
+      const { fallback } = getSiteContentBlock(key)!;
+      return {
+        id,
+        key,
+        title: fallback.title,
+        content: fallback.content,
+        updatedBy: ids.profiles.superAdmin,
+      };
+    }),
+  );
 
   console.log("Development database seeded successfully.");
 }

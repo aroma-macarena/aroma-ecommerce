@@ -6,6 +6,7 @@ import { Container } from "@/components/public/container";
 import { SectionHeading } from "@/components/public/section-heading";
 import { getPublicAssociations } from "@/lib/catalog/queries";
 import { getAssociationHref } from "@/lib/public-routes";
+import { getSiteContent } from "@/lib/site-content/queries";
 
 // Read on every request: associations and their product counts change from
 // the admin, and the build has no database to prerender from.
@@ -26,7 +27,10 @@ function formatProductCount(count: number) {
 }
 
 export default async function AssociationsPage() {
-  const associations = await getPublicAssociations();
+  const [associations, content] = await Promise.all([
+    getPublicAssociations(),
+    getSiteContent(),
+  ]);
 
   return (
     <Container className="space-y-10 pt-8 pb-16 md:space-y-14 md:pt-14 md:pb-24">
@@ -34,7 +38,7 @@ export default async function AssociationsPage() {
         as="h1"
         eyebrow="La alianza"
         title="Asociaciones"
-        description="Las organizaciones de mujeres productoras de La Macarena que forman la Alianza AROMA. Conoce quiénes son y qué ofrece cada una."
+        description={content.associations_intro.content}
       />
 
       {associations.length > 0 ? (

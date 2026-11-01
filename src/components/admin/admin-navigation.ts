@@ -59,7 +59,7 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     label: "Contenido",
     icon: FileText,
     roles: ["SUPER_ADMIN"],
-    available: false,
+    available: true,
   },
   {
     href: "/admin/users",
