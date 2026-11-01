@@ -6,7 +6,13 @@ export const publicRoutes = {
 } as const;
 
 export const publicNavigation = [
-  { href: publicRoutes.products, label: "Productos", available: true },
+  {
+    href: publicRoutes.products,
+    label: "Productos",
+    available: true,
+    // Product details live under /productos/ but belong to this section.
+    sectionPrefix: "/productos/",
+  },
   { href: "/#alianza", label: "La alianza", available: true },
 ] as const;
 
@@ -19,4 +25,10 @@ export function getProductDetailHref(
   productSlug: string,
 ) {
   return `/productos/${associationSlug}/${productSlug}`;
+}
+
+/** Absolute URL for a path, or null until NEXT_PUBLIC_SITE_URL is set. */
+export function getAbsoluteUrl(path: string) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "");
+  return siteUrl ? `${siteUrl}${path}` : null;
 }

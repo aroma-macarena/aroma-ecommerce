@@ -50,20 +50,30 @@ function PublicNav() {
   return (
     <nav aria-label="Navegación principal" className="max-w-full">
       <ul className="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
-        {publicNavigation.map(({ href, label, available }) => {
+        {publicNavigation.map((item) => {
+          const { href, label, available } = item;
           const [path, sectionId] = href.split("#");
+          const isInSection =
+            "sectionPrefix" in item && pathname.startsWith(item.sectionPrefix);
           const isActive = sectionId
             ? pathname === (path || "/") && visibleSectionId === sectionId
-            : !visibleSectionId &&
-              (pathname === href ||
-                (href !== "/" && pathname.startsWith(`${href}/`)));
+            : isInSection ||
+              (!visibleSectionId &&
+                (pathname === href ||
+                  (href !== "/" && pathname.startsWith(`${href}/`))));
           return (
             <li key={href} className="max-w-full">
               {available ? (
                 <Link
                   href={href}
                   aria-current={
-                    isActive ? (sectionId ? "location" : "page") : undefined
+                    isActive
+                      ? sectionId
+                        ? "location"
+                        : isInSection
+                          ? "true"
+                          : "page"
+                      : undefined
                   }
                   className={cn(
                     "inline-flex min-h-11 max-w-full items-center px-2 py-2 text-[0.9375rem] wrap-anywhere transition-colors focus-visible:outline-offset-[-2px] sm:px-3",

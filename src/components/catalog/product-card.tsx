@@ -1,8 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { AromaLogo } from "@/components/brand/aroma-logo";
 import type { CatalogProduct } from "@/lib/catalog/queries";
 import { getMediaUrl } from "@/lib/media";
+import { getProductDetailHref } from "@/lib/public-routes";
 
 type ProductCardProps = {
   product: CatalogProduct;
@@ -12,8 +14,10 @@ function ProductCard({ product }: ProductCardProps) {
   const imageUrl = getMediaUrl(product.imageObjectKey);
 
   return (
+    // The title link stretches over the whole card, so the card is one target
+    // while screen readers hear only the product name as the link.
     <article
-      className="flex h-full flex-col gap-4 wrap-anywhere"
+      className="group has-[a:focus-visible]:outline-ring relative flex h-full flex-col gap-4 rounded-sm wrap-anywhere has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-4"
       aria-labelledby={`producto-${product.id}`}
     >
       <div className="bg-muted relative aspect-4/3 overflow-hidden rounded-sm sm:aspect-4/5">
@@ -43,7 +47,12 @@ function ProductCard({ product }: ProductCardProps) {
           id={`producto-${product.id}`}
           className="font-heading text-2xl leading-tight font-medium tracking-[-0.015em]"
         >
-          {product.name}
+          <Link
+            href={getProductDetailHref(product.associationSlug, product.slug)}
+            className="decoration-1 underline-offset-4 outline-none group-hover:underline after:absolute after:inset-0"
+          >
+            {product.name}
+          </Link>
         </h3>
         {product.shortDescription ? (
           <p className="text-muted-foreground leading-relaxed">
