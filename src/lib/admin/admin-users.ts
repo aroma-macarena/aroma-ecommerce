@@ -378,16 +378,24 @@ export async function resendInvitation(
     throw error;
   }
 
-  const updated = await db
-    .update(profiles)
-    .set({ invitationId, updatedAt: sql`now()` })
-    .where(
-      and(
-        eq(profiles.id, pending.id),
-        eq(profiles.invitationId, pending.invitationId),
-      ),
-    )
-    .returning({ id: profiles.id });
+  let updated: { id: string }[];
+
+  try {
+    updated = await db
+      .update(profiles)
+      .set({ invitationId, updatedAt: sql`now()` })
+      .where(
+        and(
+          eq(profiles.id, pending.id),
+          eq(profiles.invitationId, pending.invitationId),
+        ),
+      )
+      .returning({ id: profiles.id });
+  } catch (error) {
+    // Unrecorded, the new invitation could never be revoked from the panel.
+    await revokeInvitationQuietly(invitationId);
+    throw error;
+  }
 
   if (updated.length === 0) {
     await revokeInvitationQuietly(invitationId);

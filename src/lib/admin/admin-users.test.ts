@@ -448,6 +448,23 @@ describe("pending invitations", () => {
     expect((await stored("lucia@aroma.test")).invitationId).toBe("inv_resent");
   });
 
+  it("revokes the new invitation when resending cannot be saved", async () => {
+    const pending = await invite();
+    mockCreateInvitation.mockResolvedValueOnce("inv_unsaved");
+    const { db } = testDatabase();
+    vi.spyOn(db, "update").mockImplementationOnce(() => {
+      throw new Error("Database unavailable");
+    });
+
+    await expect(resendInvitation(superAdmin, pending.id)).rejects.toThrow(
+      "Database unavailable",
+    );
+    expect(mockRevokeQuietly).toHaveBeenCalledWith("inv_unsaved");
+    expect((await stored("lucia@aroma.test")).invitationId).toBe(
+      pending.invitationId,
+    );
+  });
+
   it("does not resend or cancel for an account that is already linked", async () => {
     await expect(
       resendInvitation(superAdmin, bosqueVivoAdmin.id),
