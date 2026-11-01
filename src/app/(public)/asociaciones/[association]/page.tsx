@@ -91,14 +91,17 @@ export default async function AssociationPage({
             </div>
           ) : null}
 
-          <div className="max-w-3xl space-y-8">
+          <div className="space-y-8">
             <div className="border-foreground flex items-start gap-4 border-b-[1.5px] pb-6 sm:gap-6">
-              <AssociationLogo
-                name={association.name}
-                objectKey={association.logoObjectKey}
-                sizes="6rem"
-                className="w-16 sm:w-24"
-              />
+              {/* Without a logo the name leads alone, with no empty tile. */}
+              {association.logoObjectKey ? (
+                <AssociationLogo
+                  name={association.name}
+                  objectKey={association.logoObjectKey}
+                  sizes="6rem"
+                  className="w-16 sm:w-24"
+                />
+              ) : null}
               <div className="min-w-0 space-y-2 wrap-anywhere">
                 <p className="text-primary font-mono text-xs font-medium tracking-[0.08em] uppercase">
                   Asociación de la Alianza AROMA
