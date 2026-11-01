@@ -27,6 +27,13 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     available: true,
   },
   {
+    href: "/admin/association",
+    label: "Mi asociación",
+    icon: Building2,
+    roles: ["ASSOCIATION_ADMIN"],
+    available: true,
+  },
+  {
     href: "/admin/associations",
     label: "Asociaciones",
     icon: Building2,

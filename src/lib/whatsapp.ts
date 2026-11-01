@@ -13,6 +13,24 @@ export function normalizeWhatsAppNumber(value: string | null | undefined) {
   return digits.length >= 8 ? digits : null;
 }
 
+/**
+ * A stored number written for people: "+57 300 111 2233" for Colombian
+ * mobiles, "+" and the digits otherwise, and an empty string when missing.
+ */
+export function formatWhatsAppNumber(value: string | null | undefined) {
+  const digits = normalizeWhatsAppNumber(value);
+
+  if (!digits) {
+    return "";
+  }
+
+  const colombian = /^57(3\d{2})(\d{3})(\d{4})$/.exec(digits);
+
+  return colombian
+    ? `+57 ${colombian[1]} ${colombian[2]} ${colombian[3]}`
+    : `+${digits}`;
+}
+
 /** A `wa.me` link with a prefilled message, or null without a number. */
 export function getWhatsAppHref(
   number: string | null | undefined,

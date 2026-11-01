@@ -1,6 +1,7 @@
 /** Largest original the browser will try to reduce. */
 export const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
-const MAX_DIMENSION = 2000;
+/** Longest side of a product photo after reduction. */
+export const PRODUCT_IMAGE_MAX_DIMENSION = 2000;
 const QUALITY = 0.85;
 
 export type ImageReductionErrorCode = "TOO_LARGE" | "UNREADABLE";
@@ -25,11 +26,15 @@ function toBlob(canvas: HTMLCanvasElement, type: string) {
 }
 
 /**
- * Redraws a photo at up to 2000 px on its longest side and encodes it as
+ * Redraws a photo at up to `maxDimension` px on its longest side (2000 by
+ * default) and encodes it as
  * WebP (JPEG where the browser cannot encode WebP). Redrawing also drops the
  * file's metadata, such as the GPS location phones store in photos.
  */
-export async function reduceImage(source: File): Promise<ReducedImage> {
+export async function reduceImage(
+  source: File,
+  maxDimension = PRODUCT_IMAGE_MAX_DIMENSION,
+): Promise<ReducedImage> {
   if (source.size > MAX_SOURCE_BYTES) {
     throw new ImageReductionError("TOO_LARGE");
   }
@@ -46,7 +51,7 @@ export async function reduceImage(source: File): Promise<ReducedImage> {
 
   const scale = Math.min(
     1,
-    MAX_DIMENSION / Math.max(bitmap.width, bitmap.height),
+    maxDimension / Math.max(bitmap.width, bitmap.height),
   );
   const width = Math.round(bitmap.width * scale);
   const height = Math.round(bitmap.height * scale);
