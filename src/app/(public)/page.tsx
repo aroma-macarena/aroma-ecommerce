@@ -16,6 +16,7 @@ import {
   getCatalogProducts,
 } from "@/lib/catalog/queries";
 import { publicRoutes } from "@/lib/public-routes";
+import { getSiteContent } from "@/lib/site-content/queries";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -27,9 +28,10 @@ export const metadata: Metadata = {
 export default async function Home({ searchParams }: PageProps<"/">) {
   const { categoria } = await searchParams;
   const categorySlug = typeof categoria === "string" ? categoria : undefined;
-  const [categories, products] = await Promise.all([
+  const [categories, products, content] = await Promise.all([
     getCatalogCategories(),
     getCatalogProducts({ categorySlug }),
+    getSiteContent(),
   ]);
   const { hero, alliance } = homeContent;
 
@@ -61,8 +63,8 @@ export default async function Home({ searchParams }: PageProps<"/">) {
               <SectionHeading
                 as="h1"
                 eyebrow={hero.eyebrow}
-                title={hero.title}
-                description={hero.description}
+                title={content.home_hero.title}
+                description={content.home_hero.content}
               />
 
               <dl
@@ -160,8 +162,8 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           <div className="flex flex-col gap-10">
             <SectionHeading
               eyebrow={alliance.eyebrow}
-              title={alliance.title}
-              description={alliance.description}
+              title={content.home_alliance.title}
+              description={content.home_alliance.content}
               tone="inverse"
             />
             <Image
