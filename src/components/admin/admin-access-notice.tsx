@@ -1,8 +1,9 @@
-import { LockKeyhole, MessageCircle, Pause } from "lucide-react";
+import { LockKeyhole, Pause } from "lucide-react";
 import Link from "next/link";
 
 import { AdminSignOutButton } from "@/components/admin/admin-sign-out-button";
 import { AromaLogo } from "@/components/brand/aroma-logo";
+import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { buttonVariants } from "@/components/ui/button";
 import { publicRoutes } from "@/lib/public-routes";
 import { getSupportWhatsAppHref } from "@/lib/support";
@@ -102,7 +103,7 @@ function AdminAccessNotice({
                 rel="noopener noreferrer"
                 className={buttonVariants({ className: "w-full" })}
               >
-                <MessageCircle data-icon="inline-start" />
+                <WhatsAppIcon data-icon="inline-start" />
                 Escribir a la administración
               </a>
             ) : null}

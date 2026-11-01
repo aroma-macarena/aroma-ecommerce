@@ -1,5 +1,4 @@
-import { MessageCircle } from "lucide-react";
-
+import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { buttonVariants } from "@/components/ui/button";
 import { getSupportWhatsAppHref } from "@/lib/support";
 import { getProductInquiryMessage, getWhatsAppHref } from "@/lib/whatsapp";
@@ -45,8 +44,8 @@ function ProductContact({
             className: "w-full sm:w-auto",
           })}
         >
-          <MessageCircle aria-hidden />
-          Escribir a {associationName} por WhatsApp
+          <WhatsAppIcon />
+          Consultar por WhatsApp
           <span className="sr-only">(se abre en una nueva pestaña)</span>
         </a>
         <p className="text-muted-foreground text-sm leading-relaxed">
@@ -79,7 +78,7 @@ function ProductContact({
             className: "w-full sm:w-auto",
           })}
         >
-          <MessageCircle aria-hidden />
+          <WhatsAppIcon />
           Escribir a la Alianza AROMA
           <span className="sr-only">(se abre en una nueva pestaña)</span>
         </a>
