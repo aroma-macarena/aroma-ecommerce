@@ -18,17 +18,28 @@ type AssociationFormProps = {
     formData: FormData,
   ) => Promise<AssociationFormState>;
   cancelHref: string;
+  submitLabel: string;
+  defaultValues?: { name: string; location: string };
 };
 
 const initialState: AssociationFormState = { status: "idle", attempt: 0 };
 
 const hints = {
-  name: "El nombre completo, como aparecerá en la vitrina. Su dirección pública se genera con él y no cambia después. Hasta 200 caracteres.",
+  name: "El nombre completo, como aparecerá en la vitrina. Hasta 200 caracteres.",
+  newName:
+    "El nombre completo, como aparecerá en la vitrina. Su dirección pública se genera con él y no cambia después. Hasta 200 caracteres.",
   location: "Vereda, municipio o departamento. Hasta 255 caracteres.",
 };
 
-function AssociationForm({ action, cancelHref }: AssociationFormProps) {
+function AssociationForm({
+  action,
+  cancelHref,
+  submitLabel,
+  defaultValues = { name: "", location: "" },
+}: AssociationFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const values = state.values ?? defaultValues;
+  const nameHint = defaultValues.name ? hints.name : hints.newName;
   const errors = state.fieldErrors ?? {};
 
   useEffect(() => {
@@ -55,7 +66,7 @@ function AssociationForm({ action, cancelHref }: AssociationFormProps) {
       <FormAlert message={state.message} />
 
       <div className="max-w-2xl space-y-6">
-        <Field name="name" label="Nombre" hint={hints.name} error={errors.name}>
+        <Field name="name" label="Nombre" hint={nameHint} error={errors.name}>
           <input
             id="name"
             name="name"
@@ -63,9 +74,9 @@ function AssociationForm({ action, cancelHref }: AssociationFormProps) {
             required
             maxLength={200}
             autoComplete="off"
-            defaultValue={state.values?.name ?? ""}
+            defaultValue={values.name}
             aria-invalid={errors.name ? true : undefined}
-            aria-describedby={describedBy("name", hints.name, errors.name)}
+            aria-describedby={describedBy("name", nameHint, errors.name)}
             className={cn(controlClassName, "min-h-11")}
           />
         </Field>
@@ -82,7 +93,7 @@ function AssociationForm({ action, cancelHref }: AssociationFormProps) {
             name="location"
             type="text"
             maxLength={255}
-            defaultValue={state.values?.location ?? ""}
+            defaultValue={values.location}
             aria-invalid={errors.location ? true : undefined}
             aria-describedby={describedBy(
               "location",
@@ -96,7 +107,7 @@ function AssociationForm({ action, cancelHref }: AssociationFormProps) {
 
       <FormActions
         cancelHref={cancelHref}
-        submitLabel="Crear asociación"
+        submitLabel={submitLabel}
         isPending={isPending}
       />
     </form>

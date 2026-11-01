@@ -38,6 +38,7 @@ export default async function NewAssociationPage() {
       <AssociationForm
         action={createAssociationAction}
         cancelHref="/admin/associations"
+        submitLabel="Crear asociación"
       />
     </div>
   );

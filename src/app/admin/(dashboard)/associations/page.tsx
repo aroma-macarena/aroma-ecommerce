@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 const confirmations: Record<string, string> = {
   creada: "Asociación creada. Ya aparece en el directorio público.",
+  actualizada: "Cambios guardados.",
   activada: "Asociación activada.",
   desactivada: "Asociación desactivada. Sus datos se conservan.",
 };

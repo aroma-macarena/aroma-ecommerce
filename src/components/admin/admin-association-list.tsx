@@ -1,8 +1,9 @@
-import { ExternalLink, Pause, Play } from "lucide-react";
+import { ExternalLink, Pause, Pencil, Play } from "lucide-react";
 import Link from "next/link";
 
 import { ConfirmActionButton } from "@/components/admin/confirm-action-button";
 import { AssociationStatusBadge } from "@/components/admin/status-badge";
+import { buttonVariants } from "@/components/ui/button";
 import type { AdminAssociation } from "@/lib/admin/associations";
 import { getAssociationHref } from "@/lib/public-routes";
 
@@ -62,6 +63,34 @@ function StatusAction({
       pendingLabel="Activando…"
       action={setStatusAction(association.id, "ACTIVE")}
     />
+  );
+}
+
+function RowActions({
+  association,
+  setStatusAction,
+}: {
+  association: AdminAssociation;
+  setStatusAction: AdminAssociationListProps["setStatusAction"];
+}) {
+  return (
+    <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+      <Link
+        href={`/admin/associations/${association.id}/edit`}
+        className={buttonVariants({
+          variant: "outline",
+          className: "w-full sm:w-auto",
+        })}
+      >
+        <Pencil aria-hidden />
+        Editar
+        <span className="sr-only">{association.name}</span>
+      </Link>
+      <StatusAction
+        association={association}
+        setStatusAction={setStatusAction}
+      />
+    </div>
   );
 }
 
@@ -145,7 +174,7 @@ function AdminAssociationList({
                 {countLabel(association.adminCount, "cuenta", "cuentas")}
               </td>
               <td className="py-3 text-right">
-                <StatusAction
+                <RowActions
                   association={association}
                   setStatusAction={setStatusAction}
                 />
@@ -186,7 +215,7 @@ function AdminAssociationList({
             </p>
             <PublicProfileLink association={association} />
             <div className="pt-1">
-              <StatusAction
+              <RowActions
                 association={association}
                 setStatusAction={setStatusAction}
               />
