@@ -92,53 +92,57 @@ export default async function AssociationPage({
           ) : null}
 
           <div className="space-y-8">
-            <div className="border-foreground flex items-start gap-4 border-b-[1.5px] pb-6 sm:gap-6">
-              {/* Without a logo the name leads alone, with no empty tile. */}
-              {association.logoObjectKey ? (
-                <AssociationLogo
-                  name={association.name}
-                  objectKey={association.logoObjectKey}
-                  sizes="6rem"
-                  className="w-16 sm:w-24"
-                />
-              ) : null}
-              <div className="min-w-0 space-y-2 wrap-anywhere">
-                <p className="text-primary font-mono text-xs font-medium tracking-[0.08em] uppercase">
-                  Asociación de la Alianza AROMA
-                </p>
-                <h1
-                  id="asociacion-titulo"
-                  className="font-heading text-3xl leading-[1.05] font-semibold tracking-[-0.03em] text-balance md:text-5xl"
-                >
-                  {association.name}
-                </h1>
-                {association.location ? (
-                  <p className="font-mono text-[0.8125rem]">
-                    {association.location}
+            {/* On phones the contact button runs under the whole header; on
+                wider screens it closes the name's line, out of the way. */}
+            <div className="border-foreground flex flex-col gap-6 border-b-[1.5px] pb-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex min-w-0 items-start gap-4 sm:gap-6 lg:flex-1">
+                {/* Without a logo the name leads alone, with no empty tile. */}
+                {association.logoObjectKey ? (
+                  <AssociationLogo
+                    name={association.name}
+                    objectKey={association.logoObjectKey}
+                    sizes="6rem"
+                    className="w-16 sm:w-24"
+                  />
+                ) : null}
+                <div className="min-w-0 space-y-2 wrap-anywhere">
+                  <p className="text-primary font-mono text-xs font-medium tracking-[0.08em] uppercase">
+                    Asociación de la Alianza AROMA
                   </p>
-                ) : null}
-                {whatsappHref ? (
-                  <a
-                    href={whatsappHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={buttonVariants({
-                      variant: "outline",
-                      className: "mt-2 w-full sm:w-auto",
-                    })}
+                  <h1
+                    id="asociacion-titulo"
+                    className="font-heading text-3xl leading-[1.05] font-semibold tracking-[-0.03em] text-balance md:text-5xl"
                   >
-                    <WhatsAppIcon />
-                    Escribir por WhatsApp
-                    <span className="sr-only">
-                      (se abre en una nueva pestaña)
-                    </span>
-                  </a>
-                ) : null}
+                    {association.name}
+                  </h1>
+                  {association.location ? (
+                    <p className="font-mono text-[0.8125rem]">
+                      {association.location}
+                    </p>
+                  ) : null}
+                </div>
               </div>
+              {whatsappHref ? (
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonVariants({
+                    variant: "outline",
+                    className: "w-full shrink-0 lg:w-auto",
+                  })}
+                >
+                  <WhatsAppIcon />
+                  Escribir por WhatsApp
+                  <span className="sr-only">
+                    (se abre en una nueva pestaña)
+                  </span>
+                </a>
+              ) : null}
             </div>
 
             {association.description ? (
-              <p className="max-w-prose text-lg leading-relaxed whitespace-pre-line">
+              <p className="max-w-3xl text-lg leading-relaxed whitespace-pre-line">
                 {association.description}
               </p>
             ) : null}
@@ -151,7 +155,7 @@ export default async function AssociationPage({
                 >
                   Historia
                 </h2>
-                <p className="text-muted-foreground max-w-prose leading-relaxed whitespace-pre-line">
+                <p className="text-muted-foreground max-w-3xl leading-relaxed whitespace-pre-line">
                   {association.history}
                 </p>
               </section>
