@@ -38,7 +38,7 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     label: "Categorías",
     icon: Tags,
     roles: ["SUPER_ADMIN"],
-    available: false,
+    available: true,
   },
   {
     href: "/admin/products",
