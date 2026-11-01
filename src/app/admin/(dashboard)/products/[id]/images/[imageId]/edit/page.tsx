@@ -57,7 +57,7 @@ export default async function EditProductImagePage({
           alt={image.altText ?? product.name}
           sizes="(min-width: 640px) 14rem, 100vw"
           eager
-          className="w-full max-w-64 sm:max-w-none"
+          className="w-full"
         />
         <div className="space-y-3">
           {image.isPrimary ? (
@@ -76,7 +76,11 @@ export default async function EditProductImagePage({
               action={setPrimaryImageAction.bind(null, product.id, image.id)}
               className="space-y-2"
             >
-              <SubmitButton variant="outline" pendingLabel="Guardando…">
+              <SubmitButton
+                variant="outline"
+                pendingLabel="Guardando…"
+                className="w-full sm:w-auto"
+              >
                 <Star aria-hidden />
                 Usar como principal
               </SubmitButton>

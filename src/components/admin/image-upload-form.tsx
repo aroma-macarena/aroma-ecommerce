@@ -156,7 +156,7 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
           <div className="grid gap-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-start">
             <label
               htmlFor="file"
-              className="bg-muted relative flex aspect-4/5 w-full max-w-64 cursor-pointer items-center justify-center overflow-hidden rounded-sm border sm:max-w-none"
+              className="bg-muted relative flex aspect-4/5 w-full cursor-pointer items-center justify-center overflow-hidden rounded-sm border"
             >
               {selection.status === "ready" ? (
                 // A local preview: next/image cannot optimize blob URLs.
@@ -195,7 +195,7 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
                   className={buttonVariants({
                     variant: "outline",
                     className:
-                      "peer-focus-visible:outline-ring peer-aria-invalid:border-destructive cursor-pointer peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4",
+                      "peer-focus-visible:outline-ring peer-aria-invalid:border-destructive w-full cursor-pointer peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 sm:w-auto",
                   })}
                 >
                   <ImagePlus aria-hidden />
