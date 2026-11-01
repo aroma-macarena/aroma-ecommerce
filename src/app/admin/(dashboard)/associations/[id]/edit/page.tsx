@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AssociationForm } from "@/components/admin/association-form";
-import { AssociationStatusBadge } from "@/components/admin/status-badge";
+import { ActiveStatusBadge } from "@/components/admin/status-badge";
 import { getEditableAssociation } from "@/lib/admin/associations";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
 import { getAssociationHref } from "@/lib/public-routes";
@@ -42,7 +42,7 @@ export default async function EditAssociationPage({
           eyebrow="Alianza AROMA"
           title={association.name}
           description="Cambia el nombre o la ubicación. Se actualizan en el panel, la vitrina, el directorio y los mensajes de WhatsApp."
-          actions={<AssociationStatusBadge status={association.status} />}
+          actions={<ActiveStatusBadge status={association.status} />}
         />
       </div>
 

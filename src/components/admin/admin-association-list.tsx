@@ -2,7 +2,7 @@ import { ExternalLink, Pause, Pencil, Play } from "lucide-react";
 import Link from "next/link";
 
 import { ConfirmActionButton } from "@/components/admin/confirm-action-button";
-import { AssociationStatusBadge } from "@/components/admin/status-badge";
+import { ActiveStatusBadge } from "@/components/admin/status-badge";
 import { buttonVariants } from "@/components/ui/button";
 import type { AdminAssociation } from "@/lib/admin/associations";
 import { getAssociationHref } from "@/lib/public-routes";
@@ -153,7 +153,7 @@ function AdminAssociationList({
                 <PublicProfileLink association={association} />
               </th>
               <td className="py-3 pr-4">
-                <AssociationStatusBadge status={association.status} />
+                <ActiveStatusBadge status={association.status} />
               </td>
               <td className="py-3 pr-4">
                 {countLabel(
@@ -194,7 +194,7 @@ function AdminAssociationList({
               <p className="min-w-0 font-semibold wrap-anywhere">
                 {association.name}
               </p>
-              <AssociationStatusBadge
+              <ActiveStatusBadge
                 status={association.status}
                 className="pt-0.5"
               />

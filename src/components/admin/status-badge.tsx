@@ -59,7 +59,7 @@ function StatusBadge({ status, className }: StatusBadgeProps) {
   );
 }
 
-const associationStatuses: Record<
+const activeStatuses: Record<
   "ACTIVE" | "INACTIVE",
   { label: string; className: string; marker: ReactNode }
 > = {
@@ -85,19 +85,15 @@ const associationStatuses: Record<
   },
 };
 
-/** Association status, with the same shape-and-label rule. */
-function AssociationStatusBadge({
+/** Active or inactive (associations, categories), same shape-and-label rule. */
+function ActiveStatusBadge({
   status,
   className,
 }: {
   status: "ACTIVE" | "INACTIVE";
   className?: string;
 }) {
-  const {
-    label,
-    className: toneClassName,
-    marker,
-  } = associationStatuses[status];
+  const { label, className: toneClassName, marker } = activeStatuses[status];
 
   return (
     <span
@@ -115,5 +111,5 @@ function AssociationStatusBadge({
   );
 }
 
-export { AssociationStatusBadge, StatusBadge };
+export { ActiveStatusBadge, StatusBadge };
 export type { ProductStatus };
