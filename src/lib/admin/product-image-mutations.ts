@@ -2,6 +2,7 @@ import { and, asc, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { productImagesTable as productImages } from "@/db/schema/productImages";
+import { productsTable as products } from "@/db/schema/products";
 import { displayOrderByPosition, moveInOrder } from "@/lib/admin/display-order";
 import { withProductLock } from "@/lib/admin/product-lock";
 import {
@@ -141,28 +142,59 @@ export async function uploadProductImage(
     throw error;
   }
 
+  let inserted: { id: string }[];
+
   try {
-    // Under the product lock, two first uploads cannot both become primary.
-    await withProductLock(product.id, (executor) => [
-      executor.insert(productImages).values({
-        productId: product.id,
-        objectKey,
-        altText: altText.value,
-        displayOrder: sql`(
-          select coalesce(max(${productImages.displayOrder}) + 1, 0)
-          from ${productImages}
-          where ${productImages.productId} = ${product.id}
-        )`,
-        isPrimary: sql`not exists (
-          select 1 from ${productImages}
-          where ${productImages.productId} = ${product.id}
-            and ${productImages.isPrimary}
-        )`,
-      }),
-    ]);
+    // Under the product lock, two first uploads cannot both become primary
+    // and two uploads cannot both take the last free place.
+    [inserted] = await withProductLock<[{ id: string }[]]>(
+      product.id,
+      (executor) => [
+        executor
+          .insert(productImages)
+          .select(
+            executor
+              // Insert from select needs every column, in table order.
+              .select({
+                id: sql<string>`gen_random_uuid()`.as("id"),
+                productId: products.id,
+                objectKey: sql<string>`${objectKey}`.as("object_key"),
+                altText: sql<string | null>`${altText.value}`.as("alt_text"),
+                displayOrder: sql<number>`(
+                  select coalesce(max(${productImages.displayOrder}) + 1, 0)
+                  from ${productImages}
+                  where ${productImages.productId} = ${product.id}::uuid
+                )`.as("display_order"),
+                isPrimary: sql<boolean>`not exists (
+                  select 1 from ${productImages}
+                  where ${productImages.productId} = ${product.id}::uuid
+                    and ${productImages.isPrimary}
+                )`.as("is_primary"),
+                createdAt: sql<Date>`now()`.as("created_at"),
+                updatedAt: sql<Date | null>`null`.as("updated_at"),
+              })
+              .from(products)
+              .where(
+                and(
+                  eq(products.id, product.id),
+                  sql`(
+                    select count(*) from ${productImages}
+                    where ${productImages.productId} = ${product.id}::uuid
+                  ) < ${MAX_IMAGES_PER_PRODUCT}`,
+                ),
+              ),
+          )
+          .returning({ id: productImages.id }),
+      ],
+    );
   } catch (error) {
     await storage.delete(objectKey).catch(() => undefined);
     throw error;
+  }
+
+  if (inserted.length === 0) {
+    await storage.delete(objectKey).catch(() => undefined);
+    return { ok: false, reason: "LIMIT_REACHED" };
   }
 
   await recordProductChange(profile, product.id);
@@ -208,30 +240,45 @@ export async function updateImageAltText(
  * violated, not even for a moment.
  */
 async function saveImageOrder(productId: string, ids: string[]) {
-  await withProductLock(productId, (executor) => [
-    executor
-      .update(productImages)
-      .set({ isPrimary: false, updatedAt: sql`now()` })
-      .where(
-        and(
-          eq(productImages.productId, productId),
-          eq(productImages.isPrimary, true),
-          ne(productImages.id, ids[0]),
+  // Checked under the lock: if the new first image was deleted meanwhile,
+  // nothing changes, so the product never ends up without a primary image.
+  const firstStillExists = sql`exists (
+    select 1 from ${productImages} as target
+    where target.id = ${ids[0]}::uuid and target.product_id = ${productId}::uuid
+  )`;
+
+  const [, updated] = await withProductLock<[unknown, { id: string }[]]>(
+    productId,
+    (executor) => [
+      executor
+        .update(productImages)
+        .set({ isPrimary: false, updatedAt: sql`now()` })
+        .where(
+          and(
+            eq(productImages.productId, productId),
+            eq(productImages.isPrimary, true),
+            ne(productImages.id, ids[0]),
+            firstStillExists,
+          ),
         ),
-      ),
-    executor
-      .update(productImages)
-      .set({
-        displayOrder: displayOrderByPosition(productImages.id, ids),
-        isPrimary: sql`${productImages.id} = ${ids[0]}::uuid`,
-      })
-      .where(
-        and(
-          eq(productImages.productId, productId),
-          inArray(productImages.id, ids),
-        ),
-      ),
-  ]);
+      executor
+        .update(productImages)
+        .set({
+          displayOrder: displayOrderByPosition(productImages.id, ids),
+          isPrimary: sql`${productImages.id} = ${ids[0]}::uuid`,
+        })
+        .where(
+          and(
+            eq(productImages.productId, productId),
+            inArray(productImages.id, ids),
+            firstStillExists,
+          ),
+        )
+        .returning({ id: productImages.id }),
+    ],
+  );
+
+  return updated.length > 0;
 }
 
 /** Makes an image primary by moving it to the first place. */
@@ -249,10 +296,15 @@ export async function setPrimaryImage(
   const { product, image } = editable;
   const ids = (await getProductImages(product.id)).map(({ id }) => id);
 
-  await saveImageOrder(product.id, [
+  const saved = await saveImageOrder(product.id, [
     image.id,
     ...ids.filter((id) => id !== image.id),
   ]);
+
+  if (!saved) {
+    return { ok: false, reason: "NOT_FOUND" };
+  }
+
   await recordProductChange(profile, product.id);
 
   return { ok: true };

@@ -16,9 +16,9 @@ type Executor = typeof db;
  * single transaction. Drivers without batches (PGlite in tests) use
  * `transaction` with the same statements.
  *
- * Returns the result of the first write.
+ * Returns the result of each write, in order.
  */
-export async function withProductLock<T>(
+export async function withProductLock<T extends unknown[]>(
   productId: string,
   writes: (executor: Executor) => [BatchItem<"pg">, ...BatchItem<"pg">[]],
 ): Promise<T> {
@@ -30,8 +30,8 @@ export async function withProductLock<T>(
       .for("update");
 
   if ("batch" in db && typeof db.batch === "function") {
-    const [, first] = await db.batch([lock(db), ...writes(db)]);
-    return first as T;
+    const [, ...results] = await db.batch([lock(db), ...writes(db)]);
+    return results as unknown as T;
   }
 
   const transactional = db as unknown as {
@@ -40,11 +40,10 @@ export async function withProductLock<T>(
 
   return transactional.transaction(async (tx) => {
     await lock(tx);
-    const [first, ...rest] = writes(tx);
-    const result = await first;
-    for (const write of rest) {
-      await write;
+    const results = [];
+    for (const write of writes(tx)) {
+      results.push(await write);
     }
-    return result as T;
+    return results as unknown as T;
   });
 }

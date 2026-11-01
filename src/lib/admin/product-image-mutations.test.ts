@@ -27,7 +27,12 @@ const storage = vi.hoisted(() => ({
   objects: new Map<string, string>(),
   failNext: false,
 }));
-const lock = vi.hoisted(() => ({ failNext: false }));
+const lock = vi.hoisted(() => ({
+  failNext: false,
+  // Runs right before the next locked write, like a concurrent request
+  // that commits between the checks and the write.
+  beforeNext: undefined as (() => Promise<unknown>) | undefined,
+}));
 
 vi.mock("@/db", () => ({
   get db() {
@@ -64,11 +69,16 @@ vi.mock("@/lib/admin/product-lock", async (importOriginal) => {
     await importOriginal<typeof import("@/lib/admin/product-lock")>();
 
   return {
-    withProductLock: ((...args: Parameters<typeof actual.withProductLock>) => {
+    withProductLock: (async (
+      ...args: Parameters<typeof actual.withProductLock>
+    ) => {
       if (lock.failNext) {
         lock.failNext = false;
-        return Promise.reject(new Error("database unavailable"));
+        throw new Error("database unavailable");
       }
+      const before = lock.beforeNext;
+      lock.beforeNext = undefined;
+      await before?.();
       return actual.withProductLock(...args);
     }) as typeof actual.withProductLock,
   };
@@ -119,6 +129,7 @@ beforeEach(async () => {
   storage.objects.clear();
   storage.failNext = false;
   lock.failNext = false;
+  lock.beforeNext = undefined;
 });
 
 describe("uploadProductImage", () => {
@@ -178,6 +189,20 @@ describe("uploadProductImage", () => {
     expect(storage.objects.size).toBe(MAX_IMAGES_PER_PRODUCT);
   });
 
+  it("checks the limit again when another upload takes the last place", async () => {
+    const { productId } = await productWithImages(MAX_IMAGES_PER_PRODUCT - 1);
+    lock.beforeNext = () => upload(productId, "Subida simultánea");
+
+    await expect(upload(productId)).resolves.toEqual({
+      ok: false,
+      reason: "LIMIT_REACHED",
+    });
+    expect(await getProductImages(productId)).toHaveLength(
+      MAX_IMAGES_PER_PRODUCT,
+    );
+    expect(storage.objects.size).toBe(MAX_IMAGES_PER_PRODUCT);
+  });
+
   it("records nothing when the upload fails", async () => {
     const productId = await seedProduct();
     storage.failNext = true;
@@ -223,6 +248,21 @@ describe("setPrimaryImage", () => {
       { id: images[2].id, isPrimary: true, displayOrder: 0 },
       { id: images[0].id, isPrimary: false, displayOrder: 1 },
       { id: images[1].id, isPrimary: false, displayOrder: 2 },
+    ]);
+  });
+
+  it("keeps the current primary when the chosen image is deleted meanwhile", async () => {
+    const { productId, images } = await productWithImages(2);
+    lock.beforeNext = () =>
+      testDatabase()
+        .db.delete(productImagesTable)
+        .where(eq(productImagesTable.id, images[1].id));
+
+    await expect(
+      setPrimaryImage(bosqueVivoAdmin, productId, images[1].id),
+    ).resolves.toEqual({ ok: false, reason: "NOT_FOUND" });
+    expect(await getProductImages(productId)).toMatchObject([
+      { id: images[0].id, isPrimary: true },
     ]);
   });
 });

@@ -171,7 +171,7 @@ export async function changeProductStatus(
   // The status and presentation checks repeat in the update, under the
   // product lock, so a concurrent change cannot slip in between the read
   // above and this write.
-  const updated = await withProductLock<{ id: string }[]>(
+  const [updated] = await withProductLock<[{ id: string }[]]>(
     productId,
     (executor) => [
       executor

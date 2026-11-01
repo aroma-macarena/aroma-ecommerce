@@ -150,7 +150,7 @@ export async function updatePresentation(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
-  const updated = await withProductLock<{ id: string }[]>(
+  const [updated] = await withProductLock<[{ id: string }[]]>(
     editable.product.id,
     (executor) => [
       executor
@@ -197,7 +197,7 @@ export async function deletePresentation(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
-  const deleted = await withProductLock<{ id: string }[]>(
+  const [deleted] = await withProductLock<[{ id: string }[]]>(
     editable.product.id,
     (executor) => [
       executor
