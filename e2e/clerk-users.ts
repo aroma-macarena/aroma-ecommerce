@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import { clerkTestInstance } from "./environment";
 
 /**
@@ -54,7 +56,9 @@ export async function ensureClerkTestUsers() {
         method: "POST",
         body: JSON.stringify({
           email_address: [email],
-          skip_password_requirement: true,
+          // Instances that only allow passwords require one. It is random
+          // and never stored: the suite signs in with a sign-in ticket.
+          password: `${randomUUID()}-Aa1!`,
         }),
       });
     }
