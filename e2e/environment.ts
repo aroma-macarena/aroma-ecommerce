@@ -1,3 +1,8 @@
+import { config } from "dotenv";
+
+// Local Clerk test keys, kept out of `.env.local` (gitignored by `.env*`).
+config({ path: ".env.e2e.local", quiet: true });
+
 /**
  * The isolated environment the end-to-end suite builds and runs the app
  * with. Every variable the app reads is set here, so nothing comes from
@@ -14,7 +19,7 @@ export const E2E_WHATSAPP_NUMBER = "573001112233";
 
 /**
  * Clerk keys in a valid format that point to no instance (`.invalid` is a
- * reserved domain). Without a session, Clerk makes no network calls, so the
+ * reserved domain), used unless a development instance is configured. Without a session, Clerk makes no network calls, so the
  * app treats every visitor as signed out: enough to check that admin
  * routes send people to sign in, never enough to sign anyone in.
  */
@@ -22,6 +27,34 @@ const INERT_CLERK_PUBLISHABLE_KEY = `pk_live_${Buffer.from(
   "clerk.aroma-e2e.invalid$",
 ).toString("base64")}`;
 const INERT_CLERK_SECRET_KEY = "sk_live_aroma_e2e_inert_key";
+
+/**
+ * Keys of a Clerk development instance for the authenticated journeys,
+ * when available (`E2E_CLERK_PUBLISHABLE_KEY` and `E2E_CLERK_SECRET_KEY`).
+ * Without them, the inert keys apply and those journeys are skipped.
+ */
+function getClerkTestInstance() {
+  const publishableKey = process.env.E2E_CLERK_PUBLISHABLE_KEY?.trim();
+  const secretKey = process.env.E2E_CLERK_SECRET_KEY?.trim();
+
+  if (!publishableKey || !secretKey) {
+    return null;
+  }
+
+  // A production instance would let the suite sign in as real accounts.
+  if (
+    !publishableKey.startsWith("pk_test_") ||
+    !secretKey.startsWith("sk_test_")
+  ) {
+    throw new Error(
+      "E2E_CLERK_PUBLISHABLE_KEY and E2E_CLERK_SECRET_KEY must belong to a Clerk development instance (pk_test_ and sk_test_).",
+    );
+  }
+
+  return { publishableKey, secretKey };
+}
+
+export const clerkTestInstance = getClerkTestInstance();
 
 export const e2eEnvironment: Record<string, string> = {
   NODE_ENV: "production",
@@ -33,8 +66,9 @@ export const e2eEnvironment: Record<string, string> = {
   DATABASE_URL_UNPOOLED: "",
   ALLOW_DB_SEED: "false",
 
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: INERT_CLERK_PUBLISHABLE_KEY,
-  CLERK_SECRET_KEY: INERT_CLERK_SECRET_KEY,
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
+    clerkTestInstance?.publishableKey ?? INERT_CLERK_PUBLISHABLE_KEY,
+  CLERK_SECRET_KEY: clerkTestInstance?.secretKey ?? INERT_CLERK_SECRET_KEY,
   NEXT_PUBLIC_CLERK_SIGN_IN_URL: "/admin/sign-in",
   NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: "/admin",
   NEXT_PUBLIC_CLERK_SIGN_UP_URL: "/admin/sign-up",

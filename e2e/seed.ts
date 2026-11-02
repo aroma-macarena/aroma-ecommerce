@@ -4,6 +4,8 @@ import { associationsTable } from "../src/db/schema/associations";
 import { categoriesTable } from "../src/db/schema/categories";
 import { productPresentationsTable } from "../src/db/schema/productPresentations";
 import { productsTable } from "../src/db/schema/products";
+import { profilesTable } from "../src/db/schema/profiles";
+import { e2eAdmins } from "./clerk-users";
 import { E2E_WHATSAPP_NUMBER } from "./environment";
 
 /**
@@ -71,6 +73,24 @@ export async function seedE2eDatabase(db: PgliteDatabase) {
       name: draftProduct.name,
       slug: draftProduct.slug,
       status: "DRAFT",
+    },
+  ]);
+
+  // Pending profiles of the Clerk test users, linked on their first sign-in
+  // by verified email. Without a Clerk test instance nobody claims them.
+  await db.insert(profilesTable).values([
+    {
+      invitationId: "inv_e2e_super_admin",
+      name: e2eAdmins.superAdmin.name,
+      email: e2eAdmins.superAdmin.email,
+      role: "SUPER_ADMIN",
+    },
+    {
+      invitationId: "inv_e2e_association_admin",
+      name: e2eAdmins.associationAdmin.name,
+      email: e2eAdmins.associationAdmin.email,
+      role: "ASSOCIATION_ADMIN",
+      associationId: association.id,
     },
   ]);
 
