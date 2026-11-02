@@ -81,20 +81,22 @@ Product images are stored as `products/{productId}/{uuid}.{webp|jpg|png}`. The d
 
 ## Scripts
 
-| Command            | Action                               |
-| ------------------ | ------------------------------------ |
-| `pnpm dev`         | Start development server             |
-| `pnpm build`       | Production build                     |
-| `pnpm start`       | Start production server              |
-| `pnpm lint`        | Run ESLint                           |
-| `pnpm typecheck`   | Type-check without emitting          |
-| `pnpm test`        | Run tests (watch mode in a terminal) |
-| `pnpm test:ci`     | Run tests once, as in CI             |
-| `pnpm db:generate` | Generate Drizzle migrations          |
-| `pnpm db:migrate`  | Apply pending migrations             |
-| `pnpm db:check`    | Validate migration consistency       |
-| `pnpm db:studio`   | Open Drizzle Studio                  |
-| `pnpm db:seed`     | Seed the database (⚠ destructive)    |
+| Command            | Action                                     |
+| ------------------ | ------------------------------------------ |
+| `pnpm dev`         | Start development server                   |
+| `pnpm build`       | Production build                           |
+| `pnpm start`       | Start production server                    |
+| `pnpm lint`        | Run ESLint                                 |
+| `pnpm typecheck`   | Type-check without emitting                |
+| `pnpm test`        | Run tests (watch mode in a terminal)       |
+| `pnpm test:ci`     | Run tests once, as in CI                   |
+| `pnpm test:e2e`    | Build and run the end-to-end suite         |
+| `pnpm test:e2e:ui` | Open Playwright's UI on the last E2E build |
+| `pnpm db:generate` | Generate Drizzle migrations                |
+| `pnpm db:migrate`  | Apply pending migrations                   |
+| `pnpm db:check`    | Validate migration consistency             |
+| `pnpm db:studio`   | Open Drizzle Studio                        |
+| `pnpm db:seed`     | Seed the database (⚠ destructive)          |
 
 ## Testing
 
@@ -103,6 +105,33 @@ Automated tests use [Vitest](https://vitest.dev) and live next to the code they 
 - Database queries run against an in-memory PostgreSQL ([PGlite](https://pglite.dev)) with the project's migrations applied, so tests need no credentials or external services.
 - Clerk and other external services are mocked where a test needs them.
 - Shared helpers live in `src/test`: `createTestDatabase()` and fixtures for associations, categories, products and profiles.
-- CI runs `pnpm test:ci` on every pull request to `main`.
+- CI runs `pnpm test:ci` on every pull request to `main`, and then the end-to-end suite.
 
-End-to-end browser tests are not set up yet.
+### Unit and integration tests (Vitest)
+
+Vitest owns the rules: authorization, visibility, validation, invariants and race conditions. Most behavior belongs here, where tests are fast and precise.
+
+### End-to-end tests (Playwright)
+
+[Playwright](https://playwright.dev) covers only the few journeys that need a real browser, routing and rendered pages. The specs live in `e2e/`:
+
+- **Storefront** (`storefront.spec.ts`): a visitor finds a published product on the home page and opens its page; the product's WhatsApp action points to the association's number with a message about the product. The test reads the link's target and never follows it, so no message is sent.
+- **Associations** (`associations.spec.ts`): directory → association profile → one of its products.
+- **Admin access** (`admin-access.spec.ts`): visiting admin routes without a session leads to sign-in, and sign-up without an invitation is closed.
+
+Prefer roles, labels and visible text over CSS selectors, and do not repeat rules Vitest already covers unless a journey needs them.
+
+```bash
+pnpm exec playwright install chromium   # once, to download the browser
+pnpm test:e2e                           # build the app for E2E and run the suite
+pnpm test:e2e:ui                        # explore or debug, after a build
+```
+
+The suite runs in an isolated environment and never touches real data or services:
+
+- **Database**: `e2e/server.ts` starts an in-memory [PGlite](https://pglite.dev) with the project's migrations and the fixed data in `e2e/seed.ts`, served as PostgreSQL on a local port. The app connects to it with `DATABASE_DRIVER=node-postgres`; every run starts from the same data.
+- **Clerk**: keys in a valid format that point to no instance. Without a session, Clerk makes no network calls, so every visitor is signed out. Authenticated admin journeys are not covered yet; they need a proper Clerk test identity or a staging environment.
+- **Media**: no R2; products show their placeholder image.
+- **Environment**: `e2e/environment.ts` sets every variable the app reads, so `.env.local` does not leak in. The app is built into `.next-e2e`, apart from `.next`.
+
+On failure, Playwright keeps a trace and a screenshot in `test-results/` and an HTML report in `playwright-report/`. In CI, the `e2e` job runs after the checks, unit tests and build pass, and uploads both as artifacts.
