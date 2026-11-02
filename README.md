@@ -137,7 +137,7 @@ The suite runs in an isolated environment and never touches real data or service
 
 #### Admin journeys with a Clerk development instance
 
-1. Create a separate **development** instance in Clerk (never the production one). Its keys start with `pk_test_` and `sk_test_`; the suite refuses any other.
+1. Use a Clerk **development** instance, never the production one. It can be the instance you use for local development: the suite only adds its two test users. Development keys start with `pk_test_` and `sk_test_`; the suite refuses any other.
 2. Locally, put them in `.env.e2e.local` (ignored by git):
    ```bash
    E2E_CLERK_PUBLISHABLE_KEY=pk_test_…
