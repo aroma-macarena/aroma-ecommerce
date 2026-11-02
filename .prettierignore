@@ -4,3 +4,7 @@ build
 coverage
 drizzle/meta
 pnpm-lock.yaml
+.next-e2e
+playwright-report
+test-results
+blob-report
