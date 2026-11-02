@@ -18,11 +18,20 @@ export type AdminNavigationItem = {
   available: boolean;
 };
 
+// Most frequent first: products are the daily task for both roles; user
+// access, the least frequent and most sensitive, comes last.
 export const adminNavigationItems: AdminNavigationItem[] = [
   {
     href: "/admin",
     label: "Inicio",
     icon: LayoutDashboard,
+    roles: ["SUPER_ADMIN", "ASSOCIATION_ADMIN"],
+    available: true,
+  },
+  {
+    href: "/admin/products",
+    label: "Productos",
+    icon: Package,
     roles: ["SUPER_ADMIN", "ASSOCIATION_ADMIN"],
     available: true,
   },
@@ -45,13 +54,6 @@ export const adminNavigationItems: AdminNavigationItem[] = [
     label: "Categorías",
     icon: Tags,
     roles: ["SUPER_ADMIN"],
-    available: true,
-  },
-  {
-    href: "/admin/products",
-    label: "Productos",
-    icon: Package,
-    roles: ["SUPER_ADMIN", "ASSOCIATION_ADMIN"],
     available: true,
   },
   {
