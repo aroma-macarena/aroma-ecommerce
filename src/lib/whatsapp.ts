@@ -13,6 +13,10 @@ export function normalizeWhatsAppNumber(value: string | null | undefined) {
   return digits.length >= 8 ? digits : null;
 }
 
+/** Validation message for a WhatsApp field that cannot be a number. */
+export const INVALID_WHATSAPP_MESSAGE =
+  "Escribe un celular con indicativo, por ejemplo 300 111 2233 o +57 300 111 2233.";
+
 /**
  * A stored number written for people: "+57 300 111 2233" for Colombian
  * mobiles, "+" and the digits otherwise, and an empty string when missing.

@@ -75,9 +75,9 @@ Product images are stored as `products/{productId}/{uuid}.{webp|jpg|png}`. The d
 
 **Alliance support**
 
-| Variable                    | Description                                                                                                                                                                                           |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ALLIANCE_SUPPORT_WHATSAPP` | WhatsApp number of the alliance administration, with country code (optional; access notices hide the contact button without it, and product pages use it when the association has no WhatsApp number) |
+| Variable                    | Description                                                                                                                                                                                                                                                                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ALLIANCE_SUPPORT_WHATSAPP` | Fallback WhatsApp number of the alliance administration, with country code (optional). Super admins manage the number in **Contenido → Contacto de la alianza**; this variable applies only until it is saved there. Access notices and product pages without an association WhatsApp use it; without a number, those buttons are hidden |
 
 ## Scripts
 

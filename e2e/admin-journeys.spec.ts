@@ -77,9 +77,12 @@ test("a super admin edits an institutional text and sees it on the site", async 
   await signInAs(page, e2eAdmins.superAdmin);
   await page.goto("/admin/content/footer_about/edit");
 
-  await page.getByLabel("Texto").fill(footerText);
+  // Exact: a changed block also has a "Texto original" section.
+  await page
+    .getByRole("textbox", { name: "Texto", exact: true })
+    .fill(footerText);
   await page.getByRole("button", { name: "Guardar texto" }).click();
-  await expect(page.getByText("Texto guardado")).toBeVisible();
+  await expect(page.getByText("Cambios guardados")).toBeVisible();
 
   await page.goto("/");
   await expect(

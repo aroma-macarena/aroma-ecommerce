@@ -1,6 +1,9 @@
 import { z } from "zod";
 
-import { normalizeWhatsAppNumber } from "@/lib/whatsapp";
+import {
+  INVALID_WHATSAPP_MESSAGE,
+  normalizeWhatsAppNumber,
+} from "@/lib/whatsapp";
 
 // Safe for client components: no database or storage imports here.
 
@@ -37,8 +40,7 @@ export const associationProfileSchema = z.object({
       if (!normalized) {
         context.addIssue({
           code: "custom",
-          message:
-            "Escribe un celular con indicativo, por ejemplo 300 111 2233 o +57 300 111 2233.",
+          message: INVALID_WHATSAPP_MESSAGE,
         });
         return z.NEVER;
       }

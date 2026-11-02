@@ -1,9 +1,10 @@
+import { getAllianceWhatsAppNumber } from "@/lib/site-content/queries";
 import { getWhatsAppHref } from "@/lib/whatsapp";
 
 /**
  * WhatsApp link to the alliance administration, prefilled with context.
- * Returns null until ALLIANCE_SUPPORT_WHATSAPP is configured.
+ * The number is managed in "Contenido"; null when there is none.
  */
-export function getSupportWhatsAppHref(message: string) {
-  return getWhatsAppHref(process.env.ALLIANCE_SUPPORT_WHATSAPP, message);
+export async function getSupportWhatsAppHref(message: string) {
+  return getWhatsAppHref(await getAllianceWhatsAppNumber(), message);
 }

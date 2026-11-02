@@ -44,7 +44,7 @@ type AdminAccessNoticeProps = {
   associationName?: string | null;
 };
 
-function AdminAccessNotice({
+async function AdminAccessNotice({
   reason,
   email,
   associationName,
@@ -56,7 +56,7 @@ function AdminAccessNotice({
   ].filter((detail): detail is { label: string; value: string } =>
     Boolean(detail.value),
   );
-  const whatsAppHref = getSupportWhatsAppHref(
+  const whatsAppHref = await getSupportWhatsAppHref(
     [
       `Hola, necesito ayuda con el panel de AROMA. ${request}`,
       ...details.map(({ label, value }) => `${label}: ${value}.`),

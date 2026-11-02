@@ -13,7 +13,11 @@ import {
   siteContentBlocks,
   toParagraphs,
 } from "@/lib/site-content/blocks";
-import { getSiteContent } from "@/lib/site-content/queries";
+import {
+  getAllianceWhatsAppNumber,
+  getSiteContent,
+} from "@/lib/site-content/queries";
+import { getSupportWhatsAppHref } from "@/lib/support";
 import { createTestDatabase, type TestDatabase } from "@/test/database";
 import {
   bosqueVivoAdmin,
@@ -32,6 +36,7 @@ vi.mock("@/db", () => ({
 
 const hero = getSiteContentBlock("home_hero")!;
 const footer = getSiteContentBlock("footer_about")!;
+const allianceWhatsApp = getSiteContentBlock("alliance_whatsapp")!;
 
 function testDatabase() {
   return database.current as TestDatabase;
@@ -54,6 +59,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await testDatabase().db.delete(siteContentTable);
+  delete process.env.ALLIANCE_SUPPORT_WHATSAPP;
 });
 
 describe("getSiteContent", () => {
@@ -235,5 +241,74 @@ describe("restoreOriginalSiteContent", () => {
       isOriginal: true,
       updatedByName: superAdmin.name,
     });
+  });
+});
+
+describe("the alliance's WhatsApp", () => {
+  it("uses ALLIANCE_SUPPORT_WHATSAPP, normalized, while never saved", async () => {
+    process.env.ALLIANCE_SUPPORT_WHATSAPP = "300 111 2233";
+
+    await expect(getAllianceWhatsAppNumber()).resolves.toBe("573001112233");
+    expect(
+      (await getAdminSiteContent(superAdmin))?.find(
+        ({ key }) => key === "alliance_whatsapp",
+      ),
+    ).toMatchObject({ isOriginal: true, updatedAt: null });
+  });
+
+  it("has no number when neither the block nor the variable has one", async () => {
+    await expect(getAllianceWhatsAppNumber()).resolves.toBeNull();
+    await expect(getSupportWhatsAppHref("Hola")).resolves.toBeNull();
+  });
+
+  it("uses the saved number over the variable", async () => {
+    process.env.ALLIANCE_SUPPORT_WHATSAPP = "3001112233";
+    await updateSiteContent(superAdmin, "alliance_whatsapp", {
+      title: null,
+      content: "573109998877",
+    });
+
+    await expect(getAllianceWhatsAppNumber()).resolves.toBe("573109998877");
+    await expect(getSupportWhatsAppHref("Hola")).resolves.toBe(
+      "https://wa.me/573109998877?text=Hola",
+    );
+    expect(await stored("alliance_whatsapp")).toMatchObject({
+      updatedBy: superAdmin.id,
+      updatedAt: expect.any(Date),
+    });
+  });
+
+  it("hides the buttons once cleared, even with the variable set", async () => {
+    process.env.ALLIANCE_SUPPORT_WHATSAPP = "3001112233";
+    await updateSiteContent(superAdmin, "alliance_whatsapp", {
+      title: null,
+      content: "",
+    });
+
+    await expect(getAllianceWhatsAppNumber()).resolves.toBeNull();
+    await expect(getSupportWhatsAppHref("Hola")).resolves.toBeNull();
+  });
+
+  it("validates and normalizes the number, and allows clearing it", () => {
+    expect(
+      parseSiteContent(allianceWhatsApp, { content: "+57 300 111 2233" }),
+    ).toEqual({
+      success: true,
+      data: { title: null, content: "573001112233" },
+    });
+    expect(parseSiteContent(allianceWhatsApp, { content: "  " })).toEqual({
+      success: true,
+      data: { title: null, content: "" },
+    });
+    expect(parseSiteContent(allianceWhatsApp, { content: "123" })).toEqual({
+      success: false,
+      fieldErrors: { content: expect.any(String) },
+    });
+  });
+
+  it("has no original text to restore", async () => {
+    await expect(
+      restoreOriginalSiteContent(superAdmin, "alliance_whatsapp"),
+    ).resolves.toEqual({ ok: false, reason: "NOT_FOUND" });
   });
 });

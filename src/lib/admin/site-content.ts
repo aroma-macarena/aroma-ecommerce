@@ -50,10 +50,16 @@ function describeBlock(
   return {
     ...block,
     text,
-    /** The public site shows the original text, saved or not. */
+    /**
+     * The public site shows the original text, saved or not. For the
+     * alliance's WhatsApp, "original" means never saved: the deployment's
+     * variable still applies.
+     */
     isOriginal:
-      text.title === (block.fallback.title ?? "") &&
-      text.content === block.fallback.content,
+      block.kind === "whatsapp"
+        ? !stored
+        : text.title === (block.fallback.title ?? "") &&
+          text.content === block.fallback.content,
     updatedAt: stored ? (stored.updatedAt ?? stored.createdAt) : null,
     updatedByName: stored?.updatedByName ?? null,
   };
@@ -136,7 +142,8 @@ export async function restoreOriginalSiteContent(
 ): Promise<SiteContentResult> {
   const block = getSiteContentBlock(key);
 
-  if (!block) {
+  // The alliance's WhatsApp has no original text: it is cleared instead.
+  if (!block || block.kind === "whatsapp") {
     return isSuperAdmin(profile)
       ? { ok: false, reason: "NOT_FOUND" }
       : { ok: false, reason: "FORBIDDEN" };

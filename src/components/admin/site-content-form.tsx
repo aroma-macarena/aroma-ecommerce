@@ -91,28 +91,50 @@ function SiteContentForm({
           label={block.content.label}
           hint={block.content.hint}
           error={errors.content}
+          optional={block.kind === "whatsapp"}
         >
-          <textarea
-            id="content"
-            name="content"
-            required
-            rows={block.content.multiline ? 6 : 3}
-            maxLength={block.content.maxLength}
-            defaultValue={values.content}
-            aria-invalid={errors.content ? true : undefined}
-            aria-describedby={describedBy(
-              "content",
-              block.content.hint,
-              errors.content,
-            )}
-            className={controlClassName}
-          />
+          {block.kind === "whatsapp" ? (
+            <input
+              id="content"
+              name="content"
+              type="tel"
+              inputMode="tel"
+              autoComplete="off"
+              maxLength={block.content.maxLength}
+              defaultValue={values.content}
+              aria-invalid={errors.content ? true : undefined}
+              aria-describedby={describedBy(
+                "content",
+                block.content.hint,
+                errors.content,
+              )}
+              className={cn(controlClassName, "min-h-11")}
+            />
+          ) : (
+            <textarea
+              id="content"
+              name="content"
+              required
+              rows={block.content.multiline ? 6 : 3}
+              maxLength={block.content.maxLength}
+              defaultValue={values.content}
+              aria-invalid={errors.content ? true : undefined}
+              aria-describedby={describedBy(
+                "content",
+                block.content.hint,
+                errors.content,
+              )}
+              className={controlClassName}
+            />
+          )}
         </Field>
       </div>
 
       <FormActions
         cancelHref="/admin/content"
-        submitLabel="Guardar texto"
+        submitLabel={
+          block.kind === "whatsapp" ? "Guardar número" : "Guardar texto"
+        }
         isPending={isPending}
       />
     </form>

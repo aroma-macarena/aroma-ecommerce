@@ -15,11 +15,16 @@ export type SiteContentField = {
 
 export type SiteContentBlock = {
   key: string;
+  /**
+   * "text" blocks hold copy; a "whatsapp" block holds a phone number,
+   * validated and stored normalized.
+   */
+  kind: "text" | "whatsapp";
   label: string;
   /** Where the block appears, for administrators. */
   location: string;
-  /** A public path to see it in place. */
-  href: string;
+  /** A public path to see it in place, when it has a single one. */
+  href: string | null;
   title: SiteContentField | null;
   content: SiteContentField & { multiline: boolean };
   fallback: { title: string | null; content: string };
@@ -28,6 +33,7 @@ export type SiteContentBlock = {
 export const siteContentBlocks = [
   {
     key: "home_hero",
+    kind: "text",
     label: "Portada del inicio",
     location:
       "Inicio, arriba de todo: el título principal del sitio y su frase de presentación, junto a la foto del territorio.",
@@ -51,6 +57,7 @@ export const siteContentBlocks = [
   },
   {
     key: "home_alliance",
+    kind: "text",
     label: "La alianza en el inicio",
     location:
       "Inicio, banda vino tinto «La alianza»: el título y el texto que presentan a AROMA, junto a la lista de organizaciones.",
@@ -74,6 +81,7 @@ export const siteContentBlocks = [
   },
   {
     key: "associations_intro",
+    kind: "text",
     label: "Presentación de las asociaciones",
     location:
       "Página «Asociaciones», bajo el título: la frase que presenta el directorio.",
@@ -93,6 +101,7 @@ export const siteContentBlocks = [
   },
   {
     key: "footer_about",
+    kind: "text",
     label: "Pie de página",
     location:
       "Al final de todas las páginas públicas, bajo el logo. Cada línea en blanco separa un párrafo; úsalo, por ejemplo, para agradecer a quienes apoyan la alianza.",
@@ -109,6 +118,23 @@ export const siteContentBlocks = [
       content:
         "Productos de las organizaciones de mujeres que forman parte de la Alianza AROMA, en La Macarena, Meta.\n\nCon el apoyo de CORPOREFUGIO.",
     },
+  },
+  {
+    key: "alliance_whatsapp",
+    kind: "whatsapp",
+    label: "Contacto de la alianza",
+    location:
+      "El WhatsApp de la administración de la alianza. Aparece en los avisos de acceso del panel y en las fichas de producto cuya asociación no tiene WhatsApp. Sin número, esos botones no se muestran.",
+    href: null,
+    title: null,
+    content: {
+      label: "WhatsApp",
+      hint: "Celular con indicativo, por ejemplo 300 111 2233. No se muestra el número: se abre el chat. Déjalo vacío para ocultar los botones.",
+      maxLength: 30,
+      multiline: false,
+    },
+    // Until it is saved, the ALLIANCE_SUPPORT_WHATSAPP variable applies.
+    fallback: { title: null, content: "" },
   },
 ] as const satisfies readonly SiteContentBlock[];
 

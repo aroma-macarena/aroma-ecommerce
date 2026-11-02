@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { getAdminSiteContent } from "@/lib/admin/site-content";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
 import { toParagraphs } from "@/lib/site-content/blocks";
+import { formatWhatsAppNumber } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Contenido",
@@ -22,7 +23,7 @@ const dateFormatter = new Intl.DateTimeFormat("es-CO", {
 });
 
 const confirmations: Record<string, string> = {
-  guardado: "Texto guardado. Ya se ve en el sitio público.",
+  guardado: "Cambios guardados. Ya se ven en el sitio público.",
   restaurado: "Se restauró el texto original.",
 };
 
@@ -51,14 +52,14 @@ export default async function AdminContentPage({
       <AdminPageHeader
         eyebrow="Alianza AROMA"
         title="Contenido"
-        description="Los textos institucionales del sitio público. Cada uno tiene un lugar fijo; aquí cambias las palabras y el diseño se mantiene."
+        description="Los textos institucionales del sitio público y el contacto de la alianza. Cada uno tiene un lugar fijo; aquí cambias el contenido y el diseño se mantiene."
       />
 
       {confirmation ? (
         <AdminNotice tone="success">{confirmation}</AdminNotice>
       ) : null}
 
-      <ul aria-label="Textos institucionales" className="border-t">
+      <ul aria-label="Contenido institucional" className="border-t">
         {blocks.map((block) => (
           <li
             key={block.key}
@@ -71,24 +72,40 @@ export default async function AdminContentPage({
               <p className="text-muted-foreground max-w-prose text-sm leading-6">
                 {block.location}
               </p>
-              <blockquote className="border-border max-w-prose space-y-1 border-l-2 pl-4">
-                {block.title ? (
-                  <p className="font-semibold wrap-anywhere">
-                    {block.text.title}
-                  </p>
-                ) : null}
-                {toParagraphs(block.text.content).map((paragraph, index) => (
-                  <p key={index} className="text-sm leading-6 wrap-anywhere">
-                    {paragraph}
-                  </p>
-                ))}
-              </blockquote>
+              {block.kind === "whatsapp" ? (
+                <p className="border-border max-w-prose border-l-2 pl-4 text-sm leading-6">
+                  {block.text.content ? (
+                    <span className="font-semibold">
+                      {formatWhatsAppNumber(block.text.content)}
+                    </span>
+                  ) : (
+                    "Sin número: los botones de contacto con la alianza no se muestran."
+                  )}
+                </p>
+              ) : (
+                <blockquote className="border-border max-w-prose space-y-1 border-l-2 pl-4">
+                  {block.title ? (
+                    <p className="font-semibold wrap-anywhere">
+                      {block.text.title}
+                    </p>
+                  ) : null}
+                  {toParagraphs(block.text.content).map((paragraph, index) => (
+                    <p key={index} className="text-sm leading-6 wrap-anywhere">
+                      {paragraph}
+                    </p>
+                  ))}
+                </blockquote>
+              )}
               <p className="text-muted-foreground font-mono text-xs">
                 {block.updatedAt
                   ? `Editado el ${dateFormatter.format(block.updatedAt)}${
                       block.updatedByName ? ` por ${block.updatedByName}` : ""
                     }`
-                  : "Texto original"}
+                  : block.kind === "whatsapp"
+                    ? block.text.content
+                      ? "Configurado en el servidor"
+                      : "Sin configurar"
+                    : "Texto original"}
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row md:flex-col md:items-stretch">
@@ -100,18 +117,22 @@ export default async function AdminContentPage({
                 Editar
                 <span className="sr-only">{block.label}</span>
               </Link>
-              <Link
-                href={block.href}
-                target="_blank"
-                className={buttonVariants({
-                  variant: "outline",
-                  className: "w-full sm:w-auto",
-                })}
-              >
-                <ExternalLink aria-hidden />
-                Ver en el sitio
-                <span className="sr-only">(se abre en una nueva pestaña)</span>
-              </Link>
+              {block.href ? (
+                <Link
+                  href={block.href}
+                  target="_blank"
+                  className={buttonVariants({
+                    variant: "outline",
+                    className: "w-full sm:w-auto",
+                  })}
+                >
+                  <ExternalLink aria-hidden />
+                  Ver en el sitio
+                  <span className="sr-only">
+                    (se abre en una nueva pestaña)
+                  </span>
+                </Link>
+              ) : null}
             </div>
           </li>
         ))}
