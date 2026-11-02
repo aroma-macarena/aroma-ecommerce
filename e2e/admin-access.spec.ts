@@ -1,9 +1,18 @@
+import { setupClerkTestingToken } from "@clerk/testing/playwright";
 import { expect, test } from "@playwright/test";
 
-// Clerk's keys point to no instance (see `environment.ts`): its browser
-// script is not loaded, so the page's own content is what is checked.
+import { clerkTestInstance } from "./environment";
+
+// With the inert keys (see `environment.ts`), Clerk's browser script does
+// not load, so the page's own content is what is checked. With a Clerk
+// development instance, a testing token lets the browser past its bot
+// protection.
 test.beforeEach(async ({ page }) => {
-  await page.route(/aroma-e2e\.invalid/, (route) => route.abort());
+  if (clerkTestInstance) {
+    await setupClerkTestingToken({ page });
+  } else {
+    await page.route(/aroma-e2e\.invalid/, (route) => route.abort());
+  }
 });
 
 for (const path of ["/admin", "/admin/products", "/admin/users"]) {

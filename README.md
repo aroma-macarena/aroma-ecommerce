@@ -118,6 +118,7 @@ Vitest owns the rules: authorization, visibility, validation, invariants and rac
 - **Storefront** (`storefront.spec.ts`): a visitor finds a published product on the home page and opens its page; the product's WhatsApp action points to the association's number with a message about the product. The test reads the link's target and never follows it, so no message is sent.
 - **Associations** (`associations.spec.ts`): directory → association profile → one of its products.
 - **Admin access** (`admin-access.spec.ts`): visiting admin routes without a session leads to sign-in, and sign-up without an invitation is closed.
+- **Admin journeys** (`admin-journeys.spec.ts`, only with a Clerk development instance): an association admin creates a product, adds a presentation and publishes it, and it appears on the storefront; an association admin sees only their own sections; a super admin edits an institutional text and sees it on the site.
 
 Prefer roles, labels and visible text over CSS selectors, and do not repeat rules Vitest already covers unless a journey needs them.
 
@@ -130,8 +131,19 @@ pnpm test:e2e:ui                        # explore or debug, after a build
 The suite runs in an isolated environment and never touches real data or services:
 
 - **Database**: `e2e/server.ts` starts an in-memory [PGlite](https://pglite.dev) with the project's migrations and the fixed data in `e2e/seed.ts`, served as PostgreSQL on a local port. The app connects to it with `DATABASE_DRIVER=node-postgres`; every run starts from the same data.
-- **Clerk**: keys in a valid format that point to no instance. Without a session, Clerk makes no network calls, so every visitor is signed out. Authenticated admin journeys are not covered yet; they need a proper Clerk test identity or a staging environment.
+- **Clerk**: by default, keys in a valid format that point to no instance. Without a session, Clerk makes no network calls, so every visitor is signed out and the admin journeys are skipped. With a Clerk development instance (below), the suite signs in with Clerk's testing tokens; the app has no authentication shortcut for tests.
 - **Media**: no R2; products show their placeholder image.
 - **Environment**: `e2e/environment.ts` sets every variable the app reads, so `.env.local` does not leak in. The app is built into `.next-e2e`, apart from `.next`.
+
+#### Admin journeys with a Clerk development instance
+
+1. Use a Clerk **development** instance, never the production one. It can be the instance you use for local development: the suite only adds its two test users. Development keys start with `pk_test_` and `sk_test_`; the suite refuses any other.
+2. Locally, put them in `.env.e2e.local` (ignored by git):
+   ```bash
+   E2E_CLERK_PUBLISHABLE_KEY=pk_test_…
+   E2E_CLERK_SECRET_KEY=sk_test_…
+   ```
+   In CI, add them as repository secrets with the same names.
+3. Run `pnpm test:e2e`. The global setup creates the test users if they are missing, `aroma-e2e-superadmin+clerk_test@example.com` and `aroma-e2e-asociacion+clerk_test@example.com` (Clerk test addresses, no email is sent). The E2E seed leaves pending AROMA profiles with those emails, which the app links on their first sign-in, as with any invitation.
 
 On failure, Playwright keeps a trace and a screenshot in `test-results/` and an HTML report in `playwright-report/`. In CI, the `e2e` job runs after the checks, unit tests and build pass, and uploads both as artifacts.

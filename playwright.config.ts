@@ -10,6 +10,7 @@ const isCI = Boolean(process.env.CI);
  */
 export default defineConfig({
   testDir: "./e2e",
+  globalSetup: "./e2e/global-setup.ts",
   fullyParallel: false,
   // One in-memory database serves every test.
   workers: 1,

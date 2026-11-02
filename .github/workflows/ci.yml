@@ -73,10 +73,15 @@ jobs:
       - name: Install Playwright's Chromium
         run: pnpm exec playwright install --with-deps chromium
 
-      # Isolated: in-memory database, inert Clerk keys and no media storage,
-      # so no secrets are needed.
+      # Isolated: in-memory database and no media storage. Clerk uses a
+      # development instance when its secrets exist, inert keys otherwise.
       - name: Run end-to-end tests
         run: pnpm test:e2e
+        env:
+          # A Clerk development instance for the authenticated journeys;
+          # without these secrets (forks included) those journeys are skipped.
+          E2E_CLERK_PUBLISHABLE_KEY: ${{ secrets.E2E_CLERK_PUBLISHABLE_KEY }}
+          E2E_CLERK_SECRET_KEY: ${{ secrets.E2E_CLERK_SECRET_KEY }}
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
