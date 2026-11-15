@@ -1,4 +1,8 @@
 import type { SiteContentBlock } from "@/lib/site-content/blocks";
+import {
+  INVALID_WHATSAPP_MESSAGE,
+  normalizeWhatsAppNumber,
+} from "@/lib/whatsapp";
 
 /** Client-safe parsing for the content editor. */
 
@@ -35,6 +39,10 @@ export function parseSiteContent(
   block: SiteContentBlock,
   values: Partial<SiteContentFormValues>,
 ) {
+  if (block.kind === "whatsapp") {
+    return parseWhatsApp(block, values.content ?? "");
+  }
+
   const fieldErrors: SiteContentFieldErrors = {};
   const title = block.title ? normalize(values.title ?? "", false) : null;
   const content = normalize(values.content ?? "", block.content.multiline);
@@ -56,4 +64,25 @@ export function parseSiteContent(
   return Object.keys(fieldErrors).length > 0
     ? { success: false as const, fieldErrors }
     : { success: true as const, data: { title, content } };
+}
+
+/** A WhatsApp number, stored normalized; empty is allowed and hides it. */
+function parseWhatsApp(block: SiteContentBlock, value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return { success: true as const, data: { title: null, content: "" } };
+  }
+
+  const normalized =
+    trimmed.length <= block.content.maxLength
+      ? normalizeWhatsAppNumber(trimmed)
+      : null;
+
+  return normalized
+    ? { success: true as const, data: { title: null, content: normalized } }
+    : {
+        success: false as const,
+        fieldErrors: { content: INVALID_WHATSAPP_MESSAGE },
+      };
 }

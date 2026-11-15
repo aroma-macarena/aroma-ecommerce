@@ -4,12 +4,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AdminBackLink } from "@/components/admin/admin-back-link";
+import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminSection } from "@/components/admin/admin-section";
 import { ConfirmActionButton } from "@/components/admin/confirm-action-button";
 import { SiteContentForm } from "@/components/admin/site-content-form";
 import { getEditableSiteContent } from "@/lib/admin/site-content";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
+import { formatWhatsAppNumber } from "@/lib/whatsapp";
 
 import {
   restoreOriginalSiteContentAction,
@@ -48,26 +50,42 @@ export default async function EditSiteContentPage({
           title={block.label}
           description={block.location}
           actions={
-            <Link
-              href={block.href}
-              target="_blank"
-              className="text-muted-foreground hover:text-foreground inline-flex min-h-11 items-center gap-1.5 text-sm font-medium underline-offset-4 hover:underline"
-            >
-              Ver en el sitio
-              <ExternalLink aria-hidden className="size-3.5" />
-              <span className="sr-only">(se abre en una nueva pestaña)</span>
-            </Link>
+            block.href ? (
+              <Link
+                href={block.href}
+                target="_blank"
+                className="text-muted-foreground hover:text-foreground inline-flex min-h-11 items-center gap-1.5 text-sm font-medium underline-offset-4 hover:underline"
+              >
+                Ver en el sitio
+                <ExternalLink aria-hidden className="size-3.5" />
+                <span className="sr-only">(se abre en una nueva pestaña)</span>
+              </Link>
+            ) : undefined
           }
         />
       </div>
 
+      {block.kind === "whatsapp" && block.isOriginal && block.text.content ? (
+        <AdminNotice tone="warning">
+          Hoy se usa el número configurado en el servidor,{" "}
+          {formatWhatsAppNumber(block.text.content)}. Al guardar, el de aquí lo
+          reemplaza.
+        </AdminNotice>
+      ) : null}
+
       <SiteContentForm
         block={block}
-        initialValues={{ title: block.text.title, content: block.text.content }}
+        initialValues={{
+          title: block.text.title,
+          content:
+            block.kind === "whatsapp"
+              ? formatWhatsAppNumber(block.text.content)
+              : block.text.content,
+        }}
         action={updateSiteContentAction.bind(null, block.key)}
       />
 
-      {block.isOriginal ? null : (
+      {block.kind === "whatsapp" || block.isOriginal ? null : (
         <AdminSection
           id="original"
           title="Texto original"

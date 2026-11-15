@@ -16,7 +16,7 @@ type AssociationContactProps = {
  * The commercial handoff: a WhatsApp conversation with the association, or
  * with the alliance when the association has no number published yet.
  */
-function AssociationContact({
+async function AssociationContact({
   associationName,
   whatsappNumber,
   message,
@@ -25,7 +25,7 @@ function AssociationContact({
   const associationHref = getWhatsAppHref(whatsappNumber, message);
   const allianceHref = associationHref
     ? null
-    : getSupportWhatsAppHref(
+    : await getSupportWhatsAppHref(
         `${message}\n\n${associationName} aún no tiene un WhatsApp publicado. ¿Me pueden poner en contacto?`,
       );
 
