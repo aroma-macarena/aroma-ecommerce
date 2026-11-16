@@ -39,9 +39,18 @@ export async function getCatalogProducts({
       shortDescription: products.shortDescription,
       associationName: associations.name,
       associationSlug: associations.slug,
+      associationLocation: associations.location,
+      associationLogoObjectKey: associations.logoObjectKey,
       categoryName: categories.name,
+      categorySlug: categories.slug,
       imageObjectKey: productImages.objectKey,
       imageAltText: productImages.altText,
+      // Lowest reference price among available presentations, as text like
+      // the column itself; null when none has a price.
+      fromPrice: sql<string | null>`(
+        select min(pp.reference_price)::text from product_presentations as pp
+        where pp.product_id = "products"."id" and pp.is_available
+      )`,
     })
     .from(products)
     .innerJoin(associations, eq(products.associationId, associations.id))
@@ -93,6 +102,7 @@ export async function getPublicProduct(
         description: associations.description,
         location: associations.location,
         whatsappNumber: associations.whatsappNumber,
+        logoObjectKey: associations.logoObjectKey,
       },
     })
     .from(products)
@@ -164,6 +174,7 @@ export async function getPublicAssociations() {
       description: associations.description,
       location: associations.location,
       logoObjectKey: associations.logoObjectKey,
+      coverObjectKey: associations.coverObjectKey,
       // Explicit aliases: in a single-table select Drizzle leaves columns
       // unqualified, which would be ambiguous inside this subquery.
       productCount: sql<number>`(

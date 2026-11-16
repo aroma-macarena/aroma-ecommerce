@@ -17,7 +17,6 @@ import {
   getProductsByCategoryHref,
   publicRoutes,
 } from "@/lib/public-routes";
-import { getProductInquiryMessage } from "@/lib/whatsapp";
 
 type ProductPageProps = PageProps<"/productos/[association]/[product]">;
 
@@ -172,11 +171,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <AssociationContact
                 associationName={product.association.name}
                 whatsappNumber={product.association.whatsappNumber}
-                message={getProductInquiryMessage({
-                  productName: product.name,
-                  associationName: product.association.name,
-                  productUrl,
-                })}
+                productName={product.name}
+                productUrl={productUrl}
                 note="Se abre WhatsApp con un mensaje listo sobre este producto. La conversación sigue directamente con la asociación: AROMA no procesa pagos ni pedidos."
               />
             </div>

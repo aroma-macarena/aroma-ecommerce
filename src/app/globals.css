@@ -49,6 +49,8 @@
   --color-brand-green: var(--brand-green);
   --color-brand-orange: var(--brand-orange);
   --color-brand-burgundy: var(--brand-burgundy);
+  --color-board: var(--board);
+  --color-board-foreground: var(--board-foreground);
 }
 
 :root {
@@ -123,6 +125,93 @@
   --sidebar-ring: oklch(0.553 0.013 58.071);
 }
 
+/*
+ * Public site: near-white ground, white panels, near-black ink, and the
+ * AROMA palette used selectively (action green, an orange accent line, the
+ * burgundy alliance band). Photography carries the colour. Scoped to the
+ * public layout; the admin keeps the tokens above until it is redesigned.
+ */
+.plaza {
+  --background: oklch(0.982 0.002 106);
+  --foreground: oklch(0.19 0.008 150);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.47 0.13 135.4);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.955 0.004 106);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.955 0.004 106);
+  --muted-foreground: oklch(0.43 0.01 140);
+  --accent: oklch(0.955 0.004 106);
+  --accent-foreground: var(--foreground);
+  --border: oklch(0.885 0.005 106);
+  --input: oklch(0.55 0.01 120);
+  --ring: var(--primary);
+  --board: var(--brand-burgundy);
+  --board-foreground: oklch(0.97 0.012 60);
+
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+
+  & ::selection {
+    background: var(--foreground);
+    color: var(--background);
+  }
+}
+
+/* Major headlines and figures: Archivo condensed and heavy. */
+@utility font-sign {
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-stretch: 68%;
+  font-weight: 800;
+}
+
+/* Product and organization names, lead text: the editorial serif. */
+@utility font-editorial {
+  font-family: var(--font-source-serif), ui-serif, Georgia, serif;
+  font-optical-sizing: auto;
+}
+
+/*
+ * Hero carousel: the product card of the newly shown slide fades in while
+ * its photo crossfades behind it. Nothing moves for reduced motion.
+ */
+@keyframes hero-card-in {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.hero-card-in {
+  animation: hero-card-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-in {
+    animation: none;
+  }
+}
+
+/* A horizontal rail that scrolls on narrow screens, with no native
+   scrollbar: the cut-off item at the edge signals that it scrolls. */
+@utility rail-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -137,10 +226,7 @@
   html {
     @apply font-sans;
     /* Height of the sticky public header, so in-page links land at the section start. */
-    scroll-padding-top: 69px;
-    @media (min-width: 40rem) {
-      scroll-padding-top: 74px;
-    }
+    scroll-padding-top: 64px;
   }
   :focus-visible {
     outline: 2px solid var(--ring);

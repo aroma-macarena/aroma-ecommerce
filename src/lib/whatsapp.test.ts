@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   formatWhatsAppNumber,
+  getAllianceProductInquiryMessage,
   getAssociationInquiryMessage,
   getProductInquiryMessage,
   getWhatsAppHref,
@@ -63,6 +64,24 @@ describe("getProductInquiryMessage", () => {
         associationName: "AAMPY",
       }),
     ).not.toContain("http");
+  });
+});
+
+describe("getAllianceProductInquiryMessage", () => {
+  it("greets the alliance and names the product and its association", () => {
+    const message = getAllianceProductInquiryMessage({
+      productName: "Miel de abejas",
+      associationName: "AAMPY",
+      productUrl: "https://aroma.example/productos/aampy/miel-de-abejas",
+    });
+
+    expect(message).toMatch(
+      /^Hola, Alianza AROMA\. Me interesa «Miel de abejas» de AAMPY/,
+    );
+    expect(message).toContain(
+      "https://aroma.example/productos/aampy/miel-de-abejas",
+    );
+    expect(message).not.toMatch(/pedido|compré|orden/i);
   });
 });
 

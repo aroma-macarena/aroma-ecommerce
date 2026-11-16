@@ -1,80 +1,84 @@
-import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
-import { buttonVariants } from "@/components/ui/button";
+import { WhatsAppButton } from "@/components/public/whatsapp-button";
 import { getSupportWhatsAppHref } from "@/lib/support";
-import { getWhatsAppHref } from "@/lib/whatsapp";
+import {
+  getAllianceProductInquiryMessage,
+  getProductInquiryMessage,
+  getWhatsAppHref,
+} from "@/lib/whatsapp";
 
 type AssociationContactProps = {
   associationName: string;
   whatsappNumber: string | null;
-  /** Prefilled first message, about a product or the association. */
-  message: string;
+  productName: string;
+  /** Absolute product URL, added to the prefilled message. */
+  productUrl?: string | null;
   /** What happens after the click, shown under the button. */
   note: string;
+  /**
+   * Off where space is short (the home's featured card): the button stands
+   * alone, without the note or the "no WhatsApp yet" explanation. With no
+   * button to show at all, the explanation still appears.
+   */
+  showNotes?: boolean;
+  /** The button spans its container at every width (the featured card). */
+  fullWidth?: boolean;
 };
 
 /**
- * The commercial handoff: a WhatsApp conversation with the association, or
- * with the alliance when the association has no number published yet.
+ * The product's commercial handoff, always the same button: a WhatsApp
+ * conversation with the association, or with the alliance (naming the
+ * product and the association) when the association has no number yet.
  */
 async function AssociationContact({
   associationName,
   whatsappNumber,
-  message,
+  productName,
+  productUrl,
   note,
+  showNotes = true,
+  fullWidth = false,
 }: AssociationContactProps) {
-  const associationHref = getWhatsAppHref(whatsappNumber, message);
-  const allianceHref = associationHref
-    ? null
-    : await getSupportWhatsAppHref(
-        `${message}\n\n${associationName} aún no tiene un WhatsApp publicado. ¿Me pueden poner en contacto?`,
-      );
-
-  if (associationHref) {
-    return (
-      <div className="space-y-3">
-        <a
-          href={associationHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={buttonVariants({
-            size: "lg",
-            className: "w-full sm:w-auto",
-          })}
-        >
-          <WhatsAppIcon />
-          Consultar por WhatsApp
-          <span className="sr-only">(se abre en una nueva pestaña)</span>
-        </a>
-        <p className="text-muted-foreground text-sm leading-relaxed">{note}</p>
-      </div>
-    );
-  }
+  const associationHref = getWhatsAppHref(
+    whatsappNumber,
+    getProductInquiryMessage({ productName, associationName, productUrl }),
+  );
+  const href =
+    associationHref ??
+    (await getSupportWhatsAppHref(
+      getAllianceProductInquiryMessage({
+        productName,
+        associationName,
+        productUrl,
+      }),
+    ));
 
   return (
     <div className="space-y-3">
-      <p className="text-sm leading-relaxed">
-        <span className="font-semibold">
-          {associationName} aún no tiene un WhatsApp publicado.
-        </span>{" "}
-        {allianceHref
-          ? "La Alianza AROMA puede ponerte en contacto con la asociación."
-          : "Pronto podrás escribirle directamente desde aquí."}
-      </p>
-      {allianceHref ? (
-        <a
-          href={allianceHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={buttonVariants({
-            variant: "outline",
-            size: "lg",
-            className: "w-full sm:w-auto",
-          })}
+      {href ? (
+        <WhatsAppButton
+          href={href}
+          priority="primary"
+          size="lg"
+          className={fullWidth ? "w-full" : "w-full sm:w-auto"}
         >
-          <WhatsAppIcon />
-          Escribir a la Alianza AROMA
-          <span className="sr-only">(se abre en una nueva pestaña)</span>
-        </a>
+          Consultar por WhatsApp
+        </WhatsAppButton>
+      ) : null}
+      {associationHref ? (
+        showNotes ? (
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            {note}
+          </p>
+        ) : null
+      ) : showNotes || !href ? (
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          <span className="text-foreground font-semibold">
+            {associationName} aún no tiene un WhatsApp publicado.
+          </span>{" "}
+          {href
+            ? "La Alianza AROMA puede ponerte en contacto con la asociación."
+            : "Pronto podrás escribirle directamente desde aquí."}
+        </p>
       ) : null}
     </div>
   );
