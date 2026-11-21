@@ -117,6 +117,9 @@ function AssociationDirectory({
   map,
 }: AssociationDirectoryProps) {
   const [hovered, setHovered] = useState<string | null>(null);
+  // The zone of the grid card under the pointer: it only lights that
+  // zone's marker, without opening its cards or lighting its neighbours.
+  const [pointedCardZone, setPointedCardZone] = useState<string | null>(null);
   const [pinned, setPinned] = useState<string | null>(null);
   const [box, setBox] = useState({ width: 0, height: 0 });
   const [wide, setWide] = useState(false);
@@ -270,7 +273,9 @@ function AssociationDirectory({
 
             <ul aria-label="Zonas del mapa">
               {zones.map(({ zone, members, marker }) => {
-                const isShown = zone.slug === shown?.zone.slug;
+                const isShown =
+                  zone.slug === shown?.zone.slug ||
+                  zone.slug === pointedCardZone;
                 const fallback = territoryPercent(zone.lat, zone.lon);
                 // Named on the map only where no other marker crowds it.
                 const isolated =
@@ -374,7 +379,7 @@ function AssociationDirectory({
                 association.zone !== null &&
                 association.zone === (pinned ?? hovered)
               }
-              onPoint={preview}
+              onPoint={setPointedCardZone}
             />
           ))}
         </ul>
