@@ -68,6 +68,28 @@ export function getProductInquiryMessage({
     .join("\n\n");
 }
 
+/**
+ * First message to the alliance about a product whose association has no
+ * WhatsApp yet: it names the product and who makes it, so the alliance can
+ * put the buyer in touch.
+ */
+export function getAllianceProductInquiryMessage({
+  productName,
+  associationName,
+  productUrl,
+}: {
+  productName: string;
+  associationName: string;
+  productUrl?: string | null;
+}) {
+  return [
+    `Hola, Alianza AROMA. Me interesa «${productName}» de ${associationName} y me gustaría saber más: presentaciones, disponibilidad y cómo podría adquirirlo.`,
+    productUrl,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
 /** First message to an association about what it offers. */
 export function getAssociationInquiryMessage({
   associationName,

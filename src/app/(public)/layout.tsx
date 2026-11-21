@@ -4,7 +4,8 @@ import { buttonVariants } from "@/components/ui/button";
 
 export default function PublicLayout({ children }: LayoutProps<"/">) {
   return (
-    <>
+    // "plaza" scopes the public site's palette and type; the admin keeps its own.
+    <div className="plaza bg-background text-foreground flex flex-1 flex-col">
       <a
         href="#contenido"
         className={buttonVariants({
@@ -19,6 +20,6 @@ export default function PublicLayout({ children }: LayoutProps<"/">) {
         {children}
       </main>
       <PublicFooter />
-    </>
+    </div>
   );
 }

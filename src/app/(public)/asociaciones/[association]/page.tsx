@@ -5,11 +5,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-import { WhatsAppIcon } from "@/components/brand/whatsapp-icon";
 import { AssociationLogo } from "@/components/catalog/association-logo";
 import { ProductCard } from "@/components/catalog/product-card";
 import { Container } from "@/components/public/container";
-import { buttonVariants } from "@/components/ui/button";
+import { WhatsAppButton } from "@/components/public/whatsapp-button";
 import { getPublicAssociation } from "@/lib/catalog/queries";
 import { getMediaUrl } from "@/lib/media";
 import {
@@ -123,21 +122,13 @@ export default async function AssociationPage({
                 </div>
               </div>
               {whatsappHref ? (
-                <a
+                <WhatsAppButton
                   href={whatsappHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={buttonVariants({
-                    variant: "outline",
-                    className: "w-full shrink-0 lg:w-auto",
-                  })}
+                  priority="secondary"
+                  className="w-full shrink-0 lg:w-auto"
                 >
-                  <WhatsAppIcon />
                   Escribir por WhatsApp
-                  <span className="sr-only">
-                    (se abre en una nueva pestaña)
-                  </span>
-                </a>
+                </WhatsAppButton>
               ) : null}
             </div>
 

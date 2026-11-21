@@ -12,24 +12,33 @@ import {
 } from "@/components/admin/use-image-selection";
 import { AromaLogo } from "@/components/brand/aroma-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
-import type { AssociationImageFormState } from "@/lib/admin/association-profile-form";
-import type { AssociationImageKind } from "@/lib/storage/association-images";
+import type { SingleImageFormState } from "@/lib/admin/image-form";
 import { ASSOCIATION_IMAGE_MAX_DIMENSION } from "@/lib/storage/association-images";
+import { PRODUCT_BANNER_MAX_DIMENSION } from "@/lib/storage/product-images";
 import { cn } from "@/lib/utils";
 
-type AssociationImageFormProps = {
-  kind: AssociationImageKind;
-  associationName: string;
+/** An association's logo or cover, or a product's home banner. */
+export type ImageFieldKind = "logo" | "cover" | "banner";
+
+type ImageFieldFormProps = {
+  kind: ImageFieldKind;
+  /** The association or product the image belongs to, for its alt text. */
+  ownerName: string;
   currentUrl: string | null;
   canUpload: boolean;
   uploadAction: (
-    state: AssociationImageFormState,
+    state: SingleImageFormState,
     formData: FormData,
-  ) => Promise<AssociationImageFormState>;
+  ) => Promise<SingleImageFormState>;
   removeAction: () => Promise<void>;
 };
 
-const initialState: AssociationImageFormState = { status: "idle", attempt: 0 };
+const initialState: SingleImageFormState = { status: "idle", attempt: 0 };
+
+const maxDimension: Record<ImageFieldKind, number> = {
+  ...ASSOCIATION_IMAGE_MAX_DIMENSION,
+  banner: PRODUCT_BANNER_MAX_DIMENSION,
+};
 
 const copy = {
   logo: {
@@ -46,23 +55,35 @@ const copy = {
     save: "Guardar portada",
     remove: "Quitar portada",
   },
+  banner: {
+    noun: "foto",
+    hint: "JPG, PNG o WebP, horizontal (mejor 16:9, de al menos 1600 px de ancho). Deja el producto cerca del centro: los bordes se recortan según la pantalla. La reducimos a 2400 px y quitamos sus metadatos.",
+    empty:
+      "Sin foto para el inicio: si el producto sale destacado, se usa su foto principal recortada.",
+    save: "Guardar foto",
+    remove: "Quitar foto",
+  },
 } as const;
 
-function AssociationImageForm({
+/** How the home's featured carousel crops a banner, shown in its preview. */
+const bannerCrops = [
+  { label: "En computador", className: "aspect-[15/7]" },
+  { label: "En celular", className: "aspect-4/3" },
+] as const;
+
+function ImageFieldForm({
   kind,
-  associationName,
+  ownerName,
   currentUrl,
   canUpload,
   uploadAction,
   removeAction,
-}: AssociationImageFormProps) {
+}: ImageFieldFormProps) {
   const [state, formAction, isPending] = useActionState(
     uploadAction,
     initialState,
   );
-  const { selection, selectFile } = useImageSelection(
-    ASSOCIATION_IMAGE_MAX_DIMENSION[kind],
-  );
+  const { selection, selectFile } = useImageSelection(maxDimension[kind]);
   const text = copy[kind];
   const inputId = `${kind}-file`;
   const previewUrl =
@@ -91,7 +112,9 @@ function AssociationImageForm({
           "bg-muted relative flex items-center justify-center overflow-hidden rounded-sm border",
           kind === "logo"
             ? "bg-card aspect-square w-32"
-            : "aspect-[21/8] w-full",
+            : kind === "cover"
+              ? "aspect-[21/8] w-full"
+              : "aspect-video w-full max-w-xl",
         )}
       >
         {selection.status === "preparing" ? (
@@ -105,7 +128,7 @@ function AssociationImageForm({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={previewUrl}
-              alt={`Vista previa del nuevo ${text.noun}`}
+              alt={`Vista previa de ${kind === "banner" ? "la nueva" : "el nuevo"} ${text.noun}`}
               className={cn(
                 "h-full w-full",
                 kind === "logo" ? "object-contain p-2" : "object-cover",
@@ -116,8 +139,10 @@ function AssociationImageForm({
               src={previewUrl}
               alt={
                 kind === "logo"
-                  ? `Logo de ${associationName}`
-                  : `Portada actual de ${associationName}`
+                  ? `Logo de ${ownerName}`
+                  : kind === "cover"
+                    ? `Portada actual de ${ownerName}`
+                    : `Foto actual de ${ownerName} para el inicio`
               }
               fill
               sizes={
@@ -134,6 +159,32 @@ function AssociationImageForm({
           <ImagePlus aria-hidden className="text-muted-foreground size-8" />
         )}
       </div>
+
+      {kind === "banner" && previewUrl && selection.status !== "preparing" ? (
+        <div className="grid max-w-xl grid-cols-[1.6fr_1fr] gap-3">
+          {bannerCrops.map(({ label, className }) => (
+            <figure key={label} className="space-y-1.5">
+              <div
+                className={cn(
+                  "bg-muted relative overflow-hidden rounded-sm border",
+                  className,
+                )}
+              >
+                {/* Same image as above, cropped like the home does. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={previewUrl}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <figcaption className="text-muted-foreground text-xs">
+                {label}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      ) : null}
 
       {currentUrl || selection.status === "ready" ? null : (
         <p className="text-muted-foreground text-sm">{text.empty}</p>
@@ -220,4 +271,4 @@ function AssociationImageForm({
   );
 }
 
-export { AssociationImageForm };
+export { ImageFieldForm };

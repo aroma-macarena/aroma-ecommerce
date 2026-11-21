@@ -16,6 +16,7 @@ import { AdminEmptyState } from "@/components/admin/admin-empty-state";
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminSection } from "@/components/admin/admin-section";
+import { ImageFieldForm } from "@/components/admin/image-field-form";
 import { ProductImagesPanel } from "@/components/admin/product-images-panel";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { SubmitButton } from "@/components/admin/submit-button";
@@ -35,6 +36,7 @@ import {
   type ProductPublication,
 } from "@/lib/admin/product-publication";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
+import { getMediaUrl } from "@/lib/media";
 import { formatPresentationDetails } from "@/lib/presentation-format";
 import { isMediaStorageConfigured } from "@/lib/storage/r2";
 import { cn } from "@/lib/utils";
@@ -43,6 +45,8 @@ import {
   changeProductStatusAction,
   movePresentationAction,
   moveProductImageAction,
+  removeProductBannerAction,
+  uploadProductBannerAction,
 } from "./actions";
 
 export const metadata: Metadata = {
@@ -59,6 +63,8 @@ const confirmations: Record<string, string> = {
   "imagen-actualizada": "Imagen actualizada.",
   "imagen-principal": "Imagen principal actualizada.",
   "imagen-eliminada": "Imagen eliminada.",
+  "foto-inicio-actualizada": "Foto para el inicio guardada.",
+  "foto-inicio-eliminada": "Foto para el inicio eliminada.",
   publicado: "Producto publicado.",
   pausado: "Producto pausado: ya no aparece en la vitrina.",
 };
@@ -400,6 +406,22 @@ export default async function ProductPage({
           moveAction={(imageId, direction) =>
             moveProductImageAction.bind(null, product.id, imageId, direction)
           }
+        />
+      </AdminSection>
+
+      <AdminSection
+        id="foto-inicio"
+        title="Foto para el inicio"
+        description="Opcional. Cuando el producto sale destacado en el inicio, su foto ocupa todo el ancho de la pantalla: una foto horizontal se ve mucho mejor que la principal recortada."
+      >
+        <ImageFieldForm
+          key={product.bannerObjectKey ?? "none"}
+          kind="banner"
+          ownerName={product.name}
+          currentUrl={getMediaUrl(product.bannerObjectKey)}
+          canUpload={isMediaStorageConfigured()}
+          uploadAction={uploadProductBannerAction.bind(null, product.id)}
+          removeAction={removeProductBannerAction.bind(null, product.id)}
         />
       </AdminSection>
 

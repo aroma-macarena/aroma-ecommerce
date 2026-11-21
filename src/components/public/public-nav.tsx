@@ -76,8 +76,8 @@ function PublicNav() {
                     // Tighter below 480 px so the three links fit beside the symbol.
                     "inline-flex min-h-11 max-w-full items-center px-1.5 py-2 text-sm wrap-anywhere max-[359px]:px-1 max-[359px]:text-[0.8125rem] transition-colors focus-visible:outline-offset-[-2px] min-[480px]:px-2 min-[480px]:text-[0.9375rem] sm:px-3",
                     isActive
-                      ? "text-foreground shadow-[inset_0_-3px_0_var(--brand-orange)] font-semibold"
-                      : "text-muted-foreground hover:text-foreground font-medium",
+                      ? "text-foreground shadow-[inset_0_-2px_0_var(--brand-orange)] font-semibold"
+                      : "text-muted-foreground hover:text-foreground font-semibold",
                   )}
                 >
                   {label}

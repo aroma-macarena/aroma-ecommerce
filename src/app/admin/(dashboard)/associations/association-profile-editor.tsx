@@ -3,8 +3,8 @@ import Link from "next/link";
 
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminSection } from "@/components/admin/admin-section";
-import { AssociationImageForm } from "@/components/admin/association-image-form";
 import { AssociationProfileForm } from "@/components/admin/association-profile-form";
+import { ImageFieldForm } from "@/components/admin/image-field-form";
 import type { AssociationProfile } from "@/lib/admin/association-profile";
 import { getMediaUrl } from "@/lib/media";
 import { getAssociationHref } from "@/lib/public-routes";
@@ -111,10 +111,10 @@ function AssociationProfileEditor({
       >
         {/* Keyed by the stored image, so saving or removing one starts a
             fresh form instead of keeping the local preview. */}
-        <AssociationImageForm
+        <ImageFieldForm
           key={association.logoObjectKey ?? "none"}
           kind="logo"
-          associationName={association.name}
+          ownerName={association.name}
           currentUrl={getMediaUrl(association.logoObjectKey)}
           canUpload={canUpload}
           uploadAction={uploadAssociationImageAction.bind(
@@ -135,10 +135,10 @@ function AssociationProfileEditor({
         title="Portada"
         description="La foto ancha con la que empieza el perfil público."
       >
-        <AssociationImageForm
+        <ImageFieldForm
           key={association.coverObjectKey ?? "none"}
           kind="cover"
-          associationName={association.name}
+          ownerName={association.name}
           currentUrl={getMediaUrl(association.coverObjectKey)}
           canUpload={canUpload}
           uploadAction={uploadAssociationImageAction.bind(

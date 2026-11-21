@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import type { SingleImageFormState } from "@/lib/admin/image-form";
 import {
   INVALID_WHATSAPP_MESSAGE,
   normalizeWhatsAppNumber,
@@ -67,12 +68,7 @@ export type AssociationProfileFormState = {
   values?: AssociationProfileValues;
 };
 
-export type AssociationImageFormState = {
-  status: "idle" | "error";
-  /** Increases on every failed upload. */
-  attempt: number;
-  message?: string;
-};
+export type AssociationImageFormState = SingleImageFormState;
 
 export const associationProfileFields = [
   "name",
