@@ -143,6 +143,7 @@ export async function getEditableProduct(
       origin: products.origin,
       ingredients: products.ingredients,
       availabilityNote: products.availabilityNote,
+      bannerObjectKey: products.bannerObjectKey,
     })
     .from(products)
     .innerJoin(associations, eq(products.associationId, associations.id))

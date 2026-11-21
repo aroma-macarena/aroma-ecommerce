@@ -12,12 +12,10 @@ type AssociationContactProps = {
   productName: string;
   /** Absolute product URL, added to the prefilled message. */
   productUrl?: string | null;
-  /** What happens after the click, shown under the button. */
-  note: string;
   /**
    * Off where space is short (the home's featured card): the button stands
-   * alone, without the note or the "no WhatsApp yet" explanation. With no
-   * button to show at all, the explanation still appears.
+   * alone, without the "no WhatsApp yet" explanation. With no button to show
+   * at all, the explanation still appears.
    */
   showNotes?: boolean;
   /** The button spans its container at every width (the featured card). */
@@ -34,7 +32,6 @@ async function AssociationContact({
   whatsappNumber,
   productName,
   productUrl,
-  note,
   showNotes = true,
   fullWidth = false,
 }: AssociationContactProps) {
@@ -64,13 +61,7 @@ async function AssociationContact({
           Consultar por WhatsApp
         </WhatsAppButton>
       ) : null}
-      {associationHref ? (
-        showNotes ? (
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            {note}
-          </p>
-        ) : null
-      ) : showNotes || !href ? (
+      {!associationHref && (showNotes || !href) ? (
         <p className="text-muted-foreground text-sm leading-relaxed">
           <span className="text-foreground font-semibold">
             {associationName} aún no tiene un WhatsApp publicado.

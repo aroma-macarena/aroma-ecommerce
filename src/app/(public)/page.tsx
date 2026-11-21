@@ -7,7 +7,7 @@ import { BulkContact } from "@/components/plaza/bulk-contact";
 import { FeaturedCard } from "@/components/plaza/featured-card";
 import { HeroCarousel, type HeroSlide } from "@/components/plaza/hero-carousel";
 import { HowToBuy } from "@/components/plaza/how-to-buy";
-import { PlazaProductCard } from "@/components/plaza/plaza-product-card";
+import { PlazaProductGrid } from "@/components/plaza/plaza-product-card";
 import {
   ProducerRail,
   type RailProducer,
@@ -72,7 +72,11 @@ export default async function Home({ searchParams }: PageProps<"/">) {
     return {
       id: product.id,
       label: `${product.name}, de ${product.association.name}`,
-      imageUrl: getMediaUrl(image?.objectKey ?? null),
+      // The horizontal banner when the product has one; otherwise the
+      // primary photo, cropped to the carousel.
+      imageUrl:
+        getMediaUrl(product.bannerObjectKey) ??
+        getMediaUrl(image?.objectKey ?? null),
       imageAlt: image?.altText ?? product.name,
       card: (
         <FeaturedCard
@@ -150,19 +154,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
               habrá más de las asociaciones de AROMA.
             </p>
           ) : products.length > 0 ? (
-            // Each card spans six rows of this grid (see PlazaProductCard);
-            // the space between rows of cards is each card's bottom padding,
-            // and the list's negative margin takes the last one back.
-            <ul className="-mb-12 grid gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
-                <li
-                  key={product.id}
-                  className="row-span-6 grid min-w-0 grid-rows-subgrid pb-12"
-                >
-                  <PlazaProductCard product={product} />
-                </li>
-              ))}
-            </ul>
+            <PlazaProductGrid products={products} />
           ) : (
             <div className="max-w-xl space-y-2 py-4">
               <p className="font-editorial text-2xl font-semibold">

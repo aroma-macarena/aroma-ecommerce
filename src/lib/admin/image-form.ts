@@ -7,6 +7,14 @@ export type ImageFormState = {
   values?: { altText: string };
 };
 
+/** A form that uploads one image in place (a logo, a cover, a banner). */
+export type SingleImageFormState = {
+  status: "idle" | "error";
+  /** Increases on every failed upload. */
+  attempt: number;
+  message?: string;
+};
+
 export const MAX_ALT_TEXT_LENGTH = 300;
 
 /** Help for the alt text field, shared by uploading and editing an image. */

@@ -6,7 +6,7 @@ import { AssociationLogo } from "@/components/catalog/association-logo";
 import type { PublicProduct } from "@/lib/catalog/queries";
 import { getMediaUrl } from "@/lib/media";
 import {
-  formatPresentationSize,
+  formatPresentationSizeNote,
   formatReferencePrice,
 } from "@/lib/presentation-format";
 import {
@@ -101,7 +101,6 @@ function FeaturedCard({ product, productCount }: FeaturedCardProps) {
           whatsappNumber={association.whatsappNumber}
           productName={product.name}
           productUrl={getAbsoluteUrl(productHref)}
-          note="Se abre WhatsApp con un mensaje sobre este producto. AROMA no procesa pagos ni pedidos."
           showNotes={false}
           fullWidth
         />
@@ -171,12 +170,8 @@ function PriceBoard({
     <>
       <ul className="border-foreground mt-3 border-t sm:mt-5">
         {shown.map((presentation) => {
-          const size = formatPresentationSize(presentation);
+          const size = formatPresentationSizeNote(presentation);
           const price = formatReferencePrice(presentation.referencePrice);
-          // "Bolsa 250 g" already says its size; do not repeat "· 250 g".
-          const showSize =
-            size !== "" &&
-            !normalize(presentation.name).includes(normalize(size));
           return (
             <li
               key={presentation.id}
@@ -184,7 +179,7 @@ function PriceBoard({
             >
               <span className="min-w-0 wrap-anywhere">
                 <span className="font-semibold">{presentation.name}</span>
-                {showSize ? (
+                {size ? (
                   <span className="text-muted-foreground"> · {size}</span>
                 ) : null}
               </span>
@@ -210,10 +205,6 @@ function PriceBoard({
       ) : null}
     </>
   );
-}
-
-function normalize(text: string) {
-  return text.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
 export { FeaturedCard };

@@ -94,6 +94,7 @@ export async function getPublicProduct(
       origin: products.origin,
       ingredients: products.ingredients,
       availabilityNote: products.availabilityNote,
+      bannerObjectKey: products.bannerObjectKey,
       categoryName: categories.name,
       categorySlug: categories.slug,
       association: {

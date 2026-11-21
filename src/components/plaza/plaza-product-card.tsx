@@ -104,4 +104,25 @@ function PlazaProductCard({ product }: PlazaProductCardProps) {
   );
 }
 
-export { PlazaProductCard };
+/**
+ * Product cards in one to three columns. Each card spans six rows of this
+ * grid (see PlazaProductCard); the space between rows of cards is each
+ * card's bottom padding, and the list's negative margin takes the last one
+ * back.
+ */
+function PlazaProductGrid({ products }: { products: CatalogProduct[] }) {
+  return (
+    <ul className="-mb-12 grid gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
+      {products.map((product) => (
+        <li
+          key={product.id}
+          className="row-span-6 grid min-w-0 grid-rows-subgrid pb-12"
+        >
+          <PlazaProductCard product={product} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export { PlazaProductCard, PlazaProductGrid };
