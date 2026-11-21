@@ -309,6 +309,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <div className="mt-8">
               <PlazaProductGrid
                 products={otherProducts.slice(0, MORE_PRODUCTS)}
+                showAssociation={false}
               />
             </div>
           </section>

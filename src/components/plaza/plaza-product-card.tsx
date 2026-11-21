@@ -10,13 +10,22 @@ import { getProductDetailHref } from "@/lib/public-routes";
 
 type PlazaProductCardProps = {
   product: CatalogProduct;
+  /**
+   * Off where every card shares the producer and the page already names it
+   * (its profile, «Más de…»). The row stays, empty, so the rows still line
+   * up.
+   */
+  showAssociation?: boolean;
 };
 
 /**
  * A product led by its photo, with its producer named right under it so
  * nobody has to guess who makes it. The name link covers the whole card.
  */
-function PlazaProductCard({ product }: PlazaProductCardProps) {
+function PlazaProductCard({
+  product,
+  showAssociation = true,
+}: PlazaProductCardProps) {
   const imageUrl = getMediaUrl(product.imageObjectKey);
   const fromPrice = formatReferencePrice(product.fromPrice);
 
@@ -49,17 +58,21 @@ function PlazaProductCard({ product }: PlazaProductCardProps) {
       </div>
 
       <div className="flex items-center gap-2 pt-4">
-        {getMediaUrl(product.associationLogoObjectKey) ? (
-          <AssociationLogo
-            name={product.associationName}
-            objectKey={product.associationLogoObjectKey}
-            sizes="24px"
-            className="size-6 rounded-full"
-          />
+        {showAssociation ? (
+          <>
+            {getMediaUrl(product.associationLogoObjectKey) ? (
+              <AssociationLogo
+                name={product.associationName}
+                objectKey={product.associationLogoObjectKey}
+                sizes="24px"
+                className="size-6 rounded-full"
+              />
+            ) : null}
+            <span className="text-muted-foreground line-clamp-1 text-sm font-medium">
+              {product.associationName}
+            </span>
+          </>
         ) : null}
-        <span className="text-muted-foreground line-clamp-1 text-sm font-medium">
-          {product.associationName}
-        </span>
       </div>
       <h3
         id={`producto-${product.id}`}
@@ -110,7 +123,13 @@ function PlazaProductCard({ product }: PlazaProductCardProps) {
  * card's bottom padding, and the list's negative margin takes the last one
  * back.
  */
-function PlazaProductGrid({ products }: { products: CatalogProduct[] }) {
+function PlazaProductGrid({
+  products,
+  showAssociation = true,
+}: {
+  products: CatalogProduct[];
+  showAssociation?: boolean;
+}) {
   return (
     <ul className="-mb-12 grid gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
       {products.map((product) => (
@@ -118,7 +137,10 @@ function PlazaProductGrid({ products }: { products: CatalogProduct[] }) {
           key={product.id}
           className="row-span-6 grid min-w-0 grid-rows-subgrid pb-12"
         >
-          <PlazaProductCard product={product} />
+          <PlazaProductCard
+            product={product}
+            showAssociation={showAssociation}
+          />
         </li>
       ))}
     </ul>

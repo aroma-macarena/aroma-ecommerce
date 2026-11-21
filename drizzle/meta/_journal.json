@@ -50,6 +50,13 @@
       "when": 1795281437659,
       "tag": "0006_bizarre_shen",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795303261373,
+      "tag": "0007_safe_warstar",
+      "breakpoints": true
     }
   ]
 }

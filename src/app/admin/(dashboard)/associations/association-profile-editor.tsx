@@ -3,8 +3,10 @@ import Link from "next/link";
 
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminSection } from "@/components/admin/admin-section";
+import { AssociationPhotosPanel } from "@/components/admin/association-photos-panel";
 import { AssociationProfileForm } from "@/components/admin/association-profile-form";
 import { ImageFieldForm } from "@/components/admin/image-field-form";
+import { getAssociationPhotos } from "@/lib/admin/association-photos";
 import type { AssociationProfile } from "@/lib/admin/association-profile";
 import { getMediaUrl } from "@/lib/media";
 import { getAssociationHref } from "@/lib/public-routes";
@@ -12,9 +14,13 @@ import { isMediaStorageConfigured } from "@/lib/storage/r2";
 import { formatWhatsAppNumber } from "@/lib/whatsapp";
 
 import {
+  deleteAssociationPhotoAction,
+  moveAssociationPhotoAction,
   removeAssociationImageAction,
+  updateAssociationPhotoAction,
   updateAssociationProfileAction,
   uploadAssociationImageAction,
+  uploadAssociationPhotoAction,
 } from "./profile-actions";
 
 const confirmations: Record<string, string> = {
@@ -23,6 +29,10 @@ const confirmations: Record<string, string> = {
   "logo-eliminado": "Logo quitado.",
   "portada-actualizada": "Portada actualizada.",
   "portada-eliminada": "Portada quitada.",
+  "foto-agregada": "Foto agregada al perfil.",
+  "foto-actualizada": "Textos de la foto guardados.",
+  "fotos-ordenadas": "Orden de las fotos guardado.",
+  "foto-eliminada": "Foto quitada.",
 };
 
 const warnings: Record<string, string> = {
@@ -40,9 +50,9 @@ type AssociationProfileEditorProps = {
 
 /**
  * Public profile editing shared by an association's own page and the
- * alliance's association list: text fields, logo and cover.
+ * alliance's association list: text fields, logo, cover and photos.
  */
-function AssociationProfileEditor({
+async function AssociationProfileEditor({
   association,
   canEditName,
   cancelHref,
@@ -54,6 +64,7 @@ function AssociationProfileEditor({
   const warning = typeof aviso === "string" ? warnings[aviso] : undefined;
   const canUpload = isMediaStorageConfigured();
   const publicHref = getAssociationHref(association.slug);
+  const photos = await getAssociationPhotos(association.id);
 
   return (
     <>
@@ -151,6 +162,48 @@ function AssociationProfileEditor({
             null,
             association.id,
             "cover",
+          )}
+        />
+      </AdminSection>
+
+      <AdminSection
+        id="fotos"
+        title="Fotos"
+        description={`Hasta 8 fotos del trabajo y el territorio de la asociación. Se ven en el perfil público, en este orden; la primera va más grande.`}
+      >
+        <AssociationPhotosPanel
+          associationName={association.name}
+          photos={photos}
+          canUpload={canUpload}
+          uploadAction={uploadAssociationPhotoAction.bind(null, association.id)}
+          photoActions={Object.fromEntries(
+            photos.map((photo) => [
+              photo.id,
+              {
+                update: updateAssociationPhotoAction.bind(
+                  null,
+                  association.id,
+                  photo.id,
+                ),
+                moveUp: moveAssociationPhotoAction.bind(
+                  null,
+                  association.id,
+                  photo.id,
+                  "up",
+                ),
+                moveDown: moveAssociationPhotoAction.bind(
+                  null,
+                  association.id,
+                  photo.id,
+                  "down",
+                ),
+                remove: deleteAssociationPhotoAction.bind(
+                  null,
+                  association.id,
+                  photo.id,
+                ),
+              },
+            ]),
           )}
         />
       </AdminSection>

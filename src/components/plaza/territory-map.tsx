@@ -36,8 +36,12 @@ const distanceRings = [
  * hatched, the rivers in worn ink, rings of straight-line distance from the
  * town and the town as a small square. Rendered on the server; purely
  * decorative, since the markers and the list tell what it locates.
+ *
+ * `compact` is for small renderings (the association profile's locator):
+ * only the town is named, larger, and the rings and other labels, which
+ * would be unreadable, are left out.
  */
-function TerritoryMap() {
+function TerritoryMap({ compact = false }: { compact?: boolean }) {
   const town = projectToTerritory(townPosition.lat, townPosition.lon);
 
   return (
@@ -111,7 +115,7 @@ function TerritoryMap() {
         />
       ))}
 
-      {distanceRings.map(({ km, labelAngle }) => {
+      {(compact ? [] : distanceRings).map(({ km, labelAngle }) => {
         const radius = km * territoryUnitsPerKm;
         const angle = (labelAngle * Math.PI) / 180;
         return (
@@ -142,7 +146,7 @@ function TerritoryMap() {
         );
       })}
 
-      {placeLabels.map(({ text, lat, lon, kind }) => {
+      {(compact ? [] : placeLabels).map(({ text, lat, lon, kind }) => {
         const { x, y } = projectToTerritory(lat, lon);
         return (
           <text
@@ -173,7 +177,11 @@ function TerritoryMap() {
       <text
         x={town.x + 26}
         y={town.y + 7}
-        className="fill-foreground font-editorial text-[30px] font-semibold sm:text-[20px]"
+        className={
+          compact
+            ? "fill-foreground font-editorial text-[38px] font-semibold"
+            : "fill-foreground font-editorial text-[30px] font-semibold sm:text-[20px]"
+        }
       >
         La Macarena
       </text>

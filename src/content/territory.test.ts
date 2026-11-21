@@ -5,7 +5,11 @@ import {
   territoryViewBox,
 } from "@/content/territory-frame";
 
-import { getTerritoryZone, territoryZones } from "./territory";
+import {
+  formatZoneSuffix,
+  getTerritoryZone,
+  territoryZones,
+} from "./territory";
 
 describe("territory zones", () => {
   it("all lie inside the drawn map", () => {
@@ -16,6 +20,17 @@ describe("territory zones", () => {
       expect(y, zone.slug).toBeGreaterThan(0);
       expect(y, zone.slug).toBeLessThan(territoryViewBox.height);
     }
+  });
+
+  it("leave the town without a distance, beside its own name", () => {
+    const town = getTerritoryZone("casco-urbano")!;
+    const billar = getTerritoryZone("el-billar")!;
+
+    expect(formatZoneSuffix(town)).toBe("");
+    expect(formatZoneSuffix(town, "zona aproximada")).toBe(
+      " · zona aproximada",
+    );
+    expect(formatZoneSuffix(billar)).toBe(" · 8 km de La Macarena");
   });
 
   it("have unique slugs and resolve by them", () => {

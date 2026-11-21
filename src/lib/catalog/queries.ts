@@ -1,6 +1,7 @@
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
+import { associationPhotosTable as associationPhotos_ } from "@/db/schema/associationPhotos";
 import { associationsTable as associations } from "@/db/schema/associations";
 import { categoriesTable as categories } from "@/db/schema/categories";
 import { productImagesTable as productImages } from "@/db/schema/productImages";
@@ -204,11 +205,13 @@ export type PublicAssociationSummary = Awaited<
 export async function getPublicAssociation(slug: string) {
   const [association] = await db
     .select({
+      id: associations.id,
       name: associations.name,
       slug: associations.slug,
       description: associations.description,
       history: associations.history,
       location: associations.location,
+      zone: associations.zone,
       whatsappNumber: associations.whatsappNumber,
       logoObjectKey: associations.logoObjectKey,
       coverObjectKey: associations.coverObjectKey,
@@ -221,10 +224,25 @@ export async function getPublicAssociation(slug: string) {
     return null;
   }
 
-  return {
-    ...association,
-    products: await getCatalogProducts({ associationSlug: association.slug }),
-  };
+  const [products, associationPhotos] = await Promise.all([
+    getCatalogProducts({ associationSlug: association.slug }),
+    db
+      .select({
+        id: associationPhotos_.id,
+        objectKey: associationPhotos_.objectKey,
+        altText: associationPhotos_.altText,
+        caption: associationPhotos_.caption,
+      })
+      .from(associationPhotos_)
+      .where(eq(associationPhotos_.associationId, association.id))
+      .orderBy(
+        asc(associationPhotos_.displayOrder),
+        asc(associationPhotos_.createdAt),
+        asc(associationPhotos_.id),
+      ),
+  ]);
+
+  return { ...association, products, photos: associationPhotos };
 }
 
 export type PublicAssociation = NonNullable<

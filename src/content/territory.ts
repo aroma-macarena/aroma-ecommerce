@@ -94,9 +94,19 @@ export function getTerritoryZone(slug: string | null) {
   return territoryZones.find((zone) => zone.slug === slug) ?? null;
 }
 
-/** «70 km de La Macarena» or «En el casco urbano». */
+/**
+ * «70 km de La Macarena»; null for the town itself, whose zone name already
+ * says where it is.
+ */
 export function formatZoneDistance(zone: TerritoryZone) {
-  return zone.distanceKm === 0
-    ? "En el casco urbano"
-    : `${zone.distanceKm} km de La Macarena`;
+  return zone.distanceKm === 0 ? null : `${zone.distanceKm} km de La Macarena`;
+}
+
+/**
+ * What follows a zone's name: « · 70 km de La Macarena» plus any `extra`
+ * parts, or only the extras (or nothing) for the town.
+ */
+export function formatZoneSuffix(zone: TerritoryZone, ...extra: string[]) {
+  const parts = [formatZoneDistance(zone), ...extra].filter(Boolean);
+  return parts.length > 0 ? ` · ${parts.join(" · ")}` : "";
 }

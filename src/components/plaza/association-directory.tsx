@@ -14,6 +14,7 @@ import {
 import { AromaLogo } from "@/components/brand/aroma-logo";
 import {
   formatZoneDistance,
+  formatZoneSuffix,
   getTerritoryZone,
   type TerritoryZone,
   territoryZones,
@@ -440,9 +441,11 @@ function ZoneStack({
           <p className="font-editorial text-lg leading-snug font-semibold">
             {zone.name}
           </p>
-          <p className="text-muted-foreground mt-0.5 text-sm">
-            {formatZoneDistance(zone)}
-          </p>
+          {formatZoneDistance(zone) ? (
+            <p className="text-muted-foreground mt-0.5 text-sm">
+              {formatZoneDistance(zone)}
+            </p>
+          ) : null}
         </div>
         {pinned ? (
           <button
@@ -583,8 +586,7 @@ function AssociationCard({
         <p className="mt-1 text-sm leading-snug">
           <span className="font-editorial text-base italic">{zone.name}</span>
           <span className="text-muted-foreground">
-            {" "}
-            · {formatZoneDistance(zone)}
+            {formatZoneSuffix(zone)}
           </span>
         </p>
       ) : association.location ? (

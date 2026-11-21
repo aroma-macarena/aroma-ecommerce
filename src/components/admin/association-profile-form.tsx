@@ -11,7 +11,7 @@ import {
   FormSection,
   SelectControl,
 } from "@/components/admin/form-fields";
-import { formatZoneDistance, territoryZones } from "@/content/territory";
+import { formatZoneSuffix, territoryZones } from "@/content/territory";
 import {
   type AssociationProfileField,
   associationProfileFields,
@@ -154,7 +154,8 @@ function AssociationProfileForm({
             <option value="">Sin zona en el mapa</option>
             {territoryZones.map((zone) => (
               <option key={zone.slug} value={zone.slug}>
-                {zone.name} · {formatZoneDistance(zone)}
+                {zone.name}
+                {formatZoneSuffix(zone)}
               </option>
             ))}
           </SelectControl>
