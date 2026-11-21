@@ -43,6 +43,13 @@
       "when": 1795276677723,
       "tag": "0005_slow_living_tribunal",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795281437659,
+      "tag": "0006_bizarre_shen",
+      "breakpoints": true
     }
   ]
 }

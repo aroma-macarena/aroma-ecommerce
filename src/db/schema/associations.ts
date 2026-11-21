@@ -19,6 +19,9 @@ export const associationsTable = pgTable(
     description: text("description"),
     history: text("history"),
     location: varchar("location", { length: 255 }),
+    // A slug from src/content/territory.ts: the approximate zone shown on the
+    // directory's map. Null keeps the association off the map.
+    zone: varchar("zone", { length: 64 }),
     contactName: varchar("contact_name", { length: 150 }),
     whatsappNumber: varchar("whatsapp_number", { length: 30 }),
     logoObjectKey: varchar("logo_object_key", { length: 500 }),

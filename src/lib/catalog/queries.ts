@@ -174,6 +174,7 @@ export async function getPublicAssociations() {
       slug: associations.slug,
       description: associations.description,
       location: associations.location,
+      zone: associations.zone,
       logoObjectKey: associations.logoObjectKey,
       coverObjectKey: associations.coverObjectKey,
       // Explicit aliases: in a single-table select Drizzle leaves columns

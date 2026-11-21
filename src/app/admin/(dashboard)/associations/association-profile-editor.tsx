@@ -96,6 +96,7 @@ function AssociationProfileEditor({
         defaultValues={{
           name: association.name,
           location: association.location ?? "",
+          zone: association.zone ?? "",
           description: association.description ?? "",
           history: association.history ?? "",
           contactName: association.contactName ?? "",

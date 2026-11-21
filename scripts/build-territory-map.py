@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+"""
+Builds src/content/territory-map.ts (shapes) and territory-frame.ts
+(frame and projection), the drawn map of La Macarena used by the
+association directory, from OpenStreetMap data (© OpenStreetMap
+contributors, ODbL).
+
+Download the three inputs once from the Overpass API into a folder and pass
+it as the only argument:
+
+  munis.json  relation(id:11372667,7229667,7229628,11372871,11372668);out geom;
+  parks.json  relation["boundary"="national_park"]["name"~"Macarena|Tinigua",i]
+              (1.4,-75.2,3.2,-73.0);out geom;
+  rivers.json way["waterway"="river"]["name"~"Guayabero|Losada|Duda|Guaviare|
+              Ariari|Yar[ií]",i](1.4,-75.2,3.2,-73.0);out geom;
+
+Python standard library only. The output is committed; rerun only to change
+the drawing.
+"""
+
+import json
+import math
+import sys
+from pathlib import Path
+
+# Map frame: La Macarena municipality with a margin, in degrees.
+WEST, EAST, SOUTH, NORTH = -74.80, -73.38, 1.55, 2.72
+WIDTH = 1000  # viewBox units
+LAT_MID = (SOUTH + NORTH) / 2
+X_SCALE = WIDTH / ((EAST - WEST) * math.cos(math.radians(LAT_MID)))
+HEIGHT = round((NORTH - SOUTH) * X_SCALE)
+TOLERANCE = 1.2  # simplification, in viewBox units
+
+
+def project(lon, lat):
+    x = (lon - WEST) * math.cos(math.radians(LAT_MID)) * X_SCALE
+    y = (NORTH - lat) * X_SCALE
+    return (x, y)
+
+
+def simplify(points, tolerance=TOLERANCE):
+    """Douglas-Peucker on projected points."""
+    if len(points) < 3:
+        return points
+    (x1, y1), (x2, y2) = points[0], points[-1]
+    dx, dy = x2 - x1, y2 - y1
+    length = math.hypot(dx, dy) or 1e-9
+    index, distance = 0, 0.0
+    for i in range(1, len(points) - 1):
+        px, py = points[i]
+        d = abs(dy * px - dx * py + x2 * y1 - y2 * x1) / length
+        if d > distance:
+            index, distance = i, d
+    if distance <= tolerance:
+        return [points[0], points[-1]]
+    left = simplify(points[: index + 1], tolerance)
+    right = simplify(points[index:], tolerance)
+    return left[:-1] + right
+
+
+def stitch(ways):
+    """Joins a relation's outer ways into closed rings."""
+    segments = [list(w) for w in ways if len(w) > 1]
+    rings = []
+    while segments:
+        ring = segments.pop(0)
+        changed = True
+        while changed and ring[0] != ring[-1]:
+            changed = False
+            for i, seg in enumerate(segments):
+                if seg[0] == ring[-1]:
+                    ring += seg[1:]
+                elif seg[-1] == ring[-1]:
+                    ring += seg[::-1][1:]
+                elif seg[-1] == ring[0]:
+                    ring = seg[:-1] + ring
+                elif seg[0] == ring[0]:
+                    ring = seg[::-1][:-1] + ring
+                else:
+                    continue
+                segments.pop(i)
+                changed = True
+                break
+        rings.append(ring)
+    return rings
+
+
+def path(points, closed):
+    projected = [project(lon, lat) for lon, lat in points]
+    if closed and len(projected) > 3:
+        # A ring starts and ends on the same point, which would collapse the
+        # simplification's baseline: simplify its two halves instead.
+        middle = len(projected) // 2
+        pts = simplify(projected[: middle + 1]) + simplify(projected[middle:])[1:]
+    else:
+        pts = simplify(projected)
+    if len(pts) < 2:
+        return ""
+    head = f"M{pts[0][0]:.1f} {pts[0][1]:.1f}"
+    body = "".join(f"L{x:.1f} {y:.1f}" for x, y in pts[1:])
+    return head + body + ("Z" if closed else "")
+
+
+def relation_paths(element):
+    ways = [
+        [(p["lon"], p["lat"]) for p in m["geometry"]]
+        for m in element.get("members", [])
+        if m["type"] == "way" and m.get("role") in ("outer", "") and m.get("geometry")
+    ]
+    return "".join(path(ring, True) for ring in stitch(ways))
+
+
+def main(folder):
+    folder = Path(folder)
+    munis = json.loads((folder / "munis.json").read_text())["elements"]
+    parks = json.loads((folder / "parks.json").read_text())["elements"]
+    rivers = json.loads((folder / "rivers.json").read_text())["elements"]
+
+    municipalities = {e["tags"]["name"]: relation_paths(e) for e in munis}
+    protected = {
+        e["tags"]["name"]: relation_paths(e)
+        for e in parks
+        if e["type"] == "relation" and e["tags"].get("boundary") == "national_park"
+    }
+    # Only the rivers that shape the alliance's territory; others (the Yarí,
+    # the Ariari) would show as stray strokes at the frame's edges.
+    kept_rivers = {"Río Guayabero", "Río Losada", "Río Duda"}
+    river_paths = {}
+    for e in rivers:
+        name = e["tags"]["name"].split(" - ")[0].split(" (")[0]
+        if name not in kept_rivers:
+            continue
+        line = path([(p["lon"], p["lat"]) for p in e["geometry"]], False)
+        river_paths[name] = river_paths.get(name, "") + line
+
+    header = [
+        "// Generated by scripts/build-territory-map.py from OpenStreetMap data",
+        "// (© OpenStreetMap contributors, ODbL). Do not edit by hand.",
+        "",
+    ]
+    # The frame and projection are tiny and used by client code; the shapes
+    # are drawn on the server only, so they live in a file of their own.
+    frame = header + [
+        "/** The drawn frame, in viewBox units, and how to place a point in it. */",
+        f"export const territoryViewBox = {{ width: {WIDTH}, height: {HEIGHT} }} as const;",
+        "",
+        "const frame = {",
+        f"  west: {WEST},",
+        f"  north: {NORTH},",
+        f"  cosLat: {math.cos(math.radians(LAT_MID))!r},",
+        f"  scale: {X_SCALE!r},",
+        "} as const;",
+        "",
+        "/** viewBox units per kilometre (the projection keeps them equal on both axes). */",
+        "export const territoryUnitsPerKm = frame.scale / 110.574;",
+        "",
+        "/** Longitude and latitude to viewBox coordinates. */",
+        "export function projectToTerritory(lat: number, lon: number) {",
+        "  return {",
+        "    x: (lon - frame.west) * frame.cosLat * frame.scale,",
+        "    y: (frame.north - lat) * frame.scale,",
+        "  };",
+        "}",
+        "",
+    ]
+    out = header + ["export const territoryShapes = {", "  municipalities: {"]
+    for name, d in sorted(municipalities.items()):
+        out.append(f"    {json.dumps(name, ensure_ascii=False)}: {json.dumps(d)},")
+    out.append("  },")
+    out.append("  parks: {")
+    for name, d in sorted(protected.items()):
+        out.append(f"    {json.dumps(name, ensure_ascii=False)}: {json.dumps(d)},")
+    out.append("  },")
+    out.append("  rivers: {")
+    for name, d in sorted(river_paths.items()):
+        out.append(f"    {json.dumps(name, ensure_ascii=False)}: {json.dumps(d)},")
+    out.append("  },")
+    out.append("} as const;")
+    out.append("")
+
+    content = Path(__file__).resolve().parent.parent / "src/content"
+    (content / "territory-frame.ts").write_text("\n".join(frame))
+    target = content / "territory-map.ts"
+    target.write_text("\n".join(out))
+    print(f"wrote {target} ({target.stat().st_size // 1024} KB), viewBox {WIDTH}x{HEIGHT}")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1])

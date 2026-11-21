@@ -9,7 +9,9 @@ import {
   FormActions,
   FormAlert,
   FormSection,
+  SelectControl,
 } from "@/components/admin/form-fields";
+import { formatZoneDistance, territoryZones } from "@/content/territory";
 import {
   type AssociationProfileField,
   associationProfileFields,
@@ -37,6 +39,7 @@ const initialState: AssociationProfileFormState = {
 const hints = {
   name: "Como aparece en la vitrina, el directorio y los mensajes. Su dirección pública no cambia. Hasta 200 caracteres.",
   location: "Vereda, municipio o departamento. Hasta 255 caracteres.",
+  zone: "Dónde se marca la asociación en el mapa del directorio. Es una zona aproximada, nunca una dirección. Sin zona, la asociación aparece en la lista pero no en el mapa.",
   description:
     "Quiénes son y qué producen, en pocas frases. Aparece en el directorio y en el perfil. Hasta 2000 caracteres.",
   history: "Cómo empezó la asociación y qué la mueve. Hasta 5000 caracteres.",
@@ -132,6 +135,29 @@ function AssociationProfileForm({
             type="text"
             className={cn(controlClassName, "min-h-11")}
           />
+        </Field>
+
+        <Field
+          name="zone"
+          label="Zona en el mapa"
+          hint={hints.zone}
+          error={errors.zone}
+          optional
+        >
+          <SelectControl
+            id="zone"
+            name="zone"
+            defaultValue={values.zone ?? ""}
+            aria-invalid={errors.zone ? true : undefined}
+            aria-describedby={describedBy("zone", hints.zone, errors.zone)}
+          >
+            <option value="">Sin zona en el mapa</option>
+            {territoryZones.map((zone) => (
+              <option key={zone.slug} value={zone.slug}>
+                {zone.name} · {formatZoneDistance(zone)}
+              </option>
+            ))}
+          </SelectControl>
         </Field>
 
         <Field

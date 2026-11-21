@@ -1,0 +1,1 @@
+ALTER TABLE "associations" ADD COLUMN "zone" varchar(64);
