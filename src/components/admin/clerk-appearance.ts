@@ -1,27 +1,35 @@
 import type { SignIn } from "@clerk/nextjs";
 import type { ComponentProps } from "react";
 
-/** Clerk's sign-in and sign-up forms, in the admin's visual language. */
+/**
+ * Clerk's sign-in and sign-up forms in the admin's world, «Cuaderno de la
+ * asociación»: the pages wrap them in `.cuaderno`, so these variables read
+ * its tokens.
+ */
 export const clerkAppearance = {
   variables: {
     colorPrimary: "var(--primary)",
     colorBackground: "var(--card)",
     colorForeground: "var(--foreground)",
     colorMutedForeground: "var(--muted-foreground)",
-    fontFamily: "var(--font-geist-sans), sans-serif",
+    fontFamily: "var(--font-atkinson), ui-sans-serif, system-ui, sans-serif",
+    colorDanger: "var(--destructive)",
+    colorInput: "var(--card)",
+    colorInputForeground: "var(--foreground)",
     borderRadius: "var(--radius)",
   },
   elements: {
     rootBox: "w-full! max-w-full!",
     cardBox:
-      "w-full! max-w-full! shadow-none! border! border-border! rounded-lg!",
-    card: "w-full! min-w-0! gap-6! px-4! py-6! shadow-none! border-0! rounded-lg!",
-    headerTitle:
-      "font-heading! text-foreground! text-2xl! font-semibold! tracking-[-0.02em]!",
+      "w-full! max-w-full! shadow-none! border! border-border! rounded-md!",
+    card: "w-full! min-w-0! gap-6! px-5! py-6! shadow-none! border-0! rounded-md!",
+    headerTitle: "text-foreground! text-[1.5rem]! font-bold! tracking-normal!",
+    headerSubtitle: "text-muted-foreground! text-sm!",
+    formFieldLabel: "text-foreground! text-sm! font-bold!",
     formFieldInput:
       "min-h-11! min-w-0! w-full! rounded-md! border! border-input! text-base! shadow-none! focus-visible:outline-2! focus-visible:outline-offset-4! focus-visible:outline-ring!",
     formButtonPrimary:
-      "h-auto! min-h-11! max-w-full! gap-2! px-3! py-3! whitespace-normal! rounded-md! bg-primary! bg-none! hover:bg-primary/90! shadow-none! text-sm! font-semibold! focus-visible:outline-2! focus-visible:outline-offset-4! focus-visible:outline-ring! [&::after]:shadow-none! [&::after]:bg-none!",
+      "h-auto! min-h-11! max-w-full! gap-2! px-3! py-3! whitespace-normal! rounded-md! bg-primary! bg-none! hover:bg-primary/90! shadow-none! text-base! font-bold! focus-visible:outline-2! focus-visible:outline-offset-4! focus-visible:outline-ring! [&::after]:shadow-none! [&::after]:bg-none!",
     // Clerk uses this element for both "Restablece tu contraseña" and
     // the alternative sign-in methods; only the latter contain a text
     // element, so the reset action gets the primary button style.
@@ -31,6 +39,9 @@ export const clerkAppearance = {
     // keep their colors and only drop the gradient and shine.
     button:
       "rounded-md! shadow-none! bg-none! [&::after]:shadow-none! [&::after]:bg-none!",
-    footer: "bg-muted! rounded-b-lg!",
+    footer: "bg-muted! rounded-b-md!",
+    footerActionLink: "text-primary! font-bold!",
+    formFieldAction: "text-primary! font-bold!",
+    identityPreviewEditButton: "text-primary!",
   },
 } satisfies ComponentProps<typeof SignIn>["appearance"];

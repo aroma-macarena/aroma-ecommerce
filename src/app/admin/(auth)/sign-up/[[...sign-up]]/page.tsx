@@ -22,7 +22,7 @@ export default async function Page({
   const hasInvitation = typeof ticket === "string" && ticket.length > 0;
 
   return (
-    <main className="flex min-h-svh flex-1 items-center justify-center px-4 py-8">
+    <main className="cuaderno bg-grid-paper text-foreground flex min-h-svh flex-1 items-center justify-center px-4 py-8">
       <div className="w-full max-w-sm space-y-6">
         <Link
           href="/"
@@ -34,11 +34,11 @@ export default async function Page({
         {hasInvitation ? (
           <SignUp appearance={clerkAppearance} />
         ) : (
-          <div className="space-y-4 rounded-lg border px-4 py-6">
-            <h1 className="font-heading text-2xl font-semibold tracking-[-0.02em]">
+          <div className="bg-card space-y-4 rounded-md border px-5 py-6">
+            <h1 className="text-[1.5rem] leading-tight font-bold text-balance">
               El acceso es solo por invitación
             </h1>
-            <p className="text-muted-foreground text-sm leading-6">
+            <p className="text-muted-foreground leading-relaxed">
               Las cuentas del panel las crea la alianza AROMA. Si te invitaron,
               abre el enlace del correo de invitación. Si ya tienes acceso,
               inicia sesión.
@@ -53,7 +53,7 @@ export default async function Page({
         )}
         <Link
           href="/"
-          className="text-muted-foreground hover:text-primary flex min-h-11 items-center justify-center rounded-md text-sm underline underline-offset-4"
+          className="text-primary flex min-h-11 items-center justify-center rounded-md text-sm font-bold underline-offset-4 hover:underline"
         >
           Volver al sitio público
         </Link>

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   return (
-    <main className="flex min-h-svh flex-1 items-center justify-center px-4 py-8">
+    <main className="cuaderno bg-grid-paper text-foreground flex min-h-svh flex-1 items-center justify-center px-4 py-8">
       <div className="w-full max-w-sm space-y-6">
         <Link
           href="/"
@@ -23,7 +23,7 @@ export default async function Page() {
         <SignIn appearance={clerkAppearance} />
         <Link
           href="/"
-          className="text-muted-foreground hover:text-primary flex min-h-11 items-center justify-center rounded-md text-sm underline underline-offset-4"
+          className="text-primary flex min-h-11 items-center justify-center rounded-md text-sm font-bold underline-offset-4 hover:underline"
         >
           Volver al sitio público
         </Link>

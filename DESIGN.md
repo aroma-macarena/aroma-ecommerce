@@ -258,7 +258,7 @@ components:
 
 # Design System: AROMA
 
-> **Tres mundos en este repositorio.** El sitio público (todo lo que vive bajo `src/app/(public)`, envuelto en la clase `.plaza`) usa el mundo **«Vitrina de productoras»**, que es el que describen los tokens sin prefijo del encabezado. La administración (`/admin`, todo lo que envuelve `AdminShell` con la clase `.cuaderno`) usa el mundo **«Cuaderno de la asociación»**, con los tokens `cuaderno-*`, `correction` y `admin-*`. La página 404 y las pantallas de acceso (inicio de sesión y registro con Clerk, y los avisos de acceso denegado del admin, que se muestran en lugar de `AdminShell`) quedan fuera de `.cuaderno` y siguen en el mundo anterior, **«etiqueta de origen»**, con los tokens de `:root`, hasta que se rediseñen. Cada sección marca qué parte corresponde a cada mundo.
+> **Tres mundos en este repositorio.** El sitio público (todo lo que vive bajo `src/app/(public)`, envuelto en la clase `.plaza`) usa el mundo **«Vitrina de productoras»**, que es el que describen los tokens sin prefijo del encabezado. La administración (`/admin`, todo lo que envuelve `AdminShell` con la clase `.cuaderno`) usa el mundo **«Cuaderno de la asociación»**, con los tokens `cuaderno-*`, `correction` y `admin-*`. Las pantallas de acceso (inicio de sesión y registro con Clerk, y los avisos de acceso denegado, que se muestran en lugar de `AdminShell`) llevan `.cuaderno` en su propio `main`, porque son la puerta del panel. Solo la página 404 sigue en el mundo anterior, **«etiqueta de origen»**, con los tokens de `:root`. Cada sección marca qué parte corresponde a cada mundo.
 
 ## Overview
 
@@ -333,9 +333,9 @@ Papel blanco con una cuadrícula azul apenas visible, hojas blancas encima y tin
 
 **The Grey Pause Rule.** Lo pausado o inactivo pierde el color: insignia en grafito gastado, miniatura en escala de grises y cifra en cero en gris.
 
-### Mundo anterior (404 y acceso)
+### Mundo anterior (404)
 
-La página 404, el inicio de sesión y el registro con Clerk y los avisos de acceso denegado del admin conservan los tokens de `:root` de la «etiqueta de origen»: papel `#F6F1E7` de fondo, tarjeta hueso `#FFFDF8`, arena `#ECE4D5`, tinta `#1D1915`, verde acción `#3F7518` (`primary`, texto blanco a 5,6:1), verde marca `#4B8C1C` (solo superficies e ilustración), bordó `#5F0400` (superficie institucional, nunca títulos; también la selección de texto fuera de `.plaza` y `.cuaderno`) y naranja `#E24C11` (acento escaso, nunca texto pequeño). El modo claro es la superficie validada; los tokens oscuros heredados no están certificados.
+La página 404 conserva los tokens de `:root` de la «etiqueta de origen»: papel `#F6F1E7` de fondo, tarjeta hueso `#FFFDF8`, arena `#ECE4D5`, tinta `#1D1915`, verde acción `#3F7518` (`primary`, texto blanco a 5,6:1), verde marca `#4B8C1C` (solo superficies e ilustración), bordó `#5F0400` (superficie institucional, nunca títulos; también la selección de texto fuera de `.plaza` y `.cuaderno`) y naranja `#E24C11` (acento escaso, nunca texto pequeño). El modo claro es la superficie validada; los tokens oscuros heredados no están certificados.
 
 ## Typography
 
@@ -384,9 +384,9 @@ La página 404, el inicio de sesión y el registro con Clerk y los avisos de acc
 
 **The Consequence Help Rule.** El texto de ayuda aparece solo donde una decisión tiene una consecuencia que no se ve («No se puede cambiar después de crear el producto.») o donde un ejemplo ahorra una duda («Vereda, municipio o finca.»); nunca para anunciar un límite de caracteres: el límite se aplica en silencio y, cuando quedan pocos (10 % del límite, al menos 10), aparece bajo el campo «Te quedan N caracteres.», que pasa a rojo de corrección al llegar al límite (`CharacterBudget`, un solo listener en el shell que llena el espacio que deja cada `Field`). Un campo opcional lo dice con «(opcional)» en grafito gastado junto a su etiqueta.
 
-### Mundo anterior (404 y acceso)
+### Mundo anterior (404)
 
-Bricolage Grotesque (variable con tamaño óptico, `font-heading`) para los títulos; Geist para interfaz y texto corrido. Los campos de Clerk usan 16 px.
+Bricolage Grotesque (variable con tamaño óptico, `font-heading`) para los títulos; Geist para interfaz y texto corrido.
 
 ## Layout
 
@@ -420,12 +420,12 @@ Bricolage Grotesque (variable con tamaño óptico, `font-heading`) para los tít
 
 ### Cuaderno de la asociación (admin)
 
-- **Marco (`AdminShell`):** desde 768 px, un riel lateral blanco de 15rem pegado a la ventana, con borde fino a la derecha: logo arriba, los destinos, y al pie «Ver la vitrina», la cuenta y «Cerrar sesión». En celular, una barra superior blanca de 56 px pegada arriba (logo y el nombre de la asociación o «Alianza AROMA») y la barra de pestañas fija abajo.
+- **Marco (`AdminShell`):** desde 1024 px, un riel lateral blanco de 15rem pegado a la ventana, con borde fino a la derecha: logo arriba, los destinos, y al pie «Ver la vitrina», la cuenta y «Cerrar sesión». Por debajo de 1024 px (celulares y tabletas), una barra superior blanca de 56 px pegada arriba (logo y el nombre de la asociación o «Alianza AROMA») y la barra de pestañas fija abajo: entre 768 y 1023 px el riel le quitaría a las listas el ancho que necesitan.
 - **Área de trabajo:** sobre el papel cuadriculado, hasta 72rem, con márgenes de 16, 24 y 40 px y 24 px arriba (40 px desde 768 px). Abajo reserva la altura de la barra de pestañas (`--admin-tabbar-height`, 0 donde no hay barra) más 2rem.
-- **Inicio:** el saludo y una línea de estado («3 productos en la vitrina.»). Desde 1024 px, «Te falta» a la izquierda y una columna de 20rem con las tres cifras y las acciones; en celular, apilados: «Te falta», cifras y el botón a todo el ancho.
+- **Inicio:** el saludo y una línea de estado («3 productos en la vitrina.»). Desde 1280 px, «Te falta» a la izquierda y una columna de 20rem con las tres cifras y las acciones; por debajo, apilados: «Te falta», cifras y el botón a todo el ancho.
 - **Producto en el admin** (`/admin/products/[id]`): desde 1280 px, dos columnas: el trabajo (presentaciones, imágenes, foto para el inicio) a la izquierda y una columna de 22rem que se desplaza con la página con «Publicación» e «Información». Debajo de 1280 px el orden es «Publicación», el trabajo (presentaciones, imágenes, foto para el inicio) e «Información»: lo que falta para publicar queda justo encima de dónde se arregla.
 - **Trabajo y costado (desde 1280 px):** la misma estructura vale donde una página tiene una tarea larga y piezas que actúan por su cuenta: el trabajo a la izquierda y una columna de 22rem a la derecha (en producto y asociación se desplaza con la página; en usuario, texto de contenido e imagen queda fija arriba). Perfil de asociación: el formulario y «Fotos» a la izquierda, «Logo» y «Portada» a la derecha (en celular: formulario, logo, portada, fotos). Usuario: «Datos y rol» a la izquierda, «Invitación» y «Acceso» a la derecha (una sola columna si no hay costado, como en la propia cuenta). Texto de contenido: el formulario en una hoja a la izquierda, «Texto original» a la derecha. Imagen de producto: la foto de 18rem y su lugar («Imagen principal» o «Usar como principal») a la izquierda desde 1024 px, el texto alternativo en una hoja a la derecha. Los formularios cortos (presentación, categoría, altas) quedan en una columna: estirarlos no ayuda a leerlos.
-- **Listas:** filtros de estado y búsqueda en una fila desde 1024 px (la búsqueda, de 20rem, solo para el superadmin); en celular los filtros se desplazan de lado. Para la administradora de asociación los filtros aparecen solo al llegar desde una cifra del inicio: tiene pocos productos.
+- **Listas:** las de productos, asociaciones, categorías y usuarios son tablas desde 1280 px y filas apiladas por debajo, para que ninguna columna parta las palabras. Filtros de estado y búsqueda en una fila desde 1280 px (debajo, la búsqueda va bajo los filtros a todo el ancho) (la búsqueda, de 20rem, solo para el superadmin); en celular los filtros se desplazan de lado. Para la administradora de asociación los filtros aparecen solo al llegar desde una cifra del inicio: tiene pocos productos.
 - **Formularios:** cada `FormSection` es una hoja que pone el título a la izquierda (12rem) solo cuando la hoja mide al menos 48rem (consulta de contenedor); en una columna angosta, junto a un costado, el título va arriba de los campos.
 
 **The Thumb Reach Rule.** En celular, tres destinos como pestañas más «Más», que abre una hoja inferior con el resto, «Ver la vitrina» y la cuenta. Superadmin: Inicio, Productos y Asociaciones; Categorías, Contenido y Usuarios bajo «Más». Administradora de asociación: Inicio, Productos y Mi asociación. El orden es el mismo en el riel.
@@ -569,11 +569,14 @@ Lo que sigue documenta el admin tal como está en el código, dentro de `.cuader
 - **Navegación:** en el riel, filas de 44 px con icono de 20 px: la actual en velo azul con tinta azul profunda, negrita e icono azul (`aria-current`); las demás en grafito con icono gris y hover en niebla. En celular, la barra de pestañas blanca con borde arriba: cuatro celdas de 56 px con icono de 24 px y etiqueta de 0.75rem; la actual en azul y negrita, las demás en grafito gastado. «Más» se marca si su destino está abierto.
 - **Foco:** contorno de 2 px en tinta azul; en filas y celdas enlazadas, por dentro (−2 px).
 
-### Estados fuera del cuaderno (mundo anterior)
+### Acceso al panel (en el cuaderno)
+
+- **Inicio de sesión y registro** (`/admin/sign-in`, `/admin/sign-up`): sobre el papel cuadriculado, el logo, la hoja de Clerk y «Volver al sitio público» como enlace azul. `clerk-appearance.ts` lleva el formulario al cuaderno: Atkinson, tokens de `.cuaderno` (azul de acción, tarjeta blanca, radio pequeño), etiquetas en negrita, controles de 44 px, sin sombras ni degradados, y los enlaces de Clerk («¿Olvidaste tu contraseña?», «Obtener ayuda», el lápiz para cambiar el correo) en azul. El registro solo con la invitación; sin ella, una hoja explica que el acceso es solo por invitación y ofrece «Iniciar sesión».
+- **Avisos de acceso denegado** (`AdminAccessNotice`, en lugar de `AdminShell`): una hoja centrada con el icono en un círculo gris (candado o pausa), el título en negrita, qué pasó, la asociación y la cuenta afectadas sobre niebla, y las salidas: «Escribir a la administración» (WhatsApp, principal), «Usar otra cuenta» (contorno) y «Volver al sitio público» (enlace).
+
+### Fuera del cuaderno (mundo anterior)
 
 - **404** (fuera de `.plaza` y `.cuaderno`): el símbolo, un título en Bricolage y una sola acción.
-- **Acceso** (`/admin/sign-in`, `/admin/sign-up`): el formulario de Clerk con la apariencia de `clerk-appearance.ts` (sin sombras, controles de 44 px, botón principal en `primary`); el registro solo con la invitación y, sin ella, una tarjeta explica que el acceso es solo por invitación.
-- **Avisos de acceso denegado** (`AdminAccessNotice`, en lugar de `AdminShell`): explican qué pasó, muestran la cuenta y la asociación afectadas y ofrecen contactar a la alianza por WhatsApp, usar otra cuenta o volver al sitio.
 
 ## Do's and Don'ts
 
