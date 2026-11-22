@@ -3,6 +3,7 @@ import { and, asc, eq, or, type SQL, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { associationsTable as associations } from "@/db/schema/associations";
 import { categoriesTable as categories } from "@/db/schema/categories";
+import { productImagesTable as productImages } from "@/db/schema/productImages";
 import { productsTable as products } from "@/db/schema/products";
 import { canManageAssociation, isSuperAdmin } from "@/lib/auth/authorization";
 import type { AdminProfile } from "@/lib/auth/get-current-profile";
@@ -36,7 +37,15 @@ export async function getAdminProducts(profile: AdminProfile) {
       categoryIsActive: categories.isActive,
       associationId: associations.id,
       associationName: associations.name,
+      associationSlug: associations.slug,
       associationStatus: associations.status,
+      // The main photo, to recognize a product at a glance.
+      thumbnailObjectKey: sql<string | null>`(
+        select ${productImages.objectKey} from ${productImages}
+        where ${productImages.productId} = ${products.id}
+        order by ${productImages.displayOrder}, ${productImages.createdAt}
+        limit 1
+      )`,
     })
     .from(products)
     .innerJoin(associations, eq(products.associationId, associations.id))

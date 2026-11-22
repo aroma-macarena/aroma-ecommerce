@@ -58,7 +58,7 @@ export default async function AdminAssociationsPage({
       <AdminPageHeader
         eyebrow="Alianza AROMA"
         title="Asociaciones"
-        description="Crea asociaciones y activa o desactiva su participación. Desactivar oculta su perfil y sus productos y bloquea a sus administradoras, sin borrar nada."
+
         actions={newAssociationLink}
       />
 

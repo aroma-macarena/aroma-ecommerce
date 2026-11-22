@@ -31,15 +31,17 @@ export default async function NewCategoryPage() {
         <AdminPageHeader
           eyebrow="Alianza AROMA"
           title="Nueva categoría"
-          description="Se crea activa: las asociaciones podrán elegirla para sus productos y aparecerá en el filtro de la vitrina cuando tenga productos publicados."
+          description="Aparece en el filtro de la vitrina cuando tenga productos publicados."
         />
       </div>
 
-      <CategoryForm
-        action={createCategoryAction}
-        cancelHref="/admin/categories"
-        submitLabel="Crear categoría"
-      />
+      <section className="bg-card rounded-md border p-4 sm:p-6">
+        <CategoryForm
+          action={createCategoryAction}
+          cancelHref="/admin/categories"
+          submitLabel="Crear categoría"
+        />
+      </section>
     </div>
   );
 }

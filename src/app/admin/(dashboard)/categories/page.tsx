@@ -56,7 +56,7 @@ export default async function AdminCategoriesPage({
       <AdminPageHeader
         eyebrow="Alianza AROMA"
         title="Categorías"
-        description="Las categorías que comparten todas las asociaciones. Desactivar una oculta sus productos de la vitrina y la retira de los productos nuevos, sin borrar nada."
+
         actions={
           <Link
             href="/admin/categories/new"

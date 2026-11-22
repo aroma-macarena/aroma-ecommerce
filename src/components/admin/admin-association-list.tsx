@@ -1,10 +1,10 @@
-import { ExternalLink, Pause, Pencil, Play } from "lucide-react";
+import { ExternalLink, Pause, Play } from "lucide-react";
 import Link from "next/link";
 
 import { ConfirmActionButton } from "@/components/admin/confirm-action-button";
 import { ActiveStatusBadge } from "@/components/admin/status-badge";
-import { buttonVariants } from "@/components/ui/button";
 import type { AdminAssociation } from "@/lib/admin/associations";
+import { profileGaps, sentence } from "@/lib/admin/dashboard";
 import { getAssociationHref } from "@/lib/public-routes";
 
 type AdminAssociationListProps = {
@@ -36,7 +36,8 @@ function StatusAction({
             <span className="sr-only">{association.name}</span>
           </>
         }
-        triggerClassName="w-full sm:w-auto"
+        triggerVariant="ghost"
+        triggerClassName="text-muted-foreground"
         title={`¿Desactivar ${association.name}?`}
         description="Sus productos dejarán de verse en la vitrina y su perfil público dejará de estar disponible. Sus administradoras no podrán entrar al panel. No se borra nada: al reactivarla, todo vuelve a estar como antes."
         confirmLabel="Desactivar"
@@ -56,7 +57,8 @@ function StatusAction({
           <span className="sr-only">{association.name}</span>
         </>
       }
-      triggerClassName="w-full sm:w-auto"
+      triggerVariant="ghost"
+      triggerClassName="text-muted-foreground"
       title={`¿Activar ${association.name}?`}
       description="Su perfil y sus productos publicados volverán a verse en la vitrina, y sus administradoras podrán entrar de nuevo al panel."
       confirmLabel="Activar"
@@ -74,18 +76,7 @@ function RowActions({
   setStatusAction: AdminAssociationListProps["setStatusAction"];
 }) {
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-      <Link
-        href={`/admin/associations/${association.id}/edit`}
-        className={buttonVariants({
-          variant: "outline",
-          className: "w-full sm:w-auto",
-        })}
-      >
-        <Pencil aria-hidden />
-        Editar
-        <span className="sr-only">{association.name}</span>
-      </Link>
+    <div className="flex sm:justify-end">
       <StatusAction
         association={association}
         setStatusAction={setStatusAction}
@@ -94,6 +85,7 @@ function RowActions({
   );
 }
 
+/** The public profile, as an icon beside the name. */
 function PublicProfileLink({ association }: { association: AdminAssociation }) {
   if (association.status !== "ACTIVE") {
     return null;
@@ -103,12 +95,27 @@ function PublicProfileLink({ association }: { association: AdminAssociation }) {
     <Link
       href={getAssociationHref(association.slug)}
       target="_blank"
-      className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-xs font-medium underline-offset-4 hover:underline"
+      aria-label={`Ver el perfil público de ${association.name} (se abre en una nueva pestaña)`}
+      title="Ver perfil público"
+      className="text-muted-foreground hover:text-primary relative z-10 -my-2 inline-flex size-9 shrink-0 items-center justify-center rounded-md"
     >
-      Ver perfil público
-      <ExternalLink aria-hidden className="size-3" />
-      <span className="sr-only">(se abre en una nueva pestaña)</span>
+      <ExternalLink aria-hidden className="size-4" />
     </Link>
+  );
+}
+
+/** What the profile lacks, with the same correction mark as «Te falta». */
+function ProfileGaps({ association }: { association: AdminAssociation }) {
+  const gaps = profileGaps(association);
+  if (association.status !== "ACTIVE" || gaps.length === 0) return null;
+  return (
+    <span className="text-correction flex items-center gap-1.5 text-sm font-bold">
+      <span
+        aria-hidden
+        className="border-correction size-3 shrink-0 rounded-full border-2"
+      />
+      {sentence(gaps)}
+    </span>
   );
 }
 
@@ -118,62 +125,64 @@ function AdminAssociationList({
   setStatusAction,
 }: AdminAssociationListProps) {
   return (
-    <>
-      <table className="hidden w-full text-sm md:table">
+    <div className="bg-card overflow-hidden rounded-md border">
+      <table className="hidden w-full md:table">
         <caption className="sr-only">Asociaciones de la alianza</caption>
         <thead>
-          <tr className="text-muted-foreground border-b text-left font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
-            <th scope="col" className="py-2 pr-4 font-medium">
+          <tr className="bg-muted/60 text-muted-foreground border-b text-left text-sm">
+            <th scope="col" className="py-2.5 pr-4 font-bold first:pl-4">
               Asociación
             </th>
-            <th scope="col" className="py-2 pr-4 font-medium">
+            <th scope="col" className="py-2.5 pr-4 font-bold first:pl-4">
               Estado
             </th>
-            <th scope="col" className="py-2 pr-4 font-medium">
-              Productos
+            <th scope="col" className="py-2.5 pr-4 font-bold first:pl-4">
+              Publicados
             </th>
-            <th scope="col" className="py-2 pr-4 font-medium">
+            <th scope="col" className="py-2.5 pr-4 font-bold first:pl-4">
               Cuentas
             </th>
-            <th scope="col" className="py-2 text-right font-medium">
+            <th scope="col" className="py-2.5 pr-4 text-right font-bold">
               <span className="sr-only">Acciones</span>
             </th>
           </tr>
         </thead>
         <tbody>
           {associations.map((association) => (
-            <tr key={association.id} className="border-b align-top">
-              <th scope="row" className="py-3 pr-4 text-left font-normal">
-                <span className="block font-semibold">{association.name}</span>
+            <tr
+              key={association.id}
+              className="border-b align-top last:border-b-0"
+            >
+              <th scope="row" className="py-3 pr-4 pl-4 text-left font-normal">
+                <span className="flex items-center gap-1">
+                  <Link
+                    href={`/admin/associations/${association.id}/edit`}
+                    className="text-primary font-bold underline-offset-4 hover:underline"
+                  >
+                    {association.name}
+                  </Link>
+                  <PublicProfileLink association={association} />
+                </span>
                 {association.location ? (
-                  <span className="text-muted-foreground block text-xs">
+                  <span className="text-muted-foreground block text-sm">
                     {association.location}
                   </span>
                 ) : null}
-                <PublicProfileLink association={association} />
+                <ProfileGaps association={association} />
               </th>
               <td className="py-3 pr-4">
                 <ActiveStatusBadge status={association.status} />
               </td>
-              <td className="py-3 pr-4">
-                {countLabel(
-                  association.publishedCount,
-                  "publicado",
-                  "publicados",
-                )}
-                <span className="text-muted-foreground block text-xs">
-                  de{" "}
-                  {countLabel(
-                    association.productCount,
-                    "producto",
-                    "productos",
-                  )}
+              <td className="py-3 pr-4 whitespace-nowrap">
+                {association.publishedCount}{" "}
+                <span className="text-muted-foreground">
+                  de {association.productCount}
                 </span>
               </td>
-              <td className="py-3 pr-4">
-                {countLabel(association.adminCount, "cuenta", "cuentas")}
+              <td className="py-3 pr-4 whitespace-nowrap">
+                {association.adminCount}
               </td>
-              <td className="py-3 text-right">
+              <td className="py-2 pr-4 text-right">
                 <RowActions
                   association={association}
                   setStatusAction={setStatusAction}
@@ -184,16 +193,22 @@ function AdminAssociationList({
         </tbody>
       </table>
 
-      <ul
-        aria-label="Asociaciones de la alianza"
-        className="border-t md:hidden"
-      >
+      <ul aria-label="Asociaciones de la alianza" className="md:hidden">
         {associations.map((association) => (
-          <li key={association.id} className="space-y-2 border-b py-4">
+          <li
+            key={association.id}
+            className="space-y-1 border-b px-4 py-3 last:border-b-0"
+          >
             <div className="flex items-start justify-between gap-3">
-              <p className="min-w-0 font-semibold wrap-anywhere">
-                {association.name}
-              </p>
+              <span className="flex min-w-0 items-center gap-1">
+                <Link
+                  href={`/admin/associations/${association.id}/edit`}
+                  className="text-primary min-w-0 font-bold wrap-anywhere underline-offset-4 hover:underline"
+                >
+                  {association.name}
+                </Link>
+                <PublicProfileLink association={association} />
+              </span>
               <ActiveStatusBadge
                 status={association.status}
                 className="pt-0.5"
@@ -204,26 +219,29 @@ function AdminAssociationList({
                 {association.location}
               </p>
             ) : null}
-            <p className="text-muted-foreground font-mono text-xs">
-              {countLabel(
-                association.publishedCount,
-                "publicado",
-                "publicados",
-              )}{" "}
-              de {countLabel(association.productCount, "producto", "productos")}{" "}
-              · {countLabel(association.adminCount, "cuenta", "cuentas")}
-            </p>
-            <PublicProfileLink association={association} />
-            <div className="pt-1">
-              <RowActions
-                association={association}
-                setStatusAction={setStatusAction}
-              />
+            <ProfileGaps association={association} />
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm">
+                {association.publishedCount}{" "}
+                <span className="text-muted-foreground">
+                  de {association.productCount}{" "}
+                  {association.publishedCount === 1
+                    ? "publicado"
+                    : "publicados"}{" "}
+                  · {countLabel(association.adminCount, "cuenta", "cuentas")}
+                </span>
+              </p>
+              <div className="-mr-3 shrink-0">
+                <RowActions
+                  association={association}
+                  setStatusAction={setStatusAction}
+                />
+              </div>
             </div>
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
 }
 

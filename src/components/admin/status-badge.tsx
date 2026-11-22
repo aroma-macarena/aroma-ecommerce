@@ -10,12 +10,12 @@ const statuses: Record<
 > = {
   PUBLISHED: {
     label: "Publicado",
-    className: "text-primary",
-    marker: <circle cx="4" cy="4" r="4" className="fill-primary" />,
+    className: "text-foreground bg-muted",
+    marker: <circle cx="4" cy="4" r="4" className="fill-foreground" />,
   },
   DRAFT: {
     label: "Borrador",
-    className: "text-muted-foreground",
+    className: "text-foreground bg-card border",
     marker: (
       <circle
         cx="4"
@@ -23,14 +23,19 @@ const statuses: Record<
         r="3.25"
         fill="none"
         strokeWidth="1.5"
-        className="stroke-muted-foreground"
+        className="stroke-foreground"
       />
     ),
   },
   PAUSED: {
     label: "Pausado",
-    className: "text-foreground",
-    marker: <rect width="8" height="8" className="fill-brand-orange" />,
+    className: "text-muted-foreground bg-muted",
+    marker: (
+      <>
+        <rect x="1" width="2" height="8" className="fill-muted-foreground" />
+        <rect x="5" width="2" height="8" className="fill-muted-foreground" />
+      </>
+    ),
   },
 };
 
@@ -46,7 +51,7 @@ function StatusBadge({ status, className }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 font-mono text-xs font-medium whitespace-nowrap",
+        "inline-flex min-h-6 items-center gap-1.5 rounded-full px-2.5 text-[0.8125rem] font-bold whitespace-nowrap",
         toneClassName,
         className,
       )}
@@ -65,12 +70,12 @@ const activeStatuses: Record<
 > = {
   ACTIVE: {
     label: "Activa",
-    className: "text-primary",
-    marker: <circle cx="4" cy="4" r="4" className="fill-primary" />,
+    className: "text-foreground bg-muted",
+    marker: <circle cx="4" cy="4" r="4" className="fill-foreground" />,
   },
   INACTIVE: {
     label: "Inactiva",
-    className: "text-muted-foreground",
+    className: "text-muted-foreground bg-muted",
     marker: (
       <rect
         x="0.75"
@@ -98,7 +103,7 @@ function ActiveStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 font-mono text-xs font-medium whitespace-nowrap",
+        "inline-flex min-h-6 items-center gap-1.5 rounded-full px-2.5 text-[0.8125rem] font-bold whitespace-nowrap",
         toneClassName,
         className,
       )}

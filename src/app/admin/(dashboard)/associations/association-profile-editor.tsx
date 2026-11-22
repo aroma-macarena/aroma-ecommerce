@@ -74,12 +74,8 @@ async function AssociationProfileEditor({
       {warning ? <AdminNotice tone="error">{warning}</AdminNotice> : null}
 
       <dl className="text-muted-foreground flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-        <dt className="font-mono text-xs tracking-[0.06em] uppercase">
-          Dirección pública
-        </dt>
-        <dd className="text-foreground font-mono text-xs break-all">
-          {publicHref}
-        </dd>
+        <dt className="text-sm">Dirección pública</dt>
+        <dd className="text-foreground text-sm break-all">{publicHref}</dd>
         {association.status === "ACTIVE" ? (
           <dd>
             <Link
@@ -100,113 +96,123 @@ async function AssociationProfileEditor({
         ) : null}
       </dl>
 
-      <AssociationProfileForm
-        action={updateAssociationProfileAction.bind(null, association.id)}
-        canEditName={canEditName}
-        cancelHref={cancelHref}
-        defaultValues={{
-          name: association.name,
-          location: association.location ?? "",
-          zone: association.zone ?? "",
-          description: association.description ?? "",
-          history: association.history ?? "",
-          contactName: association.contactName ?? "",
-          whatsappNumber: formatWhatsAppNumber(association.whatsappNumber),
-        }}
-      />
+      {/* Wide screens: the text form and the photos on the left; the logo
+          and the cover, which save on their own, in a column on the right.
+          Phones keep the reading order: form, logo, cover, photos. */}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start xl:gap-8">
+        <div className="min-w-0 xl:col-start-1 xl:row-start-1">
+          <AssociationProfileForm
+            action={updateAssociationProfileAction.bind(null, association.id)}
+            canEditName={canEditName}
+            cancelHref={cancelHref}
+            defaultValues={{
+              name: association.name,
+              location: association.location ?? "",
+              zone: association.zone ?? "",
+              description: association.description ?? "",
+              history: association.history ?? "",
+              contactName: association.contactName ?? "",
+              whatsappNumber: formatWhatsAppNumber(association.whatsappNumber),
+            }}
+          />
+        </div>
 
-      <AdminSection
-        id="logo"
-        title="Logo"
-        description="Aparece en el directorio y en el perfil. Cada imagen se guarda con su propio botón, aparte de la información."
-        ruled
-      >
-        {/* Keyed by the stored image, so saving or removing one starts a
+        <div className="space-y-6 xl:col-start-2 xl:row-span-2 xl:row-start-1">
+          <AdminSection
+            id="logo"
+            title="Logo"
+            description="Las imágenes se guardan al subirlas."
+            ruled
+          >
+            {/* Keyed by the stored image, so saving or removing one starts a
             fresh form instead of keeping the local preview. */}
-        <ImageFieldForm
-          key={association.logoObjectKey ?? "none"}
-          kind="logo"
-          ownerName={association.name}
-          currentUrl={getMediaUrl(association.logoObjectKey)}
-          canUpload={canUpload}
-          uploadAction={uploadAssociationImageAction.bind(
-            null,
-            association.id,
-            "logo",
-          )}
-          removeAction={removeAssociationImageAction.bind(
-            null,
-            association.id,
-            "logo",
-          )}
-        />
-      </AdminSection>
+            <ImageFieldForm
+              key={association.logoObjectKey ?? "none"}
+              kind="logo"
+              ownerName={association.name}
+              currentUrl={getMediaUrl(association.logoObjectKey)}
+              canUpload={canUpload}
+              uploadAction={uploadAssociationImageAction.bind(
+                null,
+                association.id,
+                "logo",
+              )}
+              removeAction={removeAssociationImageAction.bind(
+                null,
+                association.id,
+                "logo",
+              )}
+            />
+          </AdminSection>
 
-      <AdminSection
-        id="portada"
-        title="Portada"
-        description="La foto ancha con la que empieza el perfil público."
-      >
-        <ImageFieldForm
-          key={association.coverObjectKey ?? "none"}
-          kind="cover"
-          ownerName={association.name}
-          currentUrl={getMediaUrl(association.coverObjectKey)}
-          canUpload={canUpload}
-          uploadAction={uploadAssociationImageAction.bind(
-            null,
-            association.id,
-            "cover",
-          )}
-          removeAction={removeAssociationImageAction.bind(
-            null,
-            association.id,
-            "cover",
-          )}
-        />
-      </AdminSection>
+          <AdminSection id="portada" title="Portada">
+            <ImageFieldForm
+              key={association.coverObjectKey ?? "none"}
+              kind="cover"
+              ownerName={association.name}
+              currentUrl={getMediaUrl(association.coverObjectKey)}
+              canUpload={canUpload}
+              uploadAction={uploadAssociationImageAction.bind(
+                null,
+                association.id,
+                "cover",
+              )}
+              removeAction={removeAssociationImageAction.bind(
+                null,
+                association.id,
+                "cover",
+              )}
+            />
+          </AdminSection>
+        </div>
 
-      <AdminSection
-        id="fotos"
-        title="Fotos"
-        description={`Hasta 8 fotos del trabajo y el territorio de la asociación. Se ven en el perfil público, en este orden; la primera va más grande.`}
-      >
-        <AssociationPhotosPanel
-          associationName={association.name}
-          photos={photos}
-          canUpload={canUpload}
-          uploadAction={uploadAssociationPhotoAction.bind(null, association.id)}
-          photoActions={Object.fromEntries(
-            photos.map((photo) => [
-              photo.id,
-              {
-                update: updateAssociationPhotoAction.bind(
-                  null,
-                  association.id,
+        <div className="min-w-0 xl:col-start-1 xl:row-start-2">
+          <AdminSection
+            id="fotos"
+            title="Fotos"
+            description="La primera se ve más grande."
+          >
+            <AssociationPhotosPanel
+              associationName={association.name}
+              photos={photos}
+              canUpload={canUpload}
+              uploadAction={uploadAssociationPhotoAction.bind(
+                null,
+                association.id,
+              )}
+              photoActions={Object.fromEntries(
+                photos.map((photo) => [
                   photo.id,
-                ),
-                moveUp: moveAssociationPhotoAction.bind(
-                  null,
-                  association.id,
-                  photo.id,
-                  "up",
-                ),
-                moveDown: moveAssociationPhotoAction.bind(
-                  null,
-                  association.id,
-                  photo.id,
-                  "down",
-                ),
-                remove: deleteAssociationPhotoAction.bind(
-                  null,
-                  association.id,
-                  photo.id,
-                ),
-              },
-            ]),
-          )}
-        />
-      </AdminSection>
+                  {
+                    update: updateAssociationPhotoAction.bind(
+                      null,
+                      association.id,
+                      photo.id,
+                    ),
+                    moveUp: moveAssociationPhotoAction.bind(
+                      null,
+                      association.id,
+                      photo.id,
+                      "up",
+                    ),
+                    moveDown: moveAssociationPhotoAction.bind(
+                      null,
+                      association.id,
+                      photo.id,
+                      "down",
+                    ),
+                    remove: deleteAssociationPhotoAction.bind(
+                      null,
+                      association.id,
+                      photo.id,
+                    ),
+                  },
+                ]),
+              )}
+            />
+          </AdminSection>
+        </div>
+      </div>
     </>
   );
 }

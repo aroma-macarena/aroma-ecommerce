@@ -89,7 +89,7 @@ describe("toPresentationFormValues", () => {
       name: "Bolsa",
       quantity: "1,5",
       unit: "kg",
-      referencePrice: "25000",
+      referencePrice: "25.000",
       isAvailable: "",
     });
   });

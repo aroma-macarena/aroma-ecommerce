@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
 import {
   Archivo,
+  Atkinson_Hyperlegible_Next,
   Bricolage_Grotesque,
   Geist,
   Geist_Mono,
@@ -35,6 +36,13 @@ const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
   subsets: ["latin", "latin-ext"],
   axes: ["opsz"],
+});
+
+// Admin panel: a face drawn for legibility, for leaders with little
+// digital practice reading on a phone outdoors.
+const atkinson = Atkinson_Hyperlegible_Next({
+  variable: "--font-atkinson",
+  subsets: ["latin", "latin-ext"],
 });
 
 const geistMono = Geist_Mono({
@@ -74,7 +82,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} ${archivo.variable} ${sourceSerif.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} ${archivo.variable} ${sourceSerif.variable} ${atkinson.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider afterSignOutUrl="/" localization={clerkLocalization}>

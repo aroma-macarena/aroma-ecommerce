@@ -41,34 +41,35 @@ export default async function EditProductImagePage({
   const productHref = `/admin/products/${product.id}`;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="space-y-4">
         <AdminBackLink href={productHref}>{product.name}</AdminBackLink>
         <AdminPageHeader
           eyebrow={product.associationName}
           title="Editar imagen"
-          description={`Imagen de ${product.name}.`}
         />
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-[14rem_minmax(0,1fr)] sm:items-start sm:gap-8">
-        <ProductImagePreview
-          objectKey={image.objectKey}
-          alt={image.altText ?? product.name}
-          sizes="(min-width: 640px) 14rem, 100vw"
-          eager
-          className="w-full"
-        />
-        <div className="space-y-3">
+      {/* The photo and its place on the left; what describes it on the
+          right, where the form has room. */}
+      <div className="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start lg:gap-8">
+        <div className="space-y-3 sm:max-w-72 lg:sticky lg:top-6">
+          <ProductImagePreview
+            objectKey={image.objectKey}
+            alt={image.altText ?? product.name}
+            sizes="18rem"
+            eager
+            className="w-full"
+          />
           {image.isPrimary ? (
             <p className="flex items-start gap-2 text-sm">
               <Star
                 aria-hidden
-                className="fill-brand-orange text-brand-orange mt-0.5 size-4 shrink-0"
+                className="fill-foreground text-foreground mt-0.5 size-4 shrink-0"
               />
               <span>
-                <span className="font-semibold">Imagen principal.</span> Es la
-                que se ve en la vitrina.
+                <span className="font-bold">Imagen principal.</span> Es la que
+                se ve en la vitrina.
               </span>
             </p>
           ) : (
@@ -79,37 +80,45 @@ export default async function EditProductImagePage({
               <SubmitButton
                 variant="outline"
                 pendingLabel="Guardando…"
-                className="w-full sm:w-auto"
+                className="w-full"
               >
                 <Star aria-hidden />
                 Usar como principal
               </SubmitButton>
               <p className="text-muted-foreground text-sm">
-                Pasará al primer lugar: la principal es la que se ve en la
-                vitrina.
+                Pasa al primer lugar, el que se ve en la vitrina.
               </p>
             </form>
           )}
         </div>
-      </div>
 
-      <ImageAltTextForm
-        action={updateImageAltTextAction.bind(null, product.id, image.id)}
-        defaultAltText={image.altText ?? ""}
-        cancelHref={productHref}
-        secondaryAction={
-          <ConfirmDeleteButton
-            label="Eliminar imagen"
-            title="¿Eliminar esta imagen?"
-            description={
-              image.isPrimary
-                ? "Se borrará de forma definitiva. Como es la principal, la siguiente imagen pasará a ocupar su lugar."
-                : "Se borrará de forma definitiva."
+        <section
+          aria-label="Texto alternativo"
+          className="bg-card min-w-0 rounded-md border p-4 sm:p-6"
+        >
+          <ImageAltTextForm
+            action={updateImageAltTextAction.bind(null, product.id, image.id)}
+            defaultAltText={image.altText ?? ""}
+            cancelHref={productHref}
+            secondaryAction={
+              <ConfirmDeleteButton
+                label="Eliminar imagen"
+                title="¿Eliminar esta imagen?"
+                description={
+                  image.isPrimary
+                    ? "Se borrará de forma definitiva. Como es la principal, la siguiente imagen pasará a ocupar su lugar."
+                    : "Se borrará de forma definitiva."
+                }
+                action={deleteProductImageAction.bind(
+                  null,
+                  product.id,
+                  image.id,
+                )}
+              />
             }
-            action={deleteProductImageAction.bind(null, product.id, image.id)}
           />
-        }
-      />
+        </section>
+      </div>
     </div>
   );
 }

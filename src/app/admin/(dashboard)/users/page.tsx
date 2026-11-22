@@ -54,7 +54,7 @@ export default async function AdminUsersPage({
       <AdminPageHeader
         eyebrow="Alianza AROMA"
         title="Usuarios"
-        description="Da acceso al panel a quienes administran la alianza y las asociaciones. Desactivar una cuenta le quita el acceso al instante, sin borrar su historial."
+
         actions={
           <Link
             href="/admin/users/new"

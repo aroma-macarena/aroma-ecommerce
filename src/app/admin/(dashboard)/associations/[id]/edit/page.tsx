@@ -47,7 +47,6 @@ export default async function EditAssociationPage({
         <AdminPageHeader
           eyebrow="Alianza AROMA"
           title={association.name}
-          description="Edita su perfil público: nombre, información, contacto, logo y portada."
           actions={<ActiveStatusBadge status={association.status} />}
         />
       </div>

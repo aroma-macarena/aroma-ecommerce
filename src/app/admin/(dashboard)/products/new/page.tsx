@@ -40,7 +40,7 @@ export default async function NewProductPage() {
         <AdminPageHeader
           eyebrow={profile.associationName ?? "Alianza AROMA"}
           title="Nuevo producto"
-          description="Se guarda como borrador: no aparece en la vitrina hasta que se publique."
+          description="Se guarda como borrador hasta que lo publiques."
         />
       </div>
 

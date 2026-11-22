@@ -14,6 +14,19 @@ colors:
   accent-line: "oklch(0.619 0.196 38)"
   board: "oklch(0.308 0.122 30.3)"
   board-foreground: "oklch(0.97 0.012 60)"
+  # Admin, «Cuaderno de la asociación» (.cuaderno sobre AdminShell)
+  cuaderno-paper: "oklch(0.985 0.004 255)"
+  cuaderno-grid-line: "oklch(0.955 0.012 258)"
+  cuaderno-ink: "oklch(0.255 0.012 265)"
+  cuaderno-primary: "oklch(0.45 0.15 262)"
+  cuaderno-accent: "oklch(0.945 0.025 262)"
+  cuaderno-accent-foreground: "oklch(0.36 0.15 262)"
+  cuaderno-muted: "oklch(0.955 0.012 258)"
+  cuaderno-muted-foreground: "oklch(0.47 0.02 262)"
+  cuaderno-border: "oklch(0.915 0.016 258)"
+  cuaderno-input: "oklch(0.62 0.03 262)"
+  correction: "oklch(0.58 0.19 25)"
+  cuaderno-destructive: "oklch(0.55 0.19 25)"
 typography:
   display:
     fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
@@ -67,10 +80,49 @@ typography:
     fontSize: "0.8125rem–0.9375rem"
     fontWeight: 600
     lineHeight: 1.25
+  admin-title:
+    fontFamily: "Atkinson Hyperlegible Next, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.75rem–2rem"
+    fontWeight: 700
+    lineHeight: 1.25
+    letterSpacing: "-0.015em"
+    fontFeature: '"tnum"'
+  admin-section:
+    fontFamily: "Atkinson Hyperlegible Next, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.125rem"
+    fontWeight: 700
+    lineHeight: 1.4
+    fontFeature: '"tnum"'
+  admin-figure:
+    fontFamily: "Atkinson Hyperlegible Next, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1.75rem"
+    fontWeight: 700
+    lineHeight: 1
+    fontFeature: '"tnum"'
+  admin-body:
+    fontFamily: "Atkinson Hyperlegible Next, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 400
+    lineHeight: 1.5
+    fontFeature: '"tnum"'
+  admin-note:
+    fontFamily: "Atkinson Hyperlegible Next, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.875rem"
+    fontWeight: 400
+    lineHeight: 1.43
+    fontFeature: '"tnum"'
+  admin-label:
+    fontFamily: "Atkinson Hyperlegible Next, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.8125rem–0.9375rem"
+    fontWeight: 700
+    lineHeight: 1.25
+    fontFeature: '"tnum"'
 rounded:
   none: "0"
   button: "0.3rem"
   pill: "9999px"
+  admin-sheet: "0.3rem"
+  admin-thumb: "0.225rem"
 spacing:
   gutter-mobile: "1.25rem"
   gutter-tablet: "2rem"
@@ -84,6 +136,14 @@ spacing:
   header-height: "5.0625rem"
   header-compact: "4rem"
   featured-card: "23.75rem"
+  admin-rail: "15rem"
+  admin-topbar: "3.5rem"
+  admin-tabbar: "3.5rem"
+  admin-content: "72rem"
+  admin-grid: "24px"
+  admin-task-margin: "2.75rem"
+  admin-aside: "20rem"
+  admin-product-aside: "22rem"
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
@@ -137,11 +197,68 @@ components:
     textColor: "{colors.foreground}"
     rounded: "{rounded.none}"
     height: "{spacing.header-height}"
+  admin-button-primary:
+    backgroundColor: "{colors.cuaderno-primary}"
+    textColor: "{colors.primary-foreground}"
+    typography: "{typography.admin-label}"
+    rounded: "{rounded.admin-sheet}"
+    padding: "8px 16px"
+    height: "{spacing.control-height}"
+  admin-button-outline:
+    backgroundColor: "{colors.cuaderno-paper}"
+    textColor: "{colors.cuaderno-ink}"
+    typography: "{typography.admin-label}"
+    rounded: "{rounded.admin-sheet}"
+    padding: "8px 16px"
+    height: "{spacing.control-height}"
+  admin-sheet:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.cuaderno-ink}"
+    rounded: "{rounded.admin-sheet}"
+    padding: "24px"
+  admin-filter-chip:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.cuaderno-ink}"
+    typography: "{typography.admin-label}"
+    rounded: "{rounded.pill}"
+    padding: "0 16px"
+    height: "{spacing.control-height}"
+  admin-filter-chip-active:
+    backgroundColor: "{colors.cuaderno-primary}"
+    textColor: "{colors.primary-foreground}"
+    typography: "{typography.admin-label}"
+    rounded: "{rounded.pill}"
+    padding: "0 16px"
+    height: "{spacing.control-height}"
+  admin-status-badge:
+    backgroundColor: "{colors.cuaderno-muted}"
+    textColor: "{colors.cuaderno-ink}"
+    typography: "{typography.admin-label}"
+    rounded: "{rounded.pill}"
+    padding: "0 10px"
+    height: "24px"
+  admin-status-badge-paused:
+    backgroundColor: "{colors.cuaderno-muted}"
+    textColor: "{colors.cuaderno-muted-foreground}"
+    typography: "{typography.admin-label}"
+    rounded: "{rounded.pill}"
+    padding: "0 10px"
+    height: "24px"
+  admin-rail-link-active:
+    backgroundColor: "{colors.cuaderno-accent}"
+    textColor: "{colors.cuaderno-accent-foreground}"
+    rounded: "{rounded.admin-sheet}"
+    padding: "0 12px"
+    height: "{spacing.control-height}"
+  admin-tab-bar:
+    backgroundColor: "{colors.card}"
+    textColor: "{colors.cuaderno-muted-foreground}"
+    height: "{spacing.admin-tabbar}"
 ---
 
 # Design System: AROMA
 
-> **Dos mundos en este repositorio.** El sitio público (todo lo que vive bajo `src/app/(public)`, envuelto en la clase `.plaza`) usa el mundo **«Vitrina de productoras»**, que es el que describen los tokens del encabezado. La administración (`/admin`), la página 404 y el acceso con Clerk siguen en el mundo anterior, **«etiqueta de origen»**, con los tokens de `:root`, hasta que se rediseñen. Cada sección marca qué parte corresponde a cada mundo.
+> **Tres mundos en este repositorio.** El sitio público (todo lo que vive bajo `src/app/(public)`, envuelto en la clase `.plaza`) usa el mundo **«Vitrina de productoras»**, que es el que describen los tokens sin prefijo del encabezado. La administración (`/admin`, todo lo que envuelve `AdminShell` con la clase `.cuaderno`) usa el mundo **«Cuaderno de la asociación»**, con los tokens `cuaderno-*`, `correction` y `admin-*`. La página 404 y las pantallas de acceso (inicio de sesión y registro con Clerk, y los avisos de acceso denegado del admin, que se muestran en lugar de `AdminShell`) quedan fuera de `.cuaderno` y siguen en el mundo anterior, **«etiqueta de origen»**, con los tokens de `:root`, hasta que se rediseñen. Cada sección marca qué parte corresponde a cada mundo.
 
 ## Overview
 
@@ -167,7 +284,7 @@ Neutros casi blancos y tinta, con tres colores de marca usados cada uno para un 
 
 ### Primary
 
-- **Verde de acción AROMA** (`primary`, también `ring`): el botón principal de WhatsApp («Consultar por WhatsApp», «Escribir a la Alianza AROMA» de compras por volumen), el pin de la franja de utilidades, los enlaces de texto («Ver ficha completa», «Más productos (N)»), el subrayado al pasar sobre nombres de producto y organización, el hover de los enlaces del pie y el contorno de foco. Texto blanco encima (`primary-foreground`). Es un verde algo más oscuro que el `primary` del admin, para que el texto blanco tenga contraste holgado.
+- **Verde de acción AROMA** (`primary`, también `ring`): el botón principal de WhatsApp («Consultar por WhatsApp», «Escribir a la Alianza AROMA» de compras por volumen), el pin de la franja de utilidades, los enlaces de texto («Ver ficha completa», «Más productos (N)»), el subrayado al pasar sobre nombres de producto y organización, el hover de los enlaces del pie y el contorno de foco. Texto blanco encima (`primary-foreground`). Es un verde algo más oscuro que el `primary` de `:root` (404 y acceso), para que el texto blanco tenga contraste holgado.
 
 ### Secondary
 
@@ -194,9 +311,31 @@ Neutros casi blancos y tinta, con tres colores de marca usados cada uno para un 
 
 **The Photograph Carries Color Rule.** Las superficies son neutras para que la fotografía de producto y territorio ponga el color. No se pintan secciones, tarjetas ni fondos de color para dar energía.
 
-### Mundo anterior (admin, 404, acceso)
+### Cuaderno de la asociación (admin)
 
-La administración conserva los tokens de `:root` de la «etiqueta de origen»: papel `#F6F1E7` de fondo, tarjeta hueso `#FFFDF8`, arena `#ECE4D5`, tinta `#1D1915`, verde acción `#3F7518` (`primary`, texto blanco a 5,6:1), verde marca `#4B8C1C` (solo superficies e ilustración), bordó `#5F0400` (superficie institucional, nunca títulos; también la selección de texto fuera de `.plaza`) y naranja `#E24C11` (acento escaso, nunca texto pequeño). El modo claro es la superficie validada; los tokens oscuros heredados no están certificados.
+Papel blanco con una cuadrícula azul apenas visible, hojas blancas encima y tinta grafito; un azul de tinta para todo lo que se puede hacer y el rojo de la corrección de un profesor solo para lo que falta. Los tokens se declaran en `.cuaderno` (en `AdminShell` y en la hoja «Más») y reemplazan a los de `:root` dentro del admin; los valores canónicos son los OKLCH `cuaderno-*` y `correction` del encabezado. Solo hay modo claro.
+
+- **Tinta azul** (`cuaderno-primary`, también `ring`, `caret-color` y `accent-color`): botones principales («Nuevo producto», «Guardar»), enlaces, la palabra de acción de cada fila de «Te falta» («Completar ›», «Agregar ›», «Revisar ›»), las cifras del inicio distintas de cero, el filtro de estado activo, la pestaña y el icono del destino actual, los iconos de la hoja «Más», la marca de requisito cumplido y el contorno de foco. Texto blanco encima.
+- **Velo azul** (`cuaderno-accent`) con **tinta azul profunda** (`cuaderno-accent-foreground`): el destino actual en el riel y en «Más», el aviso de confirmación; al 50–60 %, el hover de filas, cifras y tablas.
+- **Rojo de corrección** (`correction`): solo lo que falta. El anillo de 2 px (20 px en «Te falta», 12 px junto a las notas de las listas), la línea de margen de 1 px al 70 % del cuaderno «Te falta», su título «Te falta», la equis de un requisito para publicar sin cumplir y las notas «No tiene foto» y los huecos del perfil en las listas.
+- **Rojo de error** (`cuaderno-destructive`): errores de validación bajo el campo, `FormAlert`, el aviso de error y las acciones que retiran algo. Es otro trabajo que la corrección: algo salió mal o se va a borrar, no algo falta.
+- **Papel** (`cuaderno-paper`) con la **línea de cuadrícula** (`cuaderno-grid-line`) cada 24 px (`bg-grid-paper`): solo el suelo de la página, nunca dentro de una hoja.
+- **Hoja blanca** (`card`): secciones, tablas, formularios, cifras, el riel lateral, la barra superior y la barra de pestañas.
+- **Grafito** (`cuaderno-ink`): texto, nombres y estados publicados o activos.
+- **Grafito gastado** (`cuaderno-muted-foreground`): notas, ayuda, fechas, «(opcional)», el conteo tras «Te falta», cifras en cero, lo pausado e inactivo, pestañas no actuales.
+- **Niebla azul** (`cuaderno-muted`): fondo de las insignias de estado, cabecera de tablas al 60 %, miniaturas vacías y el hover del riel.
+- **Línea azul gris** (`cuaderno-border`): borde de 1 px de hojas, tablas y barras, y los divisores entre filas. **Borde de campo** (`cuaderno-input`): contorno de los controles.
+- Selección de texto en azul claro (`oklch(0.88 0.06 262)`) con letra grafito.
+
+**The Blue Ink Rule.** El azul es solo para lo que se puede hacer: acciones, enlaces, el destino actual y el foco. El estado se lee en grafito y se distingue por su forma (punto lleno, anillo, dos barras, cuadrado vacío), nunca por un color propio.
+
+**The Correction Mark Rule.** El rojo de corrección marca solo lo que falta, con un anillo y la línea fina de 1 px del margen. Nunca una franja gruesa al costado, un relleno ni un error del sistema (eso es `cuaderno-destructive`).
+
+**The Grey Pause Rule.** Lo pausado o inactivo pierde el color: insignia en grafito gastado, miniatura en escala de grises y cifra en cero en gris.
+
+### Mundo anterior (404 y acceso)
+
+La página 404, el inicio de sesión y el registro con Clerk y los avisos de acceso denegado del admin conservan los tokens de `:root` de la «etiqueta de origen»: papel `#F6F1E7` de fondo, tarjeta hueso `#FFFDF8`, arena `#ECE4D5`, tinta `#1D1915`, verde acción `#3F7518` (`primary`, texto blanco a 5,6:1), verde marca `#4B8C1C` (solo superficies e ilustración), bordó `#5F0400` (superficie institucional, nunca títulos; también la selección de texto fuera de `.plaza` y `.cuaderno`) y naranja `#E24C11` (acento escaso, nunca texto pequeño). El modo claro es la superficie validada; los tokens oscuros heredados no están certificados.
 
 ## Typography
 
@@ -228,9 +367,26 @@ La administración conserva los tokens de `:root` de la «etiqueta de origen»: 
 
 **The No Kicker Rule.** No hay antetítulo sobre los títulos. La categoría va debajo del nombre del producto, en tinta gastada.
 
-### Mundo anterior (admin, 404, acceso)
+### Cuaderno de la asociación (admin)
 
-Bricolage Grotesque (variable con tamaño óptico) para h1, títulos de sección, nombres y cifras; Geist para interfaz y texto corrido; Geist Mono en mayúsculas espaciadas para datos de origen, categorías, antetítulos y estados. Los campos de formulario usan 16 px.
+**Fuente única:** Atkinson Hyperlegible Next (`--font-atkinson` vía `next/font`), dibujada para leerse bien, para líderes con poca práctica digital que leen en el celular al aire libre. `.cuaderno` la fija como familia de todo, con cifras tabulares, y dentro del cuaderno `.font-heading` hereda la misma familia.
+
+- **Título de página** (`admin-title`, 700, 1.75rem → 2rem desde 768 px, −0.015em, `text-balance`): el h1 de `AdminPageHeader` y el saludo «Hola, {nombre}».
+- **Título de sección** (`admin-section`, 700, 1.125rem): el h2 de `AdminSection` y la leyenda de `FormSection`.
+- **Cifra** (`admin-figure`, 700, 1.75rem, 1): los conteos del inicio, en azul o, en cero, en grafito gastado.
+- **Cuerpo** (`admin-body`, 400, 1rem): texto y controles (16 px, sin zoom en el celular); los nombres en filas y las etiquetas de campo en 700.
+- **Nota** (`admin-note`, 400, 0.875rem, grafito gastado): ayuda, descripciones, «(opcional)», fechas, lo que falta bajo el nombre en «Te falta».
+- **Etiqueta** (`admin-label`, 700): insignias de estado (0.8125rem), filtros, navegación del riel y palabras de acción (0.9375rem), pestañas (0.75rem, 400; 700 la actual).
+
+**The One Family Rule.** Atkinson para todo: títulos, cifras, etiquetas y datos, con cifras tabulares. Sin serif, sin monoespaciada, sin mayúsculas espaciadas.
+
+**The No Kicker Rule (admin).** No hay antetítulo ni etiqueta sobre los títulos del admin (la prop `eyebrow` de `AdminPageHeader` se ignora). El contexto de la asociación va en la barra superior del celular y en el texto («tu asociación», «Tus productos»).
+
+**The Consequence Help Rule.** El texto de ayuda aparece solo donde una decisión tiene una consecuencia que no se ve («No se puede cambiar después de crear el producto.») o donde un ejemplo ahorra una duda («Vereda, municipio o finca.»); nunca para anunciar un límite de caracteres: el límite se aplica en silencio y, cuando quedan pocos (10 % del límite, al menos 10), aparece bajo el campo «Te quedan N caracteres.», que pasa a rojo de corrección al llegar al límite (`CharacterBudget`, un solo listener en el shell que llena el espacio que deja cada `Field`). Un campo opcional lo dice con «(opcional)» en grafito gastado junto a su etiqueta.
+
+### Mundo anterior (404 y acceso)
+
+Bricolage Grotesque (variable con tamaño óptico, `font-heading`) para los títulos; Geist para interfaz y texto corrido. Los campos de Clerk usan 16 px.
 
 ## Layout
 
@@ -262,9 +418,21 @@ Bricolage Grotesque (variable con tamaño óptico) para h1, títulos de sección
 
 **The Level Columns Rule.** En la banda de la alianza, la columna de texto termina a la misma altura que la foto: la cifra de la alianza se empuja al pie de su columna.
 
-### Mundo anterior (admin)
+### Cuaderno de la asociación (admin)
 
-Los mismos `Container` y ritmos de sección. En el admin, el contexto de la asociación va en el antetítulo; títulos y textos usan «tu asociación» o «Tus productos» en lugar de repetir su nombre.
+- **Marco (`AdminShell`):** desde 768 px, un riel lateral blanco de 15rem pegado a la ventana, con borde fino a la derecha: logo arriba, los destinos, y al pie «Ver la vitrina», la cuenta y «Cerrar sesión». En celular, una barra superior blanca de 56 px pegada arriba (logo y el nombre de la asociación o «Alianza AROMA») y la barra de pestañas fija abajo.
+- **Área de trabajo:** sobre el papel cuadriculado, hasta 72rem, con márgenes de 16, 24 y 40 px y 24 px arriba (40 px desde 768 px). Abajo reserva la altura de la barra de pestañas (`--admin-tabbar-height`, 0 donde no hay barra) más 2rem.
+- **Inicio:** el saludo y una línea de estado («3 productos en la vitrina.»). Desde 1024 px, «Te falta» a la izquierda y una columna de 20rem con las tres cifras y las acciones; en celular, apilados: «Te falta», cifras y el botón a todo el ancho.
+- **Producto en el admin** (`/admin/products/[id]`): desde 1280 px, dos columnas: el trabajo (presentaciones, imágenes, foto para el inicio) a la izquierda y una columna de 22rem que se desplaza con la página con «Publicación» e «Información». Debajo de 1280 px el orden es «Publicación», el trabajo (presentaciones, imágenes, foto para el inicio) e «Información»: lo que falta para publicar queda justo encima de dónde se arregla.
+- **Trabajo y costado (desde 1280 px):** la misma estructura vale donde una página tiene una tarea larga y piezas que actúan por su cuenta: el trabajo a la izquierda y una columna de 22rem a la derecha (en producto y asociación se desplaza con la página; en usuario, texto de contenido e imagen queda fija arriba). Perfil de asociación: el formulario y «Fotos» a la izquierda, «Logo» y «Portada» a la derecha (en celular: formulario, logo, portada, fotos). Usuario: «Datos y rol» a la izquierda, «Invitación» y «Acceso» a la derecha (una sola columna si no hay costado, como en la propia cuenta). Texto de contenido: el formulario en una hoja a la izquierda, «Texto original» a la derecha. Imagen de producto: la foto de 18rem y su lugar («Imagen principal» o «Usar como principal») a la izquierda desde 1024 px, el texto alternativo en una hoja a la derecha. Los formularios cortos (presentación, categoría, altas) quedan en una columna: estirarlos no ayuda a leerlos.
+- **Listas:** filtros de estado y búsqueda en una fila desde 1024 px (la búsqueda, de 20rem, solo para el superadmin); en celular los filtros se desplazan de lado. Para la administradora de asociación los filtros aparecen solo al llegar desde una cifra del inicio: tiene pocos productos.
+- **Formularios:** cada `FormSection` es una hoja que pone el título a la izquierda (12rem) solo cuando la hoja mide al menos 48rem (consulta de contenedor); en una columna angosta, junto a un costado, el título va arriba de los campos.
+
+**The Thumb Reach Rule.** En celular, tres destinos como pestañas más «Más», que abre una hoja inferior con el resto, «Ver la vitrina» y la cuenta. Superadmin: Inicio, Productos y Asociaciones; Categorías, Contenido y Usuarios bajo «Más». Administradora de asociación: Inicio, Productos y Mi asociación. El orden es el mismo en el riel.
+
+**The One Job Per Screen Rule.** En las rutas que terminan en `/new` o `/edit` la barra de pestañas desaparece: el formulario se queda con su enlace de vuelta y su barra de guardar.
+
+**The Sticky Save Rule.** «Cancelar» y el botón principal viven en una sola fila pegada al pie de la pantalla (sobre la barra de pestañas si existe; a 16 px del borde en escritorio). Una acción poco frecuente, como eliminar, se aparta a la izquierda de la fila desde 640 px; en celular sale de la fila y queda al final del formulario. En celular, el botón principal crece para llenar la fila.
 
 ## Elevation & Depth
 
@@ -287,7 +455,7 @@ La vitrina es casi plana: sin desenfoques ni texturas. La profundidad viene del 
 
 ### Named Rules
 
-**The Real Layer Rule.** Solo tiene sombra lo que de verdad está encima de otra cosa: la tarjeta sobre la foto, la barra sobre la página y el logo sobre su foto, además de menús y diálogos. El mundo anterior no usa sombras salvo en el menú móvil del admin.
+**The Real Layer Rule.** Solo tiene sombra lo que de verdad está encima de otra cosa: la tarjeta sobre la foto, la barra sobre la página y el logo sobre su foto, además de menús y diálogos. En el cuaderno del admin todo es plano (hojas blancas con borde fino sobre el papel cuadriculado); solo los diálogos de confirmación y la hoja «Más» tienen sombra (`shadow-xl`).
 
 ## Shapes
 
@@ -356,7 +524,7 @@ SVG oficiales en `public/brand`, servidos sin optimizar mediante `AromaLogo`, si
 
 ### Ficha de producto (`/productos/[asociación]/[producto]`)
 
-Conserva su estructura de siempre y habla el idioma de la vitrina. Miga de pan en etiqueta seminegrita («← Productos / Categoría»). Arriba, dos columnas: la galería (`ProductGallery`: en escritorio, una foto grande 4:5 del ancho de la columna (comparte bordes con la «Etiqueta de origen») y, con dos o más, una fila de miniaturas de 72 px debajo, que cambia la foto grande con el fundido de 700 ms del carrusel, marca la actual con un borde de 2 px en tinta y anuncia «Foto N de M»; la galería mide lo mismo tenga 2 u 8 fotos. En celular, franja deslizable con la siguiente foto asomando y «N fotos · desliza para ver más». Esquinas rectas; sin fotos, el símbolo de AROMA y «Foto en camino» sobre niebla) y, a la derecha y fija al desplazarse en escritorio, la ficha en el orden de la tarjeta destacada: logo de 48 px solo si existe, nombre de la organización en serif seminegrita (enlace con subrayado verde) y su lugar en cursiva; el h1 en Source Serif 600 (2.5rem → 3.25rem, −0.02em); categoría y número de presentaciones en etiqueta de tinta gastada (sin antetítulo); la descripción corta en serif de entrada. Debajo, «Presentaciones» (`ProductPresentations`): el tablero de la tarjeta destacada, regla de 1 px en tinta, filas con nombre (y tamaño solo si el nombre no lo dice) y precio en cifra condensada de 2rem → 2.25rem («Consultar» sin precio); luego «Consultar por WhatsApp» (principal, a todo el ancho de la columna, como en la tarjeta destacada), solo salvo la nota cuando la asociación no tiene número, y debajo la nota de precios de referencia si hay algún precio. El botón queda en la primera pantalla en escritorio (1440×900, 1366×768 y 1024×768); en celular se llega bajando, después de la foto. Abajo, la «Etiqueta de origen»: panel blanco abierto por una regla de 3 px en tinta, rótulo condensado y filas de etiqueta pequeña con su valor en serif (el origen en cursiva), más la descripción de la asociación en cinco líneas; a su lado, «Sobre el producto» e «Ingredientes» con títulos y texto en serif. Cierra «Más de {nombre corto}» (título en serif; el nombre completo para lectores de pantalla), bajo una regla fina: hasta tres tarjetas del catálogo (`PlazaProductGrid`, las mismas del inicio, sin la fila de la asociación) con los otros productos de la misma asociación y, si tiene más, «Ver los N productos» hacia su perfil. Si la asociación no tiene otros productos, la sección no aparece.
+Conserva su estructura de siempre y habla el idioma de la vitrina. Miga de pan en etiqueta seminegrita («← Productos / Categoría»). Arriba, dos columnas: la galería (`ProductGallery`: en escritorio, una foto grande 4:5 del ancho de la columna (comparte bordes con la «Etiqueta de origen») y, con dos o más, una fila de miniaturas de 72 px debajo, que cambia la foto grande con el fundido de 700 ms del carrusel, marca la actual con un borde de 2 px en tinta y anuncia «Foto N de M»; la galería mide lo mismo tenga 2 u 8 fotos. Tocar la foto grande (o cualquiera de la franja en celular), que lleva un ícono de ampliar en la esquina, la abre entera en la misma vista ampliada del mosaico de la asociación (`PhotoLightbox`): sobre negro, sin recorte, con «N / M», flechas, teclado y deslizar; al cerrar en otra foto, esa queda como la grande y recibe el foco. En celular, franja deslizable con la siguiente foto asomando y «N fotos · desliza para ver más». Esquinas rectas; sin fotos, el símbolo de AROMA y «Foto en camino» sobre niebla) y, a la derecha y fija al desplazarse en escritorio, la ficha en el orden de la tarjeta destacada: logo de 48 px solo si existe, nombre de la organización en serif seminegrita (enlace con subrayado verde) y su lugar en cursiva; el h1 en Source Serif 600 (2.5rem → 3.25rem, −0.02em); categoría y número de presentaciones en etiqueta de tinta gastada (sin antetítulo); la descripción corta en serif de entrada. Debajo, «Presentaciones» (`ProductPresentations`): el tablero de la tarjeta destacada, regla de 1 px en tinta, filas con nombre (y tamaño solo si el nombre no lo dice) y precio en cifra condensada de 2rem → 2.25rem («Consultar» sin precio); luego «Consultar por WhatsApp» (principal, a todo el ancho de la columna, como en la tarjeta destacada), solo salvo la nota cuando la asociación no tiene número, y debajo la nota de precios de referencia si hay algún precio. El botón queda en la primera pantalla en escritorio (1440×900, 1366×768 y 1024×768); en celular se llega bajando, después de la foto. Abajo, la «Etiqueta de origen»: panel blanco abierto por una regla de 3 px en tinta, rótulo condensado y filas de etiqueta pequeña con su valor en serif (el origen en cursiva), más la descripción de la asociación en cinco líneas; a su lado, «Sobre el producto» e «Ingredientes» con títulos y texto en serif. Cierra «Más de {nombre corto}» (título en serif; el nombre completo para lectores de pantalla), bajo una regla fina: hasta tres tarjetas del catálogo (`PlazaProductGrid`, las mismas del inicio, sin la fila de la asociación) con los otros productos de la misma asociación y, si tiene más, «Ver los N productos» hacia su perfil. Si la asociación no tiene otros productos, la sección no aparece.
 
 ### Directorio de asociaciones (`/asociaciones`)
 
@@ -370,35 +538,42 @@ Encabezado: «Asociaciones» en condensada mayúscula (2.75rem → 4.5rem) y, de
 
 ### Perfil de asociación (`/asociaciones/[asociación]`)
 
-Misma estructura de siempre, en el idioma de la vitrina. «← Asociaciones» en etiqueta seminegrita; la portada a todo el ancho de la columna (16:9, 21:8 desde 768 px), con esquinas rectas, solo si existe. Encabezado sin antetítulo, cerrado por una regla fina: logo circular de 64 → 80 px solo si existe, nombre en Source Serif 600 (2.25rem → 3.25rem) y, debajo, la zona en cursiva con su distancia (o, sin zona, la ubicación); «Escribir por WhatsApp» en el estilo secundario, a todo el ancho en celular y al final de la línea desde 1024 px. Debajo, la descripción en serif de entrada (1.25rem → 1.375rem) y «Historia» con título en serif y texto en tinta gastada, a todo el ancho; si la asociación tiene zona, el mapa del territorio flota a la derecha (40 %) desde 1024 px y el texto lo rodea (en celular va después del texto). El mapa es la versión compacta (`TerritoryMap compact`: sin rótulos ni anillos, solo «La Macarena») en un panel blanco con borde fino y un punto verde en su zona, con el pie «zona · distancia · zona aproximada» y «Ver todas en el mapa →». Si tiene fotos, «En su territorio» (rótulo condensado): un mosaico de hasta cinco fotos (`AssociationGallery`; la primera grande; con una, ancha 16:9; con dos, lado a lado; con tres, la grande y dos apiladas; con cuatro, la grande, dos arriba y una ancha abajo; con más, la quinta dice «+N fotos»; en celular, la primera ancha y las demás en dos columnas). Al tocar una se abre la vista ampliada: un diálogo a pantalla completa sobre negro, con «N / M», la foto entera, su pie en serif cursiva, flechas, teclado y deslizar; Escape o la X la cierran y el foco vuelve a la foto. Cierra «Sus productos» (rótulo condensado y el conteo) con las tarjetas del catálogo (`PlazaProductGrid`) sin la fila de la asociación, que la página ya nombra; sin productos, una frase en serif.
+Misma estructura de siempre, en el idioma de la vitrina. «← Asociaciones» en etiqueta seminegrita; la portada a todo el ancho de la columna (16:9, 21:8 desde 768 px), con esquinas rectas, solo si existe. Encabezado sin antetítulo, cerrado por una regla fina: logo circular de 64 → 80 px solo si existe, nombre en Source Serif 600 (2.25rem → 3.25rem) y, debajo, la zona en cursiva con su distancia (o, sin zona, la ubicación); «Escribir por WhatsApp» en el estilo secundario, a todo el ancho en celular y al final de la línea desde 1024 px. Debajo, la descripción en serif de entrada (1.25rem → 1.375rem) y «Historia» con título en serif y texto en tinta gastada, a todo el ancho; si la asociación tiene zona, el mapa del territorio flota a la derecha (40 %) desde 1024 px y el texto lo rodea (en celular va después del texto). El mapa es la versión compacta (`TerritoryMap compact`: sin rótulos ni anillos, solo «La Macarena») en un panel blanco con borde fino y un punto verde en su zona, con el pie «zona · distancia · zona aproximada» y «Ver todas en el mapa →». Si tiene fotos, «En su territorio» (rótulo condensado): un mosaico de hasta cinco fotos (`AssociationGallery`; la primera grande; con una, ancha 16:9; con dos, lado a lado; con tres, la grande y dos apiladas; con cuatro, la grande, dos arriba y una ancha abajo; con más, la quinta dice «+N fotos»; en celular, la primera ancha y las demás en dos columnas). Al tocar una se abre la vista ampliada (`PhotoLightbox`, compartida con la ficha del producto): un diálogo a pantalla completa sobre negro, con «N / M», la foto entera, su pie en serif cursiva, flechas, teclado y deslizar; Escape o la X la cierran y el foco vuelve a la foto. Cierra «Sus productos» (rótulo condensado y el conteo) con las tarjetas del catálogo (`PlazaProductGrid`) sin la fila de la asociación, que la página ya nombra; sin productos, una frase en serif.
 
-### Administración (mundo anterior: «etiqueta de origen»)
+### Administración («Cuaderno de la asociación»)
 
-Lo que sigue documenta el admin tal como está en el código; rige hasta que se rediseñe. Usa los tokens de `:root`, reglas finas en lugar de cajas, Bricolage en títulos y Geist Mono para datos. shadcn/ui es infraestructura adaptada a esos tokens.
+Lo que sigue documenta el admin tal como está en el código, dentro de `.cuaderno`. Hojas blancas con borde fino y radio de 0,3rem sobre el papel cuadriculado; shadcn/ui es infraestructura adaptada a esos tokens.
 
-- **AdminPageHeader**: antetítulo opcional (asociación o alianza), título en display y regla en tinta. En páginas internas lo antecede `AdminBackLink` hacia la lista. Su acción principal ocupa el ancho total en móvil, como las acciones de los formularios.
-- **Lista administrativa de productos** (`/admin/products`): tabla en escritorio y filas apiladas en móvil, con producto, categoría, asociación cuando aplica, estado y acción. El superadmin ve una sola lista; el admin de asociación ve sus productos y, aparte, los publicados por otras asociaciones activas como «Solo lectura». La visibilidad y el permiso de gestión se calculan en el servidor. Categorías y asociaciones inactivas se señalan con una nota en mono.
-- **Gestión de asociaciones** (`/admin/associations`, solo superadmin): tabla en escritorio y filas apiladas en móvil, con nombre, ubicación y «Ver perfil público» si está activa, estado (`ActiveStatusBadge`: «Activa» con círculo verde, «Inactiva» con cuadrado vacío), productos publicados sobre el total y cuentas de administración. «Nueva asociación» pide solo nombre y ubicación; la dirección pública sale del nombre y no cambia. «Editar» abre el editor de perfil. «Desactivar» y «Activar» abren un diálogo que explica el efecto (vitrina, perfil y acceso de sus administradoras) y aclara que no se borra nada. No hay eliminación.
-- **Gestión de categorías** (`/admin/categories`, solo superadmin): mismo patrón, con nombre, descripción en dos líneas, «Ver en la vitrina» si tiene productos publicados, estado y uso («3 publicados de 5 productos» o «Sin productos»). La dirección del filtro (`/?categoria=…`) sale del nombre y no cambia al renombrar. Desactivar explica que oculta sus productos sin borrar nada. «Eliminar categoría» solo se habilita si ningún producto la usa; si no, se deshabilita con la razón.
-- **Gestión de usuarios** (`/admin/users`, solo superadmin): persona (nombre, correo y «(tú)»), rol, asociación («Toda la alianza» para el superadmin) y estado con forma y texto: círculo verde «Activa», círculo discontinuo «Invitación pendiente», cuadrado vacío «Inactiva». «Nuevo usuario» pide nombre, correo, rol y asociación (solo para el administrador de asociación) y envía una invitación. La edición muestra el correo como dato fijo, el rol (fijo en la propia cuenta), «Invitación» con «Reenviar» y «Cancelar» y «Acceso» con su diálogo; nadie se desactiva a sí mismo.
-- **Contenido** (`/admin/content`, solo superadmin): conjunto fijo de bloques definidos en `src/lib/site-content/blocks.ts` (portada del inicio, la alianza en el inicio, presentación de las asociaciones, pie de página y contacto de la alianza). «Contacto de la alianza» es un teléfono validado y normalizado («+57 300 111 2233») que puede quedar vacío para ocultar los botones de contacto con la alianza; mientras nunca se haya guardado rige `ALLIANCE_SUPPORT_WHATSAPP`. La lista muestra cada bloque con nombre, dónde aparece, una cita del texto actual (regla izquierda) y «Editado el … por …» o «Texto original» en mono. La edición tiene límite y ayuda; si el texto cambió, «Texto original» permite restaurarlo con confirmación. La base guarda solo las palabras; la composición sigue en el código.
-- **Registro por invitación** (`/admin/sign-up`): el formulario de Clerk solo si llega con la invitación; sin ella, una tarjeta explica que el acceso es solo por invitación.
-- **Perfil de asociación en el admin** (`/admin/association` y «Editar» del superadmin): dirección pública y, con `FormSection`, «Información pública» y «Contacto» (WhatsApp normalizado y persona de contacto, que no se publica). Solo el superadmin cambia el nombre. Debajo, «Logo» (baldosa cuadrada) y «Portada» (21:8), cada una con su botón, vista previa reducida en el navegador y «Quitar» con confirmación.
-- **ConfirmActionButton**: diálogo genérico con título, explicación y botón de confirmar, rojo para acciones que retiran algo. `ConfirmDeleteButton` lo usa para eliminar.
-- **AdminEmptyState**: espacio con borde discontinuo, icono, título breve que no repite el de la sección y texto que explica cuándo aparecerá contenido; admite una acción.
-- **StatusBadge**: estado del producto con forma y texto, nunca solo color: círculo verde «Publicado», círculo vacío «Borrador», cuadrado naranja «Pausado».
-- **Formulario de producto**: secciones «Información básica» y «Detalles» con título y propósito a la izquierda en escritorio; etiqueta visible, «Opcional» en mono, ayuda con el límite de caracteres y `select` nativo. Validación en servidor: aviso general con `role="alert"`, error bajo cada campo (`aria-invalid`, `aria-describedby`), foco en el primer campo inválido y valores conservados. «Cancelar» y el botón principal al final; en móvil, el principal primero.
-- **Contexto de edición**: la asociación en el antetítulo, fija; el estado acompaña al título; el identificador web queda fijo al publicarse; una categoría inactiva se conserva como «(inactiva)»; si está publicado, un aviso con borde naranja advierte que los cambios se verán en la vitrina.
-- **Página de producto** (`/admin/products/[id]`): `AdminSection` con **Publicación** (`StatusBadge`, qué ve el público, requisitos con marca verde o equis naranja, la acción disponible con su nota), **Presentaciones** (lista con «Subir», «Bajar» y «Editar», o `AdminEmptyState`) e **Información** (filas con etiqueta mono y «Sin completar»).
-- **Formulario de presentación**: nombre, cantidad y unidad, precio en pesos enteros con «$» y «Disponible». «Eliminar presentación» a la izquierda en rojo sin relleno, con confirmación; se deshabilita con la razón si es la única disponible de un producto publicado.
-- **Imágenes del producto**: cuadrícula de 2 a 4 columnas a 4:5; la primera es la principal («Principal» en mono); controles para moverlas y editar el texto alternativo; máximo 8. La subida reduce la foto en el navegador y lo dice («Preparando la foto…»).
-- **Fotos de la asociación** (editor de perfil, sección «Fotos»): hasta 8, con pie de foto opcional (160 caracteres) y texto alternativo; cada una con vista previa 4:3, sus textos editables en el lugar, flechas para moverla y «Quitar foto» con confirmación; debajo, el formulario para agregar otra (la foto se reduce en el navegador). Se ven en el perfil público en ese orden.
-- **Foto para el inicio** (`/admin/products/[id]`, sección «Foto para el inicio»): opcional, una por producto, horizontal (mejor 16:9, al menos 1600 px de ancho), reducida a 2400 px. Usa el mismo formulario de imagen única que el logo y la portada de la asociación (`ImageFieldForm`): vista previa 16:9 y, debajo, cómo la recorta el carrusel del inicio en computador (15:7) y en celular (4:3), con «Quitar foto» y confirmación. Sin ella, el inicio recorta la foto principal.
-- **AdminNotice**: mensaje de una línea con regla izquierda de 3 px: verde para confirmaciones (`role="status"`), naranja para advertencias y rojo para errores (`role="alert"`).
-- **Navegación admin**: activo en verde claro con barra verde a la izquierda; pendientes con «Pronto», deshabilitadas. Superadmin: Inicio, Productos, Asociaciones, Categorías, Contenido y Usuarios; administradora de asociación: Inicio, Productos y Mi asociación. Mismo orden en barra lateral y menú móvil.
-- **Inicio del panel** (`/admin`): saludo con la asociación o «Alianza AROMA» en el antetítulo y secciones `AdminSection` con cifras enlazadas bajo regla en tinta, borradores con lo que les falta y accesos según el rol. Las cifras se calculan en el servidor; los botones ocupan el ancho en móvil.
-- **Estados**: la 404 (fuera de `.plaza`) usa el símbolo, un título en display y una sola acción. Los avisos de acceso al admin explican qué pasó, muestran la cuenta y la asociación afectadas y ofrecen contactar a la alianza por WhatsApp, usar otra cuenta o volver al sitio.
-- **Foco**: contorno de 2 px en verde acción con 4 px de separación; en pestañas, contorno interior.
+- **«Te falta»** (`PendingTaskList`, signature): la página del cuaderno que abre el inicio. Hoja blanca con una línea de margen vertical de 1 px en rojo de corrección al 70 %, a 2.75rem del borde izquierdo. El título «Te falta» en rojo con el conteo «· N» en grafito gastado. Cada fila (mín. 64 px) es un enlace a la tarea exacta: en el margen, el anillo de corrección de 20 px; el asunto en negrita (producto, «Tu asociación», asociación o persona) y debajo lo que falta, en nota; a la derecha, la palabra de acción en azul con su chevrón («Completar», «Publicar», «Agregar», «Revisar»). Se ven cinco; el resto tras «Ver N más». Sin pendientes: «Todo al día» en azul y «No hay nada pendiente. Todo lo publicado se ve completo.» con una marca azul.
+- **Qué cuenta como falta** (`getPendingTasks`): solo lo que una lista o la vitrina no muestran sin abrir cada ficha. Se calcula en cada visita; una fila desaparece cuando se arregla y no se descarta a mano.
+  - **Administradora de asociación:** sus borradores con el primer requisito sin cumplir (o «Está listo, pero aún no se ve en la vitrina» → «Publicar»); sus productos publicados o pausados con problemas, una fila por producto con todos juntos («Sin foto y sin descripción corta»; «No se ve: su categoría está inactiva»), «Agregar» directo a subir la foto cuando solo falta la foto y «Revisar» a la ficha en los demás casos; y «Tu asociación» con los huecos del perfil.
+  - **Superadmin**, en este orden: el WhatsApp de la alianza si no está configurado (sin él no se muestran sus botones de contacto); las invitaciones sin aceptar; las asociaciones activas sin ninguna cuenta activa («Nadie la administra en el panel» → «Invitar», que abre el alta de usuario con la asociación ya elegida); los productos publicados de asociaciones activas con los mismos problemas; y los huecos de perfil de las asociaciones activas.
+  - **Huecos del perfil:** descripción, zona en el mapa, portada y WhatsApp (sin número, los botones de los productos escriben a la alianza); los mismos que marca `ProfileGaps` en la lista de asociaciones.
+  - **No cuentan:** el logo y las fotos de la asociación (extras opcionales), los precios («Consultar» es un precio válido), los borradores y los pausados para la alianza, y que un producto publicado se quede sin presentación disponible (el sistema no lo permite).
+- **Cifras del inicio** (`AdminDashboardStats`): una hoja dividida en tres (Publicados, Borradores, Pausados), cada cifra un enlace a la lista filtrada; en azul, o en grafito gastado si es cero. Debajo, el botón principal a todo el ancho de la columna: «Nuevo producto», porque las cifras de encima cuentan productos; el superadmin tiene además, en contorno, «Nueva asociación» e «Invitar a una persona».
+- **AdminPageHeader**: título y, solo si dice algo que el título no, una línea en grafito gastado; la acción principal a la derecha desde 768 px y a todo el ancho en celular. En páginas internas lo antecede `AdminBackLink` («← nombre», nota en grafito gastado).
+- **AdminSection**: hoja blanca con título de sección y descripción opcional; agrupa todo en las páginas internas.
+- **StatusBadge** y **ActiveStatusBadge**: píldora de 24 px en niebla azul con un marcador de 8 px y la palabra, nunca solo color: punto lleno grafito «Publicado» / «Activa», anillo grafito sobre blanco con borde «Borrador», dos barras en grafito gastado «Pausado», cuadrado vacío en grafito gastado «Inactiva».
+- **Lista de productos** (`/admin/products`): tabla en escritorio (Producto, Asociación para el superadmin, Categoría, Estado, Cambiado) y filas apiladas en celular con chevrón azul; miniatura de 48 px con radio pequeño (en escala de grises si está pausado; sin foto, un icono en niebla), nombre en negrita azul que abre la ficha del producto y cuyo enlace cubre toda la fila (como en asociaciones y categorías), con el ícono de la vitrina al lado cuando el público lo ve (publicado, de asociación y categoría activas) y, si falta la foto, la nota de corrección «No tiene foto» con su anillo de 12 px. Una asociación o categoría inactiva se dice en nota gris. La administradora de asociación ve aparte, bajo «De otras asociaciones» («Publicados en la vitrina. Solo para consultar.»), los productos publicados por otras asociaciones, con el nombre en negro (sin ficha que abrir) y solo el ícono de la vitrina. Filtros «Todos», «Publicados», «Borradores», «Pausados» como píldoras de 44 px con su conteo (la activa en azul lleno) y búsqueda por producto, asociación o categoría, sin importar tildes ni mayúsculas (`ProductSearch`, solo para la alianza): filtra mientras se escribe, 300 ms después de la última tecla (Enter filtra al instante), con la lupa convertida en un indicador de carga mientras llega el resultado; una X y Escape la borran y devuelven la lista completa. La búsqueda vive en la dirección (`?q=`): los filtros de estado la conservan, «volver» la recupera y los conteos de las píldoras se calculan sobre lo buscado. Sin resultados: «Nada coincide con «…».» y «Ver todos los productos».
+- **Listas de gestión** (asociaciones, categorías y usuarios, superadmin): las tres funcionan igual. El nombre es el enlace azul que abre la ficha para editarla (no hay botón «Editar»); el enlace público, si existe, es un ícono junto al nombre; la única acción de la fila es activar o desactivar, un botón discreto en grafito gastado que abre su diálogo. Las cifras van solas y en una línea («3 de 4»). En celular, cada fila es nombre con su estado, una nota y una línea con las cifras a la izquierda y la acción a la derecha; nada a todo el ancho.
+- **Gestión de asociaciones** (`/admin/associations`, superadmin): hoja con tabla y filas apiladas; bajo el nombre, los huecos del perfil (`ProfileGaps`) con el anillo de corrección, solo para asociaciones activas; estado con `ActiveStatusBadge`; publicados sobre el total. Desactivar y activar abren un diálogo que explica el efecto y que no se borra nada; no hay eliminación.
+- **Categorías, usuarios y contenido** (superadmin): el mismo patrón de hoja con tabla en escritorio y filas en celular. Usuarios: persona, rol, asociación y estado con forma y texto («Activa», «Invitación pendiente» con círculo discontinuo, «Inactiva»). Contenido: los bloques fijos de `src/lib/site-content/blocks.ts`, cada uno con dónde aparece, una cita del texto actual con regla izquierda fina y «Editado el … por …» o «Texto original» en nota.
+- **Reglas que siguen del admin anterior** (sin cambio de comportamiento): «Nueva asociación» pide solo nombre y ubicación y la dirección pública sale del nombre y no cambia; la dirección del filtro de una categoría tampoco cambia al renombrar, y «Eliminar categoría» solo aparece si ningún producto la usa (si no, la razón y «Desactivar categoría»); «Nuevo usuario» envía una invitación, que en la edición se puede reenviar o cancelar, y nadie se desactiva a sí mismo; en «Contenido», «Contacto de la alianza» es un teléfono normalizado que puede quedar vacío para ocultar los botones de contacto, y «Texto original» restaura un bloque con confirmación; «Eliminar presentación» se aparta a la izquierda de la fila de guardar (al final del formulario en celular), con confirmación, y si es la única disponible de un producto publicado se muestra la razón en su lugar.
+- **Formularios** (`form-fields.tsx`): `FormSection` es una hoja con título a la izquierda en escritorio; `Field` con etiqueta en negrita y «(opcional)» en grafito gastado al lado, ayuda solo con consecuencia (ver The Consequence Help Rule), `select` nativo con chevrón, controles de 44 px con borde de campo y texto de 16 px. Validación en servidor: `FormAlert` con `role="alert"`, error bajo cada campo en rojo de error con icono (`aria-invalid`, `aria-describedby`), foco en el primer campo inválido y valores conservados. `FormActions`: la fila pegada de «Cancelar» (contorno) y el botón principal (ver The Sticky Save Rule); hoja propia sobre el papel, y solo una regla superior cuando vive dentro de una hoja, para no anidar tarjetas. Una acción rara y destructiva («Eliminar presentación», «Eliminar imagen», «Eliminar categoría») va a la izquierda de esa barra desde 640 px, apartada de «Cancelar» y del botón principal; en celular sale de la barra y queda al final del formulario, justo antes de ella, fuera del alcance del pulgar. Cuando no se puede eliminar (una categoría que usan productos, la última presentación disponible de un producto publicado), no se muestra un botón rojo deshabilitado: en su lugar va la razón, corta y en grafito gastado («No se puede eliminar: 4 productos la usan.»), y, si existe, la alternativa como acción («Desactivar categoría»), cuyo diálogo explica la consecuencia. Todo formulario vive en una hoja blanca, también los cortos (presentación, categoría, altas, imagen nueva). Los montos se muestran como en la lista: el precio de referencia con punto de miles («18.500») y la cantidad con coma decimal («1,5»).
+- **Producto en el admin** (`/admin/products/[id]`): «Publicación» con `StatusBadge`, una frase de lo que ve el público y, si no está publicado, «Requisitos para publicar» como lista entre reglas finas (marca azul cumplido, equis de corrección pendiente); «Pausar» con diálogo. «Información», «Presentaciones» (o `AdminEmptyState`), «Imágenes» y «Foto para el inicio».
+- **Imágenes** (`ImageFieldForm`, `ProductImagesPanel`, `AssociationPhotosPanel`): vistas previas con radio pequeño y borde sobre niebla (logo cuadrado de 128 px, portada 21:8, foto para el inicio 16:9 con sus recortes del carrusel en computador 15:7 y celular 4:3, fotos de la asociación 4:3, fotos del producto 4:5 con «Principal» en la primera, en una grilla de al menos 9,5rem por foto para que quepan sus tres controles —mover antes, mover después y el lápiz de editar— sin texto debajo, porque el texto alternativo es opcional y no se marca como faltante); sin imagen, el símbolo de AROMA en gris. La subida reduce la foto en el navegador y lo dice; «Quitar foto» con confirmación. Hasta 8 fotos de producto y 8 de la asociación, con texto alternativo y, en las de la asociación, pie de foto opcional.
+- **AdminNotice**: mensaje de una línea en una caja con borde y radio, en negrita: confirmación en velo azul con icono azul (`role="status"`), nota en blanco con icono azul de información y error en rojo de error (`role="alert"`). Sin franjas laterales.
+- **AdminEmptyState**: hoja blanca con borde discontinuo, icono en niebla, título breve y texto que explica cuándo aparecerá contenido; admite una acción.
+- **Ver una imagen completa** (`ImageZoom`): toda vista previa recortada del admin (fotos del producto y su edición, logo, portada, foto para el inicio y fotos de la asociación) es un botón con cursor de lupa y un ícono de ampliar en la esquina; al tocarla abre un diálogo con la imagen entera, sin recorte y tan grande como permita la pantalla, sobre un velo casi opaco en tinta azulada, con su tamaño real en píxeles («1600 × 1200 px») para notar una foto pequeña o borrosa. Muestra el archivo original tal como está guardado, no una copia optimizada, y solo lo descarga al abrirse. Se cierra con la X, Escape o tocando fuera, y el foco vuelve a la miniatura. Las miniaturas de la lista de productos no lo tienen: su clic abre la ficha.
+- **ConfirmActionButton**: diálogo con título en negrita, explicación en grafito gastado, «Cancelar» (contorno) y confirmar (azul, o rojo de error lleno para las acciones que retiran algo); en celular los botones se apilan con el principal arriba. Hoja blanca de radio pequeño con sombra suave y fondo velado en tinta azulada. Se dibuja en un portal fuera del panel, así que el popup lleva la clase `.cuaderno` para heredar sus tokens y su tipografía; todo lo que el admin abra en un portal debe hacer lo mismo (el panel «Más» también la lleva).
+- **Navegación:** en el riel, filas de 44 px con icono de 20 px: la actual en velo azul con tinta azul profunda, negrita e icono azul (`aria-current`); las demás en grafito con icono gris y hover en niebla. En celular, la barra de pestañas blanca con borde arriba: cuatro celdas de 56 px con icono de 24 px y etiqueta de 0.75rem; la actual en azul y negrita, las demás en grafito gastado. «Más» se marca si su destino está abierto.
+- **Foco:** contorno de 2 px en tinta azul; en filas y celdas enlazadas, por dentro (−2 px).
+
+### Estados fuera del cuaderno (mundo anterior)
+
+- **404** (fuera de `.plaza` y `.cuaderno`): el símbolo, un título en Bricolage y una sola acción.
+- **Acceso** (`/admin/sign-in`, `/admin/sign-up`): el formulario de Clerk con la apariencia de `clerk-appearance.ts` (sin sombras, controles de 44 px, botón principal en `primary`); el registro solo con la invitación y, sin ella, una tarjeta explica que el acceso es solo por invitación.
+- **Avisos de acceso denegado** (`AdminAccessNotice`, en lugar de `AdminShell`): explican qué pasó, muestran la cuenta y la asociación afectadas y ofrecen contactar a la alianza por WhatsApp, usar otra cuenta o volver al sitio.
 
 ## Do's and Don'ts
 
@@ -424,6 +599,11 @@ Lo que sigue documenta el admin tal como está en el código; rige hasta que se 
 - **Do** dar nombre accesible a cada flecha, anunciar el cambio de destacado y dejar las tarjetas de la franja enfocables con un contorno visible.
 - **Do** respetar movimiento reducido: el contenido está en su lugar desde el primer cuadro.
 - **Do** validar teclado, 360–390 px y escritorio, con nombres largos, organizaciones sin logo ni portada, productos sin precio y categorías vacías; mantener el contenido institucional en `src/content` y los bloques editables.
+- **Do** (admin) poner toda pantalla nueva del admin dentro de `AdminShell`, con hojas blancas (`AdminSection`, `FormSection`) sobre el papel cuadriculado y Atkinson con cifras tabulares.
+- **Do** (admin) usar la tinta azul solo para acciones, enlaces, el destino actual y el foco; los estados en grafito con su forma.
+- **Do** (admin) marcar lo que falta con el anillo de corrección y llevar a la tarea exacta; sumar a `getPendingTasks` solo lo que de verdad impide publicar o deja incompleta la vitrina.
+- **Do** (admin) poner en gris lo pausado o inactivo, también su miniatura.
+- **Do** (admin) dejar «Cancelar» y guardar en la fila pegada de `FormActions` y esconder la barra de pestañas en `/new` y `/edit`.
 
 ### Don't:
 
@@ -442,4 +622,9 @@ Lo que sigue documenta el admin tal como está en el código; rige hasta que se 
 - **Don't** mostrar el mismo producto dos veces seguidas (destacado y cuadrícula).
 - **Don't** tomar el admin como referencia para pantallas nuevas de la vitrina.
 - **Don't** publicar imágenes generadas como si fueran productos reales, ni sellos como «100 % orgánico» sin certificación.
-- **Don't** (admin, mundo anterior) volver a tarjetas con caja para todo, píldoras rellenas ni el bordó en títulos.
+- **Don't** (admin) usar el azul para un estado, ni el rojo de corrección para un error, una franja gruesa al costado o un relleno.
+- **Don't** (admin) poner antetítulos, etiquetas en monoespaciada o mayúsculas espaciadas, serif ni otra familia que Atkinson.
+- **Don't** (admin) escribir ayudas que no tengan consecuencia, como «Hasta N caracteres».
+- **Don't** (admin) abrir el inicio con tarjetas de KPI ni con una tabla gris como lo primero que ve una líder.
+- **Don't** (admin) llevar la cuadrícula del papel dentro de las hojas, ni sombras fuera de diálogos y la hoja «Más».
+- **Don't** usar los tokens de `:root` (mundo anterior) para pantallas nuevas del admin.

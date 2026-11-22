@@ -51,46 +51,43 @@ export default async function EditPresentationPage({
         <AdminPageHeader
           eyebrow={product.associationName}
           title={presentation.name}
-          description={`Presentación de ${product.name}.`}
         />
       </div>
 
-      <PresentationForm
-        action={updatePresentationAction.bind(
-          null,
-          product.id,
-          presentation.id,
-        )}
-        defaultValues={toPresentationFormValues(presentation)}
-        submitLabel="Guardar cambios"
-        cancelHref={productHref}
-        secondaryAction={
-          <ConfirmDeleteButton
-            label="Eliminar presentación"
-            title={`¿Eliminar «${presentation.name}»?`}
-            description="La presentación se borrará de forma definitiva. Si solo quieres dejar de ofrecerla por un tiempo, márcala como no disponible."
-            action={deletePresentationAction.bind(
-              null,
-              product.id,
-              presentation.id,
-            )}
-            disabled={isLastAvailable}
-            aria-describedby={isLastAvailable ? "eliminar-nota" : undefined}
-          />
-        }
-        actionsNote={
-          isLastAvailable ? (
-            <p
-              id="eliminar-nota"
-              className="text-muted-foreground max-w-xl text-center text-sm sm:text-left"
-            >
-              No se puede eliminar:{" "}
-              {lastAvailableMessage.charAt(0).toLowerCase()}
-              {lastAvailableMessage.slice(1)}
-            </p>
-          ) : null
-        }
-      />
+      <section className="bg-card rounded-md border p-4 sm:p-6">
+        <PresentationForm
+          action={updatePresentationAction.bind(
+            null,
+            product.id,
+            presentation.id,
+          )}
+          defaultValues={toPresentationFormValues(presentation)}
+          submitLabel="Guardar cambios"
+          cancelHref={productHref}
+          secondaryAction={
+            isLastAvailable ? (
+              // The published product's last available presentation: say why
+              // it stays instead of showing a disabled red button.
+              <p className="text-muted-foreground text-sm">
+                No se puede eliminar:{" "}
+                {lastAvailableMessage.charAt(0).toLowerCase()}
+                {lastAvailableMessage.slice(1)}
+              </p>
+            ) : (
+              <ConfirmDeleteButton
+                label="Eliminar presentación"
+                title={`¿Eliminar «${presentation.name}»?`}
+                description="La presentación se borrará de forma definitiva. Si solo quieres dejar de ofrecerla por un tiempo, márcala como no disponible."
+                action={deletePresentationAction.bind(
+                  null,
+                  product.id,
+                  presentation.id,
+                )}
+              />
+            )
+          }
+        />
+      </section>
     </div>
   );
 }

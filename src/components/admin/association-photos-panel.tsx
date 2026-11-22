@@ -24,6 +24,7 @@ import {
   Field,
   FormAlert,
 } from "@/components/admin/form-fields";
+import { ImageZoom } from "@/components/admin/image-zoom";
 import { SubmitButton } from "@/components/admin/submit-button";
 import {
   formatFileSize,
@@ -157,14 +158,13 @@ function PhotoUploadForm({ action }: { action: PhotoAction }) {
     selectionError ??
     (selection.status === "error" ? selection.message : undefined) ??
     state.fieldErrors?.file;
-  const fileHint =
-    "JPG, PNG o WebP. La reducimos a 2000 px antes de subirla y quitamos sus metadatos, como la ubicación.";
+  const fileHint = undefined;
 
   return (
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="bg-card max-w-2xl space-y-6 rounded-sm border p-4 sm:p-6"
+      className="max-w-2xl space-y-6 border-t pt-6"
     >
       <h3 className="font-heading text-lg font-semibold">Agregar una foto</h3>
       <FormAlert message={state.message} />
@@ -216,10 +216,7 @@ function PhotoUploadForm({ action }: { action: PhotoAction }) {
               <ImagePlus aria-hidden />
               {selection.status === "ready" ? "Cambiar foto" : "Elegir foto"}
             </label>
-            <p
-              aria-live="polite"
-              className="text-muted-foreground font-mono text-xs"
-            >
+            <p aria-live="polite" className="text-muted-foreground text-sm">
               {selection.status === "preparing"
                 ? "Preparando la foto…"
                 : selection.status === "ready"
@@ -294,78 +291,103 @@ function AssociationPhotosPanel({
       )}
 
       {photos.length > 0 ? (
-        <ol aria-label="Fotos de la asociación" className="space-y-6">
+        <ol aria-label="Fotos de la asociación" className="space-y-4">
           {photos.map((photo, index) => {
             const actions = photoActions[photo.id];
             const url = getMediaUrl(photo.objectKey);
             const label = `foto ${index + 1}`;
             return (
-              <li
-                key={photo.id}
-                className="grid gap-4 border-t pt-6 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-6"
-              >
-                <div className="space-y-2">
+              <li key={photo.id} className="border-t pt-4">
+                <div className="grid grid-cols-[5.5rem_minmax(0,1fr)] gap-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-4">
                   <div className="bg-muted relative aspect-4/3 overflow-hidden rounded-sm border">
                     {url ? (
-                      <Image
+                      <ImageZoom
                         src={url}
                         alt={photo.altText ?? `Foto de ${associationName}`}
-                        fill
-                        sizes="12rem"
-                        className="object-cover"
-                      />
+                        label={`Ver la ${label} completa`}
+                        className="h-full"
+                      >
+                        <Image
+                          src={url}
+                          alt={photo.altText ?? `Foto de ${associationName}`}
+                          fill
+                          sizes="8rem"
+                          className="object-cover"
+                        />
+                      </ImageZoom>
                     ) : null}
                   </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-muted-foreground mr-auto font-mono text-xs">
-                      {index + 1} de {photos.length}
-                    </span>
-                    <form action={actions.moveUp}>
-                      <SubmitButton
-                        variant="ghost"
-                        size="icon"
-                        disabled={index === 0}
-                        aria-label={`Mover la ${label} antes`}
-                      >
-                        <ArrowLeft aria-hidden />
-                      </SubmitButton>
-                    </form>
-                    <form action={actions.moveDown}>
-                      <SubmitButton
-                        variant="ghost"
-                        size="icon"
-                        disabled={index === photos.length - 1}
-                        aria-label={`Mover la ${label} después`}
-                      >
-                        <ArrowRight aria-hidden />
-                      </SubmitButton>
-                    </form>
+                  <div className="min-w-0 space-y-1">
+                    <p className="text-muted-foreground text-sm">
+                      {index === 0 ? "Foto principal" : `Foto ${index + 1}`}
+                    </p>
+                    <p
+                      className={
+                        photo.caption ? "font-bold" : "text-muted-foreground"
+                      }
+                    >
+                      {photo.caption ?? "Sin pie de foto"}
+                    </p>
+                    <div className="-ml-3 flex flex-wrap items-center">
+                      <form action={actions.moveUp}>
+                        <SubmitButton
+                          variant="ghost"
+                          size="icon"
+                          disabled={index === 0}
+                          aria-label={`Mover la ${label} antes`}
+                        >
+                          <ArrowLeft aria-hidden />
+                        </SubmitButton>
+                      </form>
+                      <form action={actions.moveDown}>
+                        <SubmitButton
+                          variant="ghost"
+                          size="icon"
+                          disabled={index === photos.length - 1}
+                          aria-label={`Mover la ${label} después`}
+                        >
+                          <ArrowRight aria-hidden />
+                        </SubmitButton>
+                      </form>
+                      <ConfirmActionButton
+                        trigger={
+                          <>
+                            <Trash2 aria-hidden />
+                            Quitar
+                            <span className="sr-only"> la {label}</span>
+                          </>
+                        }
+                        triggerVariant="ghost"
+                        triggerClassName="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                        title="¿Quitar esta foto?"
+                        description="Se borrará de forma definitiva y dejará de verse en el perfil público."
+                        confirmLabel="Quitar foto"
+                        pendingLabel="Quitando…"
+                        tone="destructive"
+                        action={actions.remove}
+                      />
+                    </div>
+                    {/* The texts open on demand: most visits only reorder. */}
+                    <details className="group/textos">
+                      <summary className="text-primary inline-flex min-h-11 cursor-pointer list-none items-center font-bold underline-offset-4 hover:underline [&::-webkit-details-marker]:hidden">
+                        <span className="group-open/textos:hidden">
+                          Editar textos
+                        </span>
+                        <span className="hidden group-open/textos:inline">
+                          Cerrar textos
+                        </span>
+                        <span className="sr-only"> de la {label}</span>
+                      </summary>
+                      <div className="pt-2">
+                        <PhotoEditForm
+                          key={`${photo.altText}|${photo.caption}`}
+                          photo={photo}
+                          index={index}
+                          action={actions.update}
+                        />
+                      </div>
+                    </details>
                   </div>
-                </div>
-                <div className="min-w-0 space-y-4">
-                  <PhotoEditForm
-                    key={`${photo.altText}|${photo.caption}`}
-                    photo={photo}
-                    index={index}
-                    action={actions.update}
-                  />
-                  <ConfirmActionButton
-                    trigger={
-                      <>
-                        <Trash2 aria-hidden />
-                        Quitar foto
-                        <span className="sr-only"> {index + 1}</span>
-                      </>
-                    }
-                    triggerVariant="ghost"
-                    triggerClassName="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    title="¿Quitar esta foto?"
-                    description="Se borrará de forma definitiva y dejará de verse en el perfil público."
-                    confirmLabel="Quitar foto"
-                    pendingLabel="Quitando…"
-                    tone="destructive"
-                    action={actions.remove}
-                  />
                 </div>
               </li>
             );
@@ -373,8 +395,8 @@ function AssociationPhotosPanel({
         </ol>
       ) : (
         <p className="text-muted-foreground text-sm">
-          Sin fotos: el perfil muestra solo el texto. Con fotos del trabajo y
-          del territorio, el perfil se entiende mejor.
+          Aún no hay fotos. Las del trabajo y el territorio hacen que el perfil
+          se entienda mejor.
         </p>
       )}
 

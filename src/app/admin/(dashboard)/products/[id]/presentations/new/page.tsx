@@ -38,15 +38,16 @@ export default async function NewPresentationPage({
         <AdminPageHeader
           eyebrow={product.associationName}
           title="Nueva presentación"
-          description={`Una forma en que se ofrece ${product.name}: su empaque, cantidad y precio de referencia.`}
         />
       </div>
 
-      <PresentationForm
-        action={createPresentationAction.bind(null, product.id)}
-        submitLabel="Agregar presentación"
-        cancelHref={productHref}
-      />
+      <section className="bg-card rounded-md border p-4 sm:p-6">
+        <PresentationForm
+          action={createPresentationAction.bind(null, product.id)}
+          submitLabel="Agregar presentación"
+          cancelHref={productHref}
+        />
+      </section>
     </div>
   );
 }

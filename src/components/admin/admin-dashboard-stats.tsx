@@ -5,14 +5,14 @@ import { cn } from "@/lib/utils";
 export type DashboardStat = {
   label: string;
   value: number;
-  /** A short note beside the value, such as "de 5". */
+  /** A short note beside the value, such as "de 8". */
   note?: string;
   href: string;
 };
 
 /**
- * A row of counts, each one a link to the section it summarizes. Same
- * ruled strip as the storefront facts, in the admin's scale.
+ * A row of counts in blue ink, each one a link to what it counts. A zero
+ * goes grey: nothing to look at there.
  */
 function AdminDashboardStats({
   stats,
@@ -25,7 +25,7 @@ function AdminDashboardStats({
     <ul
       aria-label={label}
       className={cn(
-        "border-foreground grid border-t-[1.5px] border-b",
+        "bg-card grid overflow-hidden rounded-md border",
         stats.length === 3 ? "grid-cols-3" : "grid-cols-2",
       )}
     >
@@ -33,10 +33,15 @@ function AdminDashboardStats({
         <li key={stat.label} className="min-w-0 border-l first:border-l-0">
           <Link
             href={stat.href}
-            className="hover:bg-muted/60 focus-visible:outline-ring flex h-full flex-col gap-1 px-3 py-3 transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 sm:px-5"
+            className="hover:bg-accent/60 focus-visible:outline-ring flex h-full flex-col gap-1 px-3 py-3 transition-colors duration-150 focus-visible:outline-2 focus-visible:-outline-offset-2 sm:px-4"
           >
-            <span className="flex items-baseline gap-1.5">
-              <span className="font-heading text-3xl leading-none font-semibold md:text-4xl">
+            <span className="flex items-baseline gap-1">
+              <span
+                className={cn(
+                  "text-[1.75rem] leading-none font-bold",
+                  stat.value === 0 ? "text-muted-foreground" : "text-primary",
+                )}
+              >
                 {stat.value}
               </span>
               {stat.note ? (

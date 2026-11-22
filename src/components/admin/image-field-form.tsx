@@ -6,6 +6,7 @@ import { type FormEvent, startTransition, useActionState } from "react";
 
 import { ConfirmActionButton } from "@/components/admin/confirm-action-button";
 import { FormAlert } from "@/components/admin/form-fields";
+import { ImageZoom } from "@/components/admin/image-zoom";
 import {
   formatFileSize,
   useImageSelection,
@@ -43,23 +44,22 @@ const maxDimension: Record<ImageFieldKind, number> = {
 const copy = {
   logo: {
     noun: "logo",
-    hint: "JPG, PNG o WebP. Mejor cuadrado y con fondo transparente o claro. Lo reducimos a 800 px y quitamos sus metadatos.",
-    empty: "Sin logo: el directorio muestra el símbolo de AROMA.",
+    hint: "",
+    empty: "",
     save: "Guardar logo",
     remove: "Quitar logo",
   },
   cover: {
     noun: "portada",
-    hint: "JPG, PNG o WebP, horizontal. Una foto real del territorio o del trabajo de la asociación. La reducimos a 2400 px y quitamos sus metadatos.",
+    hint: "Horizontal.",
     empty: "Sin portada: el perfil empieza directamente con el nombre.",
     save: "Guardar portada",
     remove: "Quitar portada",
   },
   banner: {
     noun: "foto",
-    hint: "JPG, PNG o WebP, horizontal (mejor 16:9, de al menos 1600 px de ancho). Deja el producto cerca del centro: los bordes se recortan según la pantalla. La reducimos a 2400 px y quitamos sus metadatos.",
-    empty:
-      "Sin foto para el inicio: si el producto sale destacado, se usa su foto principal recortada.",
+    hint: "Horizontal, mejor 16:9. Deja el producto al centro: los bordes se recortan.",
+    empty: "Sin foto para el inicio, se usa la principal recortada.",
     save: "Guardar foto",
     remove: "Quitar foto",
   },
@@ -110,6 +110,11 @@ function ImageFieldForm({
       <div
         className={cn(
           "bg-muted relative flex items-center justify-center overflow-hidden rounded-sm border",
+          // An empty wide slot is only grey space: the line below says it.
+          kind !== "logo" &&
+            !previewUrl &&
+            selection.status !== "preparing" &&
+            "hidden",
           kind === "logo"
             ? "bg-card aspect-square w-32"
             : kind === "cover"
@@ -123,36 +128,55 @@ function ImageFieldForm({
             className="text-muted-foreground size-6 animate-spin"
           />
         ) : previewUrl ? (
-          selection.status === "ready" ? (
-            // A local preview: next/image cannot optimize blob URLs.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewUrl}
-              alt={`Vista previa de ${kind === "banner" ? "la nueva" : "el nuevo"} ${text.noun}`}
-              className={cn(
-                "h-full w-full",
-                kind === "logo" ? "object-contain p-2" : "object-cover",
-              )}
-            />
-          ) : (
-            <Image
-              src={previewUrl}
-              alt={
-                kind === "logo"
-                  ? `Logo de ${ownerName}`
-                  : kind === "cover"
-                    ? `Portada actual de ${ownerName}`
-                    : `Foto actual de ${ownerName} para el inicio`
-              }
-              fill
-              sizes={
-                kind === "logo" ? "8rem" : "(min-width: 768px) 42rem, 100vw"
-              }
-              className={
-                kind === "logo" ? "object-contain p-2" : "object-cover"
-              }
-            />
-          )
+          <ImageZoom
+            src={previewUrl}
+            alt={
+              kind === "logo"
+                ? `Logo de ${ownerName}`
+                : kind === "cover"
+                  ? `Portada de ${ownerName}`
+                  : `Foto de ${ownerName} para el inicio`
+            }
+            label={
+              kind === "logo"
+                ? "Ver el logo completo"
+                : kind === "cover"
+                  ? "Ver la portada completa"
+                  : "Ver la foto completa"
+            }
+            className="h-full"
+          >
+            {selection.status === "ready" ? (
+              // A local preview: next/image cannot optimize blob URLs.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={previewUrl}
+                alt={`Vista previa de ${kind === "banner" ? "la nueva" : "el nuevo"} ${text.noun}`}
+                className={cn(
+                  "h-full w-full",
+                  kind === "logo" ? "object-contain p-2" : "object-cover",
+                )}
+              />
+            ) : (
+              <Image
+                src={previewUrl}
+                alt={
+                  kind === "logo"
+                    ? `Logo de ${ownerName}`
+                    : kind === "cover"
+                      ? `Portada actual de ${ownerName}`
+                      : `Foto actual de ${ownerName} para el inicio`
+                }
+                fill
+                sizes={
+                  kind === "logo" ? "8rem" : "(min-width: 768px) 42rem, 100vw"
+                }
+                className={
+                  kind === "logo" ? "object-contain p-2" : "object-cover"
+                }
+              />
+            )}
+          </ImageZoom>
         ) : kind === "logo" ? (
           <AromaLogo variant="symbol" className="w-3/5 opacity-35 grayscale" />
         ) : (
@@ -186,7 +210,11 @@ function ImageFieldForm({
         </div>
       ) : null}
 
-      {currentUrl || selection.status === "ready" ? null : (
+      {/* The banner's section description already says it is optional. */}
+      {currentUrl ||
+      selection.status === "ready" ||
+      !text.empty ||
+      kind === "banner" ? null : (
         <p className="text-muted-foreground text-sm">{text.empty}</p>
       )}
 
@@ -200,7 +228,7 @@ function ImageFieldForm({
                 id={inputId}
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-                aria-describedby={`${inputId}-ayuda`}
+                aria-describedby={text.hint ? `${inputId}-ayuda` : undefined}
                 onChange={(event) => void selectFile(event.target.files?.[0])}
                 className="peer sr-only"
               />
@@ -239,7 +267,7 @@ function ImageFieldForm({
                 triggerVariant="ghost"
                 triggerClassName="text-destructive hover:bg-destructive/10 hover:text-destructive w-full sm:w-auto"
                 title={`¿${text.remove}?`}
-                description={`Se borrará de forma definitiva. ${text.empty}`}
+                description={`Se borrará de forma definitiva. ${text.empty}`.trim()}
                 confirmLabel={text.remove}
                 pendingLabel="Quitando…"
                 tone="destructive"
@@ -247,19 +275,21 @@ function ImageFieldForm({
               />
             ) : null}
           </div>
-          <p
-            aria-live="polite"
-            className="text-muted-foreground font-mono text-xs"
-          >
+          <p aria-live="polite" className="text-muted-foreground text-sm">
             {selection.status === "preparing"
               ? "Preparando la imagen…"
               : selection.status === "ready"
                 ? `Lista para subir · ${selection.image.width} × ${selection.image.height} px · ${formatFileSize(selection.image.file.size)}`
                 : null}
           </p>
-          <p id={`${inputId}-ayuda`} className="text-muted-foreground text-sm">
-            {text.hint}
-          </p>
+          {text.hint ? (
+            <p
+              id={`${inputId}-ayuda`}
+              className="text-muted-foreground text-sm"
+            >
+              {text.hint}
+            </p>
+          ) : null}
         </div>
       ) : (
         <p className="text-muted-foreground text-sm">

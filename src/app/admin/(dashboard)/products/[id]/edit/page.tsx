@@ -2,10 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { AdminBackLink } from "@/components/admin/admin-back-link";
-import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { ProductForm } from "@/components/admin/product-form";
-import { StatusBadge } from "@/components/admin/status-badge";
 import {
   getEditableProduct,
   getProductFormOptions,
@@ -49,31 +47,15 @@ export default async function EditProductPage({
         <AdminPageHeader
           eyebrow={product.associationName}
           title="Editar información"
-          description="Edita la información del producto. La asociación no se puede cambiar."
-          actions={<StatusBadge status={product.status} />}
+          description={
+            product.status === "PUBLISHED"
+              ? "Está publicado: los cambios se ven en la vitrina al guardar."
+              : isDraft
+                ? undefined
+                : `Su dirección web es fija: /${product.slug}.`
+          }
         />
       </div>
-
-      <dl className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-sm">
-        <dt className="font-mono text-xs tracking-[0.06em] uppercase">
-          Identificador web
-        </dt>
-        <dd className="text-foreground font-mono text-xs break-all">
-          {product.slug}
-        </dd>
-        <dd className="w-full">
-          {isDraft
-            ? "Se actualiza con el nombre mientras el producto sea borrador."
-            : "Queda fija desde que el producto se publicó, para no romper enlaces."}
-        </dd>
-      </dl>
-
-      {product.status === "PUBLISHED" ? (
-        <AdminNotice tone="warning">
-          Este producto está publicado: los cambios se verán en la vitrina al
-          guardar.
-        </AdminNotice>
-      ) : null}
 
       <ProductForm
         action={updateProductAction.bind(null, product.id)}
