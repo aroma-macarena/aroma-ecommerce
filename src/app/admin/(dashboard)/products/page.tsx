@@ -106,7 +106,7 @@ export default async function AdminProductsPage({
         {/* An association has a handful of products: the filters show only
             when it arrives from a count on the home page. */}
         {showFilters ? (
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <nav
               aria-label="Filtrar por estado"
               className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0"

@@ -151,7 +151,7 @@ export function FormActions({
       ) : null}
       {/* Stays in view while the form scrolls, above the phone's tab bar; a
           sheet of its own on the paper, a ruled footer inside a card. */}
-      <div className="bg-card sticky bottom-(--admin-tabbar-height) z-20 -mx-4 space-y-3 border-t px-4 py-3 sm:mx-0 sm:rounded-md sm:border md:bottom-4 in-[.bg-card]:mx-0! in-[.bg-card]:rounded-none! in-[.bg-card]:border-x-0! in-[.bg-card]:border-b-0! in-[.bg-card]:px-0! in-[.bg-card]:pb-0!">
+      <div className="bg-card sticky bottom-(--admin-tabbar-height) z-20 -mx-4 space-y-3 border-t px-4 py-3 sm:mx-0 sm:rounded-md sm:border lg:bottom-4 in-[.bg-card]:mx-0! in-[.bg-card]:rounded-none! in-[.bg-card]:border-x-0! in-[.bg-card]:border-b-0! in-[.bg-card]:px-0! in-[.bg-card]:pb-0!">
         <div className="flex items-center justify-end gap-2 sm:gap-3">
           {/* The same action, rendered once per layout: only one is shown. */}
           {secondaryAction ? (

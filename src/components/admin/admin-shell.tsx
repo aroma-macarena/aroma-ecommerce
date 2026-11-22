@@ -36,7 +36,7 @@ function AdminShell({ profile, children }: AdminShellProps) {
       >
         Saltar al contenido
       </a>
-      <aside className="bg-card sticky top-0 hidden h-svh w-60 shrink-0 flex-col overflow-y-auto overscroll-contain border-r md:flex">
+      <aside className="bg-card sticky top-0 hidden h-svh w-60 shrink-0 flex-col overflow-y-auto overscroll-contain border-r lg:flex">
         <div className="px-5 pt-6 pb-5">
           <Link href="/admin" aria-label="Inicio de administración">
             <AromaLogo className="w-32" />
@@ -61,7 +61,7 @@ function AdminShell({ profile, children }: AdminShellProps) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="bg-card sticky top-0 z-30 flex min-h-14 items-center justify-between gap-3 border-b px-4 md:hidden">
+        <header className="bg-card sticky top-0 z-30 flex min-h-14 items-center justify-between gap-3 border-b px-4 lg:hidden">
           <Link href="/admin" aria-label="Inicio de administración">
             <AromaLogo className="w-24" />
           </Link>
@@ -73,7 +73,7 @@ function AdminShell({ profile, children }: AdminShellProps) {
         <main
           id="admin-contenido"
           tabIndex={-1}
-          className="mx-auto w-full max-w-6xl min-w-0 flex-1 px-4 pt-6 pb-[calc(var(--admin-tabbar-height)+2rem)] wrap-anywhere sm:px-6 md:px-10 md:pt-10 md:pb-16"
+          className="mx-auto w-full max-w-6xl min-w-0 flex-1 px-4 pt-6 pb-[calc(var(--admin-tabbar-height)+2rem)] wrap-anywhere sm:px-6 md:px-10 md:pt-10 lg:pb-16"
         >
           {children}
         </main>

@@ -129,7 +129,7 @@ function AdminProductList({
 }: AdminProductListProps) {
   return (
     <div className="bg-card overflow-hidden rounded-md border">
-      <table className="hidden w-full text-left md:table">
+      <table className="hidden w-full text-left xl:table">
         <caption className="sr-only">{label}</caption>
         <thead className="bg-muted/60 text-muted-foreground text-sm">
           <tr>
@@ -205,7 +205,7 @@ function AdminProductList({
         </tbody>
       </table>
 
-      <ul aria-label={label} className="divide-y md:hidden">
+      <ul aria-label={label} className="divide-y xl:hidden">
         {products.map((product) => {
           const note = contextNote(product);
           const meta = [

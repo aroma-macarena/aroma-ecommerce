@@ -203,7 +203,7 @@
     color: var(--foreground);
   }
 
-  @media (width < 48rem) {
+  @media (width < 64rem) {
     &:has([data-admin-tabbar]) {
       --admin-tabbar-height: calc(3.5rem + env(safe-area-inset-bottom));
     }

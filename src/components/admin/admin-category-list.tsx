@@ -118,7 +118,7 @@ function AdminCategoryList({
 }: AdminCategoryListProps) {
   return (
     <div className="bg-card overflow-hidden rounded-md border">
-      <table className="hidden w-full md:table">
+      <table className="hidden w-full xl:table">
         <caption className="sr-only">Categorías de la alianza</caption>
         <thead>
           <tr className="bg-muted/60 text-muted-foreground border-b text-left text-sm">
@@ -169,7 +169,7 @@ function AdminCategoryList({
         </tbody>
       </table>
 
-      <ul aria-label="Categorías de la alianza" className="divide-y md:hidden">
+      <ul aria-label="Categorías de la alianza" className="divide-y xl:hidden">
         {categories.map((category) => (
           <li key={category.id} className="space-y-1 px-4 py-3">
             <div className="flex items-start justify-between gap-3">

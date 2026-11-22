@@ -85,7 +85,7 @@ export default async function AdminPage() {
         {summary ? <p className="text-muted-foreground">{summary}</p> : null}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start lg:gap-8">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem] xl:items-start xl:gap-8">
         <PendingTaskList tasks={tasks} />
 
         <div className="space-y-4">

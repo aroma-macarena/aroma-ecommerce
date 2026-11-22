@@ -60,7 +60,7 @@ function ProductSearch() {
         event.preventDefault();
         apply(value);
       }}
-      className="relative lg:w-80"
+      className="relative xl:w-80"
     >
       <label htmlFor="buscar-producto" className="sr-only">
         Buscar por producto, asociación o categoría

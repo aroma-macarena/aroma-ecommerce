@@ -213,7 +213,7 @@ function AdminUserList({
 }: AdminUserListProps) {
   return (
     <div className="bg-card overflow-hidden rounded-md border">
-      <table className="hidden w-full md:table">
+      <table className="hidden w-full xl:table">
         <caption className="sr-only">Cuentas administrativas</caption>
         <thead>
           <tr className="bg-muted/60 text-muted-foreground border-b text-left text-sm">
@@ -266,7 +266,7 @@ function AdminUserList({
         </tbody>
       </table>
 
-      <ul aria-label="Cuentas administrativas" className="md:hidden">
+      <ul aria-label="Cuentas administrativas" className="xl:hidden">
         {users.map((user) => {
           const isSelf = user.id === currentUserId;
 

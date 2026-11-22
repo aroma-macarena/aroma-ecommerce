@@ -126,7 +126,7 @@ function AdminAssociationList({
 }: AdminAssociationListProps) {
   return (
     <div className="bg-card overflow-hidden rounded-md border">
-      <table className="hidden w-full md:table">
+      <table className="hidden w-full xl:table">
         <caption className="sr-only">Asociaciones de la alianza</caption>
         <thead>
           <tr className="bg-muted/60 text-muted-foreground border-b text-left text-sm">
@@ -193,7 +193,7 @@ function AdminAssociationList({
         </tbody>
       </table>
 
-      <ul aria-label="Asociaciones de la alianza" className="md:hidden">
+      <ul aria-label="Asociaciones de la alianza" className="xl:hidden">
         {associations.map((association) => (
           <li
             key={association.id}

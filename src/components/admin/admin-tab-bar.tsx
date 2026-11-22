@@ -54,7 +54,7 @@ function AdminTabBar({ role, account, storefrontHref }: AdminTabBarProps) {
     <nav
       data-admin-tabbar
       aria-label="Navegación administrativa"
-      className="bg-card fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="bg-card fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       <ul className="grid grid-cols-4">
         {tabs.map(({ href, label, icon: Icon }) => {
