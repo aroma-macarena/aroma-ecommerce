@@ -1,4 +1,4 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { associationPhotosTable as photos } from "@/db/schema/associationPhotos";
@@ -272,11 +272,16 @@ export async function moveAssociationPhoto(
     return { ok: false, reason: "NOT_FOUND" };
   }
 
-  // One statement renumbers every photo, so the order never has repeats.
+  // One statement renumbers the photos that were read, so the order never
+  // has repeats. Only those: a photo uploaded in between is not in the
+  // CASE and would get a null order; it keeps the one it was saved with,
+  // after the last.
   await db
     .update(photos)
     .set({ displayOrder: displayOrderByPosition(photos.id, ids) })
-    .where(eq(photos.associationId, association.id));
+    .where(
+      and(eq(photos.associationId, association.id), inArray(photos.id, ids)),
+    );
 
   return { ok: true };
 }

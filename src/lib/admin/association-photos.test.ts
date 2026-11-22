@@ -22,6 +22,22 @@ import {
 } from "@/test/fixtures";
 
 const database = vi.hoisted(() => ({ current: undefined as unknown }));
+/** Runs while a move computes the new order: after the read, before the write. */
+const duringMove = vi.hoisted(() => ({
+  run: undefined as (() => void) | undefined,
+}));
+
+vi.mock("@/lib/admin/display-order", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/lib/admin/display-order")>();
+  return {
+    ...actual,
+    moveInOrder: (...args: Parameters<typeof actual.moveInOrder>) => {
+      duringMove.run?.();
+      return actual.moveInOrder(...args);
+    },
+  };
+});
 const storage = vi.hoisted(() => ({
   objects: new Map<string, string>(),
   failNext: false,
@@ -179,6 +195,49 @@ describe("association photos", () => {
       { id: second.id, altText: "Secado de café", caption: null },
       { id: first.id, caption: "A" },
     ]);
+  });
+
+  it("reorders only the photos it read when another arrives meanwhile", async () => {
+    await uploadAssociationPhoto(
+      superAdmin,
+      bosqueVivo,
+      upload({ caption: "A" }),
+    );
+    await uploadAssociationPhoto(
+      superAdmin,
+      bosqueVivo,
+      upload({ caption: "B" }),
+    );
+    const [first, second] = await getAssociationPhotos(bosqueVivo);
+
+    // Another upload lands between the move's read and its write. The test
+    // database runs one query at a time, in the order they are sent, so the
+    // insert started here goes before the move's update.
+    let concurrent: Promise<unknown> | undefined;
+    duringMove.run = () => {
+      duringMove.run = undefined;
+      concurrent = (database.current as TestDatabase).db
+        .insert(associationPhotosTable)
+        .values({
+          associationId: bosqueVivo,
+          objectKey: "associations/concurrente.webp",
+          caption: "C",
+          displayOrder: 2,
+        })
+        // Drizzle queries run when awaited: start this one now.
+        .execute();
+    };
+
+    await expect(
+      moveAssociationPhoto(bosqueVivoAdmin, bosqueVivo, second.id, "up"),
+    ).resolves.toEqual({ ok: true });
+    await concurrent;
+
+    expect(
+      (await getAssociationPhotos(bosqueVivo)).map(({ id, caption }) =>
+        caption === "C" ? "C" : id,
+      ),
+    ).toEqual([second.id, first.id, "C"]);
   });
 
   it("deletes a photo from storage and the profile, keeping it if storage fails", async () => {
