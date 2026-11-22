@@ -1,15 +1,9 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import Image from "next/image";
-import {
-  type KeyboardEvent,
-  type TouchEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useRef, useState } from "react";
 
+import { PhotoLightbox } from "@/components/plaza/photo-lightbox";
 import { cn } from "@/lib/utils";
 
 export type GalleryPhoto = {
@@ -25,62 +19,23 @@ type AssociationGalleryProps = {
 
 /** Tiles shown in the mosaic; the last one says how many more there are. */
 const MOSAIC_TILES = 5;
-const SWIPE_DISTANCE = 48;
 
 /**
- * An association's photos as a mosaic, the first larger, and a full-screen
- * view (a modal dialog) to go through all of them with their captions:
- * arrows, the keyboard's arrow keys or a swipe; Escape or the close button
- * returns to the tile that opened it.
+ * An association's photos as a mosaic, the first larger; any tile opens the
+ * full-screen view (`PhotoLightbox`) to go through all of them with their
+ * captions.
  */
 function AssociationGallery({ photos }: AssociationGalleryProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLButtonElement | null>(null);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const [index, setIndex] = useState<number | null>(null);
   const count = photos.length;
   const shownTiles = photos.slice(0, MOSAIC_TILES);
   const hidden = count - shownTiles.length;
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (index !== null && !dialog.open) dialog.showModal();
-    if (index === null && dialog.open) dialog.close();
-  }, [index]);
-
   const open = (photoIndex: number, opener: HTMLButtonElement) => {
     openerRef.current = opener;
     setIndex(photoIndex);
   };
-  const step = (by: number) =>
-    setIndex((current) =>
-      current === null ? current : (current + by + count) % count,
-    );
-
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "ArrowLeft") step(-1);
-    if (event.key === "ArrowRight") step(1);
-  };
-  const onTouchStart = (event: TouchEvent) => {
-    const touch = event.touches[0];
-    touchStart.current = { x: touch.clientX, y: touch.clientY };
-  };
-  const onTouchEnd = (event: TouchEvent) => {
-    const start = touchStart.current;
-    touchStart.current = null;
-    if (!start || count < 2) return;
-    const touch = event.changedTouches[0];
-    const dx = touch.clientX - start.x;
-    if (
-      Math.abs(dx) > SWIPE_DISTANCE &&
-      Math.abs(dx) > Math.abs(touch.clientY - start.y)
-    ) {
-      step(dx < 0 ? 1 : -1);
-    }
-  };
-
-  const current = index === null ? null : photos[index];
 
   // The mosaic's arrangement by how many tiles there are.
   const layout =
@@ -151,76 +106,13 @@ function AssociationGallery({ photos }: AssociationGalleryProps) {
         })}
       </ul>
 
-      <dialog
-        ref={dialogRef}
-        aria-label="Fotos de la asociación"
-        onClose={() => {
-          setIndex(null);
-          openerRef.current?.focus();
-        }}
-        onKeyDown={onKeyDown}
-        className="m-0 h-dvh max-h-none w-screen max-w-none bg-black p-0 text-white backdrop:bg-black"
-      >
-        {current ? (
-          <div
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-            className="flex h-full flex-col"
-          >
-            <div className="flex items-center justify-between px-4 py-3 sm:px-6">
-              <p className="text-sm font-semibold text-white/85 tabular-nums">
-                {index! + 1} / {count}
-              </p>
-              <button
-                type="button"
-                onClick={() => setIndex(null)}
-                aria-label="Cerrar"
-                autoFocus
-                className="inline-flex size-11 items-center justify-center rounded-full border border-white/45 transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
-                <X aria-hidden className="size-5" />
-              </button>
-            </div>
-            <figure className="flex min-h-0 flex-1 flex-col px-4 pb-6 sm:px-20">
-              <div className="relative min-h-0 flex-1">
-                <Image
-                  key={current.id}
-                  src={current.url}
-                  alt={current.alt}
-                  fill
-                  sizes="100vw"
-                  className="object-contain"
-                />
-              </div>
-              {current.caption ? (
-                <figcaption className="font-editorial mx-auto mt-4 max-w-[60ch] text-center text-lg text-white/90 italic">
-                  {current.caption}
-                </figcaption>
-              ) : null}
-            </figure>
-            {count > 1 ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => step(-1)}
-                  aria-label="Foto anterior"
-                  className="absolute top-1/2 left-3 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/45 bg-black/30 transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:left-6"
-                >
-                  <ArrowLeft aria-hidden className="size-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => step(1)}
-                  aria-label="Foto siguiente"
-                  className="absolute top-1/2 right-3 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/45 bg-black/30 transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-6"
-                >
-                  <ArrowRight aria-hidden className="size-5" />
-                </button>
-              </>
-            ) : null}
-          </div>
-        ) : null}
-      </dialog>
+      <PhotoLightbox
+        photos={photos}
+        index={index}
+        onIndexChange={setIndex}
+        returnFocusRef={openerRef}
+        label="Fotos de la asociación"
+      />
     </>
   );
 }

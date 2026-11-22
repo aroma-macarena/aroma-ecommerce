@@ -1,9 +1,11 @@
 "use client";
 
+import { Expand } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { AromaLogo } from "@/components/brand/aroma-logo";
+import { PhotoLightbox } from "@/components/plaza/photo-lightbox";
 import type { PublicProduct } from "@/lib/catalog/queries";
 import { getMediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
@@ -19,10 +21,15 @@ type ProductGalleryProps = {
  * column (the origin label below shares its edges), with a row of
  * thumbnails under it; choosing one crossfades the large photo, like the
  * home's carousel. Each photo is rendered once and serves both layouts.
+ * Tapping a photo opens it whole, uncropped, in the full-screen view
+ * (`PhotoLightbox`), where the arrows go through the rest.
  */
 function ProductGallery({ productName, images }: ProductGalleryProps) {
   const [active, setActive] = useState(0);
   const [announce, setAnnounce] = useState(false);
+  const [zoomed, setZoomed] = useState<number | null>(null);
+  const openerRef = useRef<HTMLButtonElement | null>(null);
+  const photoButtons = useRef<(HTMLButtonElement | null)[]>([]);
   const photos = images
     .map((image) => ({ ...image, url: getMediaUrl(image.objectKey) }))
     .filter(
@@ -67,17 +74,53 @@ function ProductGallery({ productName, images }: ProductGalleryProps) {
               index === active ? "lg:opacity-100" : "lg:invisible lg:opacity-0",
             )}
           >
-            <Image
-              src={photo.url}
-              alt={photo.altText ?? productName}
-              fill
-              preload={index === 0}
-              sizes="(min-width: 1024px) 34rem, 85vw"
-              className="object-cover"
-            />
+            <button
+              ref={(element) => {
+                photoButtons.current[index] = element;
+              }}
+              type="button"
+              onClick={() => setZoomed(index)}
+              aria-label={`Ampliar foto ${index + 1} de ${count}`}
+              className="group absolute inset-0 cursor-zoom-in focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
+            >
+              <Image
+                src={photo.url}
+                alt={photo.altText ?? productName}
+                fill
+                preload={index === 0}
+                sizes="(min-width: 1024px) 34rem, 85vw"
+                className="object-cover"
+              />
+              <span
+                aria-hidden
+                className="text-foreground absolute right-3 bottom-3 inline-flex size-9 items-center justify-center rounded-full bg-white/90 shadow-[0_2px_8px_oklch(0_0_0/0.2)] transition-transform duration-150 group-hover:scale-110"
+              >
+                <Expand className="size-4" />
+              </span>
+            </button>
           </li>
         ))}
       </ul>
+
+      <PhotoLightbox
+        photos={photos.map((photo) => ({
+          id: photo.id,
+          url: photo.url,
+          alt: photo.altText ?? productName,
+        }))}
+        index={zoomed}
+        onIndexChange={(next) => {
+          // Closing on another photo leaves the large one on it, and focus
+          // returns to that photo, the one that stays visible.
+          if (next === null && zoomed !== null) {
+            openerRef.current = photoButtons.current[zoomed];
+          }
+          if (next !== null) setActive(next);
+          setZoomed(next);
+        }}
+        returnFocusRef={openerRef}
+        label={`Fotos de ${productName}`}
+      />
 
       {count > 1 ? (
         <>

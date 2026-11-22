@@ -94,7 +94,7 @@ export default async function AssociationPage({
 
   return (
     <article aria-labelledby="asociacion-titulo">
-      <Container className="space-y-12 pt-4 pb-16 md:space-y-20 md:pt-6 md:pb-24">
+      <Container className="space-y-12 pt-4 pb-16 md:space-y-14 md:pt-6 md:pb-24">
         <div className="space-y-6 md:space-y-8">
           <Link
             href={publicRoutes.associations}
@@ -170,7 +170,7 @@ export default async function AssociationPage({
             // Phones: the text first, the map after it.
             <div className="flex flex-col gap-10 lg:block lg:flow-root">
               {zone ? (
-                <figure className="order-last lg:float-right lg:mb-8 lg:ml-12 lg:w-[40%]">
+                <figure className="order-last lg:float-right lg:mb-4 lg:ml-12 lg:w-[40%]">
                   <div
                     className="bg-card relative border"
                     style={{ aspectRatio: territoryAspectRatio }}
