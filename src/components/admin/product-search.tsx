@@ -21,10 +21,15 @@ function ProductSearch() {
   const [isPending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  // The last query asked of the router, which may still be on its way: a
+  // new one is compared with it, not with the address, so clearing while a
+  // search loads replaces that search instead of being ignored.
+  const requested = useRef(urlQuery);
 
   // When the address changes from elsewhere (a «Ver todos» link, back),
   // the box follows it, unless the person is typing.
   useEffect(() => {
+    requested.current = urlQuery;
     if (document.activeElement !== inputRef.current) {
       setValue(urlQuery);
     }
@@ -38,7 +43,8 @@ function ProductSearch() {
     const query = next.trim();
     if (query) params.set("q", query);
     else params.delete("q");
-    if ((params.get("q") ?? "") === urlQuery) return;
+    if (query === requested.current) return;
+    requested.current = query;
     const search = params.toString();
     startTransition(() => {
       router.replace(search ? `${pathname}?${search}` : pathname, {

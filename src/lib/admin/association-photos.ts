@@ -2,12 +2,14 @@ import { and, asc, eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { associationPhotosTable as photos } from "@/db/schema/associationPhotos";
+import { associationsTable as associations } from "@/db/schema/associations";
 import { getAssociationProfile } from "@/lib/admin/association-profile";
 import { displayOrderByPosition, moveInOrder } from "@/lib/admin/display-order";
 import {
   MAX_ALT_TEXT_LENGTH,
   MAX_CAPTION_LENGTH,
 } from "@/lib/admin/image-form";
+import { withRowLock } from "@/lib/admin/product-lock";
 import type { AdminProfile } from "@/lib/auth/get-current-profile";
 import {
   associationPhotoKey,
@@ -143,21 +145,49 @@ export async function uploadAssociationPhoto(
   let inserted: { id: string }[];
 
   try {
-    const result = await db.execute<{ id: string }>(sql`
-      insert into ${photos}
-        (association_id, object_key, alt_text, caption, display_order)
-      select
-        ${association.id}::uuid,
-        ${objectKey},
-        ${texts.altText},
-        ${texts.caption},
-        coalesce(max(${photos.displayOrder}) + 1, 0)
-      from ${photos}
-      where ${photos.associationId} = ${association.id}::uuid
-      having count(*) < ${MAX_ASSOCIATION_PHOTOS}
-      returning id
-    `);
-    inserted = "rows" in result ? result.rows : (result as { id: string }[]);
+    // Counted and inserted under a lock on the association's row, so two
+    // uploads at once cannot both see seven photos and make nine.
+    [inserted] = await withRowLock<[{ id: string }[]]>(
+      (executor) =>
+        executor
+          .select({ id: associations.id })
+          .from(associations)
+          .where(eq(associations.id, association.id))
+          .for("update"),
+      (executor) => [
+        executor
+          .insert(photos)
+          .select(
+            executor
+              // Insert from select needs every column, in table order.
+              .select({
+                id: sql<string>`gen_random_uuid()`.as("id"),
+                associationId: associations.id,
+                objectKey: sql<string>`${objectKey}`.as("object_key"),
+                altText: sql<string | null>`${texts.altText}`.as("alt_text"),
+                caption: sql<string | null>`${texts.caption}`.as("caption"),
+                displayOrder: sql<number>`(
+                  select coalesce(max(${photos.displayOrder}) + 1, 0)
+                  from ${photos}
+                  where ${photos.associationId} = ${association.id}::uuid
+                )`.as("display_order"),
+                createdAt: sql<Date>`now()`.as("created_at"),
+                updatedAt: sql<Date | null>`null`.as("updated_at"),
+              })
+              .from(associations)
+              .where(
+                and(
+                  eq(associations.id, association.id),
+                  sql`(
+                    select count(*) from ${photos}
+                    where ${photos.associationId} = ${association.id}::uuid
+                  ) < ${MAX_ASSOCIATION_PHOTOS}`,
+                ),
+              ),
+          )
+          .returning({ id: photos.id }),
+      ],
+    );
   } catch (error) {
     await storage.delete(objectKey).catch(() => undefined);
     throw error;
