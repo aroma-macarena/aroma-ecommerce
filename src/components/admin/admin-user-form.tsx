@@ -34,6 +34,8 @@ type AdminUserFormProps = {
   associations: AssociationOption[];
   /** Saved values when editing; the email is then shown, not edited. */
   initialValues?: AdminUserFormValues;
+  /** A new account's association, chosen in advance (from «Invitar»). */
+  defaultAssociationId?: string;
   /** Editing your own account: the role stays as it is. */
   isSelf?: boolean;
   cancelHref: string;
@@ -51,11 +53,9 @@ const emptyValues: AdminUserFormValues = {
 };
 
 const hints = {
-  name: "Como aparecerá en el panel. Hasta 150 caracteres.",
-  email:
-    "Le enviaremos una invitación para crear su acceso. Si ya tiene una cuenta con este correo, podrá entrar de inmediato.",
-  associationId:
-    "Solo podrá ver y editar los productos y el perfil de esta asociación.",
+  name: "",
+  email: "Le llegará una invitación para entrar al panel.",
+  associationId: "Solo podrá editar lo de esta asociación.",
 };
 
 const roleDescriptions: Record<AdminUserRole, string> = {
@@ -71,13 +71,18 @@ function AdminUserForm({
   action,
   associations,
   initialValues,
+  defaultAssociationId,
   isSelf = false,
   cancelHref,
   submitLabel,
   note,
 }: AdminUserFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
-  const values = state.values ?? initialValues ?? emptyValues;
+  const values = state.values ??
+    initialValues ?? {
+      ...emptyValues,
+      associationId: defaultAssociationId ?? "",
+    };
   const errors = state.fieldErrors ?? {};
   // When editing, the email is not submitted, so it comes from the saved
   // values even after a failed submission.

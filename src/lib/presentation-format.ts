@@ -24,6 +24,26 @@ export function formatPresentationSize({
     .join(" ");
 }
 
+/**
+ * The size worth showing beside a presentation's name: empty when the name
+ * already says it ("Frasco 250 g" does not need "· 250 g").
+ */
+export function formatPresentationSizeNote(
+  presentation: { name: string } & Pick<
+    PresentationAmounts,
+    "quantity" | "unit"
+  >,
+) {
+  const size = formatPresentationSize(presentation);
+  return size !== "" && !normalize(presentation.name).includes(normalize(size))
+    ? size
+    : "";
+}
+
+function normalize(text: string) {
+  return text.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
 /** Reference price in Colombian pesos, such as "$ 25.000". */
 export function formatReferencePrice(referencePrice: string | null) {
   return referencePrice === null

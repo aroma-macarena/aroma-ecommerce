@@ -29,6 +29,9 @@ export const productsTable = pgTable(
     origin: varchar("origin", { length: 255 }),
     ingredients: text("ingredients"),
     availabilityNote: varchar("availability_note", { length: 500 }),
+    // Optional horizontal photo for the home's full-width featured carousel;
+    // without it the home crops the primary image.
+    bannerObjectKey: varchar("banner_object_key", { length: 500 }),
     status: productStatus("status").default("DRAFT").notNull(),
     createdBy: uuid("created_by").references(() => profiles.id, {
       onDelete: "set null",

@@ -41,8 +41,10 @@ export default async function EditSiteContentPage({
     notFound();
   }
 
+  const showOriginal = block.kind !== "whatsapp" && !block.isOriginal;
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="space-y-4">
         <AdminBackLink href="/admin/content">Contenido</AdminBackLink>
         <AdminPageHeader
@@ -73,49 +75,63 @@ export default async function EditSiteContentPage({
         </AdminNotice>
       ) : null}
 
-      <SiteContentForm
-        block={block}
-        initialValues={{
-          title: block.text.title,
-          content:
-            block.kind === "whatsapp"
-              ? formatWhatsAppNumber(block.text.content)
-              : block.text.content,
-        }}
-        action={updateSiteContentAction.bind(null, block.key)}
-      />
-
-      {block.kind === "whatsapp" || block.isOriginal ? null : (
-        <AdminSection
-          id="original"
-          title="Texto original"
-          description="El que trae el sitio, por si quieres volver a él."
-          ruled
+      {/* Wide screens: the text being edited on the left, the site's
+          original beside it to compare or go back to. */}
+      <div
+        className={
+          showOriginal
+            ? "grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start xl:gap-8"
+            : undefined
+        }
+      >
+        <section
+          aria-label="Texto"
+          className="bg-card min-w-0 rounded-md border p-4 sm:p-6"
         >
-          <blockquote className="border-border max-w-prose space-y-1 border-l-2 pl-4">
-            {block.fallback.title ? (
-              <p className="font-semibold">{block.fallback.title}</p>
-            ) : null}
-            <p className="text-sm leading-6 whitespace-pre-line">
-              {block.fallback.content}
-            </p>
-          </blockquote>
-          <ConfirmActionButton
-            trigger={
-              <>
-                <RotateCcw aria-hidden />
-                Restaurar texto original
-              </>
-            }
-            triggerClassName="w-full sm:w-auto"
-            title="¿Restaurar el texto original?"
-            description="El sitio público volverá a mostrar el texto original de este bloque. El texto actual se reemplaza."
-            confirmLabel="Restaurar"
-            pendingLabel="Restaurando…"
-            action={restoreOriginalSiteContentAction.bind(null, block.key)}
+          <SiteContentForm
+            block={block}
+            initialValues={{
+              title: block.text.title,
+              content:
+                block.kind === "whatsapp"
+                  ? formatWhatsAppNumber(block.text.content)
+                  : block.text.content,
+            }}
+            action={updateSiteContentAction.bind(null, block.key)}
           />
-        </AdminSection>
-      )}
+        </section>
+
+        {showOriginal ? (
+          <AdminSection
+            id="original"
+            title="Texto original"
+            className="xl:sticky xl:top-6"
+          >
+            <blockquote className="space-y-1">
+              {block.fallback.title ? (
+                <p className="font-semibold">{block.fallback.title}</p>
+              ) : null}
+              <p className="text-sm leading-6 whitespace-pre-line">
+                {block.fallback.content}
+              </p>
+            </blockquote>
+            <ConfirmActionButton
+              trigger={
+                <>
+                  <RotateCcw aria-hidden />
+                  Restaurar texto original
+                </>
+              }
+              triggerClassName="w-full sm:w-auto"
+              title="¿Restaurar el texto original?"
+              description="El sitio público volverá a mostrar el texto original de este bloque. El texto actual se reemplaza."
+              confirmLabel="Restaurar"
+              pendingLabel="Restaurando…"
+              action={restoreOriginalSiteContentAction.bind(null, block.key)}
+            />
+          </AdminSection>
+        ) : null}
+      </div>
     </div>
   );
 }

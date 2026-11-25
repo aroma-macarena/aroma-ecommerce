@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 
 import { getActionProfile } from "@/lib/admin/action-profile";
-import type { ImageFormState } from "@/lib/admin/image-form";
+import type {
+  ImageFormState,
+  SingleImageFormState,
+} from "@/lib/admin/image-form";
 import {
   parsePresentationForm,
   type PresentationFormState,
@@ -16,6 +19,10 @@ import {
   movePresentation,
   updatePresentation,
 } from "@/lib/admin/presentation-mutations";
+import {
+  removeProductBanner,
+  setProductBanner,
+} from "@/lib/admin/product-banner";
 import {
   deleteProductImage,
   moveProductImage,
@@ -345,4 +352,73 @@ export async function moveProductImageAction(
   }
 
   revalidateProduct(productId);
+}
+
+export async function uploadProductBannerAction(
+  productId: string,
+  previousState: SingleImageFormState,
+  formData: FormData,
+): Promise<SingleImageFormState> {
+  const failed = (message: string) => ({
+    status: "error" as const,
+    attempt: previousState.attempt + 1,
+    message,
+  });
+
+  if (!isMediaStorageConfigured()) {
+    return failed(
+      "La subida de imágenes aún no está configurada. Avísale a la administración de la alianza.",
+    );
+  }
+
+  const profile = await getActionProfile();
+
+  if (!profile) {
+    return failed(lostAccessMessage);
+  }
+
+  const file = formData.get("file");
+  const result = await setProductBanner(
+    profile,
+    productId,
+    file instanceof File
+      ? new Uint8Array(await file.arrayBuffer())
+      : new Uint8Array(),
+  );
+
+  if (!result.ok) {
+    switch (result.reason) {
+      case "INVALID_FILE":
+        return failed(result.message);
+      case "STORAGE_ERROR":
+        return failed(
+          "No pudimos guardar la foto. Intenta de nuevo en unos minutos.",
+        );
+      case "CONFLICT":
+        return failed(
+          "La foto cambió mientras tanto. Recarga la página para ver la actual.",
+        );
+      default:
+        notFound();
+    }
+  }
+
+  revalidateProduct(productId);
+  returnToProduct(productId, "estado", "foto-inicio-actualizada");
+}
+
+export async function removeProductBannerAction(productId: string) {
+  const profile = await requireActionProfile();
+  const result = await removeProductBanner(profile, productId);
+
+  if (!result.ok) {
+    if (result.reason === "STORAGE_ERROR") {
+      returnToProduct(productId, "aviso", "imagen-no-eliminada");
+    }
+
+    notFound();
+  }
+
+  revalidateProduct(productId);
+  returnToProduct(productId, "estado", "foto-inicio-eliminada");
 }

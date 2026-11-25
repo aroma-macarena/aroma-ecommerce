@@ -64,17 +64,17 @@ async function AdminAccessNotice({
   );
 
   return (
-    <main className="bg-background flex min-h-svh flex-1 items-center justify-center px-5 py-12">
+    <main className="cuaderno bg-grid-paper text-foreground flex min-h-svh flex-1 items-center justify-center px-4 py-12">
       <div className="w-full max-w-md space-y-6">
         <AromaLogo className="mx-auto w-36" />
 
-        <div className="bg-card space-y-6 rounded-lg border p-6 text-center sm:p-8">
-          <span className="bg-brand-orange/12 text-brand-orange mx-auto flex size-14 items-center justify-center rounded-full">
+        <div className="bg-card space-y-6 rounded-md border p-6 text-center sm:p-8">
+          <span className="bg-muted text-muted-foreground mx-auto flex size-14 items-center justify-center rounded-full">
             <Icon className="size-6" aria-hidden="true" />
           </span>
 
           <div className="space-y-2">
-            <h1 className="font-heading text-2xl leading-tight font-semibold tracking-[-0.02em] text-balance sm:text-3xl">
+            <h1 className="text-[1.5rem] leading-tight font-bold text-balance sm:text-[1.75rem]">
               {title}
             </h1>
             <p className="text-muted-foreground leading-7 text-balance">
@@ -83,11 +83,11 @@ async function AdminAccessNotice({
           </div>
 
           {details.length > 0 ? (
-            <dl className="bg-muted/70 grid gap-y-3 rounded-md px-4 py-3 text-left text-sm sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-x-4 sm:gap-y-2">
+            <dl className="bg-muted grid gap-y-3 rounded-md px-4 py-3 text-left text-sm sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-x-4 sm:gap-y-2">
               {details.map(({ label, value }) => (
                 <div key={label} className="sm:contents">
                   <dt className="text-muted-foreground">{label}</dt>
-                  <dd className="font-medium wrap-anywhere sm:text-right">
+                  <dd className="font-bold wrap-anywhere sm:text-right">
                     {value}
                   </dd>
                 </div>
@@ -110,7 +110,7 @@ async function AdminAccessNotice({
             <AdminSignOutButton label="Usar otra cuenta" />
             <Link
               href={publicRoutes.home}
-              className="text-muted-foreground hover:text-primary flex min-h-11 items-center justify-center rounded-md text-sm underline underline-offset-4"
+              className="text-primary flex min-h-11 items-center justify-center rounded-md text-sm font-bold underline-offset-4 hover:underline"
             >
               Volver al sitio público
             </Link>

@@ -1,16 +1,22 @@
+import { Pause } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { AdminBackLink } from "@/components/admin/admin-back-link";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { CategoryForm } from "@/components/admin/category-form";
+import { ConfirmActionButton } from "@/components/admin/confirm-action-button";
 import { ConfirmDeleteButton } from "@/components/admin/confirm-delete-button";
 import { ActiveStatusBadge } from "@/components/admin/status-badge";
 import { getEditableCategory } from "@/lib/admin/categories";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
 import { getProductsByCategoryHref } from "@/lib/public-routes";
 
-import { deleteCategoryAction, updateCategoryAction } from "../../actions";
+import {
+  deleteCategoryAction,
+  setCategoryActiveAction,
+  updateCategoryAction,
+} from "../../actions";
 
 export const metadata: Metadata = {
   title: "Editar categoría",
@@ -44,7 +50,7 @@ export default async function EditCategoryPage({
         <AdminPageHeader
           eyebrow="Alianza AROMA"
           title={category.name}
-          description="Cambia el nombre o la descripción. Los productos conservan la categoría y ven el nombre nuevo."
+          description="Los productos conservan la categoría con el nombre nuevo."
           actions={
             <ActiveStatusBadge
               status={category.isActive ? "ACTIVE" : "INACTIVE"}
@@ -54,10 +60,8 @@ export default async function EditCategoryPage({
       </div>
 
       <dl className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-sm">
-        <dt className="font-mono text-xs tracking-[0.06em] uppercase">
-          Dirección en el filtro
-        </dt>
-        <dd className="text-foreground font-mono text-xs break-all">
+        <dt className="text-sm">Dirección en el filtro</dt>
+        <dd className="text-foreground text-sm break-all">
           {getProductsByCategoryHref(category.slug)}
         </dd>
         <dd className="w-full">
@@ -65,39 +69,61 @@ export default async function EditCategoryPage({
         </dd>
       </dl>
 
-      <CategoryForm
-        action={updateCategoryAction.bind(null, category.id)}
-        cancelHref="/admin/categories"
-        submitLabel="Guardar cambios"
-        defaultValues={{
-          name: category.name,
-          description: category.description ?? "",
-        }}
-        secondaryAction={
-          <ConfirmDeleteButton
-            label="Eliminar categoría"
-            title={`¿Eliminar «${category.name}»?`}
-            description="La categoría se borrará de forma definitiva. Solo es posible porque ningún producto la usa."
-            action={deleteCategoryAction.bind(null, category.id)}
-            disabled={inUse}
-            aria-describedby={inUse ? "eliminar-nota" : undefined}
-          />
-        }
-        actionsNote={
-          inUse ? (
-            <p
-              id="eliminar-nota"
-              className="text-muted-foreground max-w-xl text-center text-sm sm:text-left"
-            >
-              No se puede eliminar:{" "}
-              {category.productCount === 1
-                ? "1 producto la usa"
-                : `${category.productCount} productos la usan`}
-              . Puedes desactivarla en su lugar.
-            </p>
-          ) : null
-        }
-      />
+      <section className="bg-card rounded-md border p-4 sm:p-6">
+        <CategoryForm
+          action={updateCategoryAction.bind(null, category.id)}
+          cancelHref="/admin/categories"
+          submitLabel="Guardar cambios"
+          defaultValues={{
+            name: category.name,
+            description: category.description ?? "",
+          }}
+          secondaryAction={
+            inUse ? (
+              // Deleting needs no product using it: say why here, beside the
+              // alternative, instead of a disabled red button.
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                <p className="text-muted-foreground text-sm">
+                  No se puede eliminar:{" "}
+                  {category.productCount === 1
+                    ? "1 producto la usa"
+                    : `${category.productCount} productos la usan`}
+                  .
+                </p>
+                {category.isActive ? (
+                  <ConfirmActionButton
+                    trigger={
+                      <>
+                        <Pause aria-hidden />
+                        Desactivar categoría
+                      </>
+                    }
+                    triggerVariant="ghost"
+                    triggerClassName="text-muted-foreground shrink-0"
+                    title={`¿Desactivar «${category.name}»?`}
+                    description="Sus productos dejarán de verse en la vitrina y no se podrá elegir para productos nuevos. Los productos que ya la tienen la conservan y no se borra nada: al reactivarla, todo vuelve a estar como antes."
+                    confirmLabel="Desactivar"
+                    pendingLabel="Desactivando…"
+                    tone="destructive"
+                    action={setCategoryActiveAction.bind(
+                      null,
+                      category.id,
+                      false,
+                    )}
+                  />
+                ) : null}
+              </div>
+            ) : (
+              <ConfirmDeleteButton
+                label="Eliminar categoría"
+                title={`¿Eliminar «${category.name}»?`}
+                description="La categoría se borrará de forma definitiva. Ningún producto la usa, así que no afecta a la vitrina."
+                action={deleteCategoryAction.bind(null, category.id)}
+              />
+            )
+          }
+        />
+      </section>
     </div>
   );
 }

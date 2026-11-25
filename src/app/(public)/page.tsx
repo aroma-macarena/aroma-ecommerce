@@ -1,23 +1,28 @@
-import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 
-import territoryImage from "@/assets/territorio-rio-guayabero.jpg";
 import { CategoryFilter } from "@/components/catalog/category-filter";
-import { ProductCard } from "@/components/catalog/product-card";
+import { AllianceBoard } from "@/components/plaza/alliance-board";
+import { BulkContact } from "@/components/plaza/bulk-contact";
+import { FeaturedCard } from "@/components/plaza/featured-card";
+import { HeroCarousel, type HeroSlide } from "@/components/plaza/hero-carousel";
+import { HowToBuy } from "@/components/plaza/how-to-buy";
+import { PlazaProductGrid } from "@/components/plaza/plaza-product-card";
+import {
+  ProducerRail,
+  type RailProducer,
+} from "@/components/plaza/producer-rail";
 import { Container } from "@/components/public/container";
-import { Section } from "@/components/public/section";
-import { SectionHeading } from "@/components/public/section-heading";
 import { buttonVariants } from "@/components/ui/button";
-import { homeContent } from "@/content/home";
 import {
   getCatalogCategories,
   getCatalogProducts,
+  getPublicAssociations,
+  getPublicProduct,
 } from "@/lib/catalog/queries";
-import { publicRoutes } from "@/lib/public-routes";
+import { getMediaUrl } from "@/lib/media";
+import { getAssociationHref, publicRoutes } from "@/lib/public-routes";
 import { getSiteContent } from "@/lib/site-content/queries";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: { absolute: "Productos de La Macarena | Alianza AROMA" },
@@ -25,189 +30,165 @@ export const metadata: Metadata = {
     "Conoce los productos de las organizaciones y mujeres productoras de la Alianza AROMA, en La Macarena, Meta.",
 };
 
+/** Home address with the chosen category. */
+function getHomeHref(categoria?: string) {
+  return categoria
+    ? `${publicRoutes.home}?${new URLSearchParams({ categoria })}`
+    : publicRoutes.home;
+}
+
 export default async function Home({ searchParams }: PageProps<"/">) {
   const { categoria } = await searchParams;
   const categorySlug = typeof categoria === "string" ? categoria : undefined;
-  const [categories, products, content] = await Promise.all([
+
+  const [categories, allProducts, associations, content] = await Promise.all([
     getCatalogCategories(),
-    getCatalogProducts({ categorySlug }),
+    getCatalogProducts(),
+    getPublicAssociations(),
     getSiteContent(),
   ]);
-  const { hero, alliance } = homeContent;
 
-  const facts = [
-    { label: "organizaciones", value: alliance.organizations.length },
-    {
-      label: "mujeres productoras",
-      value: alliance.organizations.reduce(
-        (total, { women }) => total + women,
-        0,
+  // The hero carousel: one featured product per organization, its latest
+  // one, organizations ordered by their latest publication.
+  const latestPerAssociation = allProducts.filter(
+    (product, position) =>
+      allProducts.findIndex(
+        (other) => other.associationSlug === product.associationSlug,
+      ) === position,
+  );
+  const featured = (
+    await Promise.all(
+      latestPerAssociation.map(({ associationSlug, slug }) =>
+        getPublicProduct(associationSlug, slug),
       ),
-    },
-    ...(categories.length > 0
-      ? [
-          {
-            label: categories.length === 1 ? "categoría" : "categorías",
-            value: categories.length,
-          },
-        ]
-      : []),
-  ];
+    )
+  ).filter((product) => product !== null);
+  const featuredProduct = featured[0] ?? null;
+  const productCountOf = (slug: string) =>
+    associations.find((association) => association.slug === slug)
+      ?.productCount ?? 1;
+  const slides: HeroSlide[] = featured.map((product) => {
+    const [image] = product.images;
+    return {
+      id: product.id,
+      label: `${product.name}, de ${product.association.name}`,
+      // The horizontal banner when the product has one; otherwise the
+      // primary photo, cropped to the carousel.
+      imageUrl:
+        getMediaUrl(product.bannerObjectKey) ??
+        getMediaUrl(image?.objectKey ?? null),
+      imageAlt: image?.altText ?? product.name,
+      card: (
+        <FeaturedCard
+          product={product}
+          productCount={productCountOf(product.association.slug)}
+        />
+      ),
+    };
+  });
+
+  // The grid leaves out the product already featured above, unless a
+  // category is chosen, so the same product never shows twice in a row.
+  const products = categorySlug
+    ? allProducts.filter((product) => product.categorySlug === categorySlug)
+    : allProducts.filter((product) => product.id !== featuredProduct?.id);
+  const onlyFeatured = !categorySlug && allProducts.length === 1;
+
+  const producers: RailProducer[] = associations
+    .filter(({ productCount }) => productCount > 0)
+    .map((association) => ({
+      slug: association.slug,
+      name: association.name,
+      location: association.location,
+      logoObjectKey: association.logoObjectKey,
+      coverObjectKey: association.coverObjectKey,
+      productCount: association.productCount,
+      href: getAssociationHref(association.slug),
+    }));
 
   return (
     <>
-      <Section className="pt-8 pb-16 md:pt-14 md:pb-24">
-        <Container className="space-y-16 md:space-y-24">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:gap-16">
-            <div className="flex flex-col gap-8 lg:justify-center lg:gap-10">
-              <SectionHeading
-                as="h1"
-                eyebrow={hero.eyebrow}
-                title={content.home_hero.title}
-                description={content.home_hero.content}
-              />
+      {slides.length > 0 ? (
+        <HeroCarousel
+          title={content.home_hero.title}
+          lead={content.home_hero.content}
+          slides={slides}
+        />
+      ) : (
+        <Container className="grid gap-2 pt-4 pb-4 sm:gap-3 sm:pt-6 sm:pb-6 md:pt-8 md:pb-8 lg:grid-cols-12 lg:items-end lg:gap-10">
+          <h1 className="font-sign text-[2.75rem] leading-[0.88] text-balance uppercase wrap-anywhere sm:text-[4.5rem] lg:col-span-8 lg:text-[4.75rem]">
+            {content.home_hero.title}
+          </h1>
+          <p className="font-editorial text-muted-foreground max-w-[48ch] text-base leading-relaxed sm:text-lg md:text-xl lg:col-span-4 lg:pb-1">
+            {content.home_hero.content}
+          </p>
+        </Container>
+      )}
 
-              <dl
-                className={cn(
-                  "border-foreground grid border-t-[1.5px] border-b",
-                  facts.length === 3 ? "grid-cols-3" : "grid-cols-2",
-                )}
-              >
-                {facts.map(({ label, value }) => (
-                  <div
-                    key={label}
-                    className="flex min-w-0 flex-col-reverse justify-end gap-1 border-l py-3 pl-3 first:border-l-0 first:pl-0 sm:pl-5"
-                  >
-                    <dt className="text-muted-foreground text-sm leading-snug">
-                      {label}
-                    </dt>
-                    <dd className="font-heading text-3xl leading-none font-semibold md:text-[2.75rem]">
-                      {value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
+      {producers.length > 1 ? <ProducerRail producers={producers} /> : null}
 
-            <figure className="space-y-2">
-              <Image
-                src={territoryImage}
-                alt={hero.image.alt}
-                placeholder="blur"
-                preload
-                sizes="(min-width: 1024px) 28rem, (min-width: 640px) 80vw, 100vw"
-                className="aspect-4/3 w-full rounded-sm object-cover lg:aspect-square"
+      <section
+        aria-labelledby="catalogo-titulo"
+        className="pt-8 pb-12 md:pt-10 md:pb-20"
+      >
+        <Container className="space-y-8">
+          <div className="flex flex-col gap-5 border-b pb-5 md:flex-row md:items-end md:justify-between md:gap-8">
+            <h2
+              id="catalogo-titulo"
+              className="font-sign text-[2.5rem] leading-[0.92] uppercase md:text-[3.25rem]"
+            >
+              Explora los productos
+            </h2>
+            {categories.length > 0 ? (
+              <CategoryFilter
+                categories={categories}
+                activeSlug={categorySlug}
+                getHref={(slug) => getHomeHref(slug)}
               />
-              <figcaption className="text-muted-foreground font-mono text-xs">
-                {hero.image.caption}
-              </figcaption>
-            </figure>
+            ) : null}
           </div>
 
-          <section aria-labelledby="catalogo-titulo" className="space-y-8">
-            <div className="flex flex-col gap-2 border-b md:flex-row md:items-end md:justify-between md:gap-8">
-              <h2
-                id="catalogo-titulo"
-                className="font-heading text-3xl leading-tight font-semibold tracking-[-0.03em] md:pb-2 md:text-[2.5rem]"
-              >
-                Explora los productos
-              </h2>
-              {categories.length > 0 ? (
-                <CategoryFilter
-                  categories={categories}
-                  activeSlug={categorySlug}
-                />
+          {onlyFeatured ? (
+            <p className="font-editorial text-muted-foreground text-lg">
+              Por ahora el producto destacado es el único publicado; pronto
+              habrá más de las asociaciones de AROMA.
+            </p>
+          ) : products.length > 0 ? (
+            <PlazaProductGrid products={products} />
+          ) : (
+            <div className="max-w-xl space-y-2 py-4">
+              <p className="font-editorial text-2xl font-semibold">
+                {categorySlug
+                  ? "No hay productos en esta categoría"
+                  : "Aún no hay productos disponibles"}
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                {categorySlug
+                  ? "Prueba con otra categoría o consulta todos los productos disponibles."
+                  : "Pronto encontrarás aquí los productos de las asociaciones de AROMA."}
+              </p>
+              {categorySlug ? (
+                <Link
+                  href={getHomeHref()}
+                  scroll={false}
+                  className={buttonVariants({ size: "lg", className: "mt-4" })}
+                >
+                  Ver todos los productos
+                </Link>
               ) : null}
             </div>
-
-            {products.length > 0 ? (
-              <ul className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-                {products.map((product) => (
-                  <li key={product.id} className="min-w-0">
-                    <ProductCard product={product} />
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="max-w-xl space-y-2 py-4">
-                <p className="font-heading text-2xl font-medium">
-                  {categorySlug
-                    ? "No hay productos en esta categoría"
-                    : "Aún no hay productos disponibles"}
-                </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  {categorySlug
-                    ? "Prueba con otra categoría o consulta todos los productos disponibles."
-                    : "Pronto encontrarás aquí los productos de las asociaciones de AROMA."}
-                </p>
-                {categorySlug ? (
-                  <Link
-                    href={publicRoutes.products}
-                    className={buttonVariants({
-                      variant: "outline",
-                      className: "mt-4",
-                    })}
-                  >
-                    Ver todos los productos
-                  </Link>
-                ) : null}
-              </div>
-            )}
-          </section>
+          )}
         </Container>
-      </Section>
+      </section>
 
-      <Section id="alianza" className="bg-brand-burgundy text-background">
-        <Container className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-16">
-          <div className="flex flex-col gap-10">
-            <SectionHeading
-              eyebrow={alliance.eyebrow}
-              title={content.home_alliance.title}
-              description={content.home_alliance.content}
-              tone="inverse"
-            />
-            <Image
-              src="/brand/aroma-sello.svg"
-              alt="Sello: Producto de la Alianza AROMA, hecho por mujeres campesinas"
-              width={1525}
-              height={1525}
-              unoptimized
-              className="mx-auto w-40 sm:w-48 lg:my-auto lg:w-56"
-            />
-          </div>
+      <HowToBuy />
 
-          <div className="space-y-6">
-            <ul className="border-background/25 grid content-start border-b sm:grid-cols-2 sm:gap-x-8">
-              {alliance.organizations.map((organization) => (
-                <li
-                  key={organization.acronym}
-                  className="border-background/25 space-y-1 border-t py-3.5"
-                >
-                  <p className="flex justify-between gap-3 font-mono text-[0.8125rem] font-medium">
-                    <span>{organization.acronym}</span>
-                    <span className="text-background/80 text-right">
-                      {organization.women} mujeres
-                      {"men" in organization
-                        ? ` y ${organization.men} hombres`
-                        : ""}
-                    </span>
-                  </p>
-                  <p className="text-background/80 text-sm leading-snug">
-                    {organization.name}
-                  </p>
-                </li>
-              ))}
-            </ul>
-            <Link
-              href={publicRoutes.associations}
-              className="decoration-background/40 hover:decoration-background inline-flex min-h-11 w-fit items-center gap-2 font-semibold underline underline-offset-4 transition-colors"
-            >
-              Conoce las asociaciones
-              <ArrowRight aria-hidden className="size-4" />
-            </Link>
-          </div>
-        </Container>
-      </Section>
+      <AllianceBoard
+        title={content.home_alliance.title}
+        description={content.home_alliance.content}
+      />
+
+      <BulkContact />
     </>
   );
 }

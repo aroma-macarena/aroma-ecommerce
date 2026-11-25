@@ -20,7 +20,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:check": "drizzle-kit check",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/db/seed.ts"
+    "db:seed": "tsx src/db/seed.ts",
+    "map:build": "tsx scripts/build-territory-map.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

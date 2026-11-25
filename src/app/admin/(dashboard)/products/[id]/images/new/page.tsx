@@ -56,10 +56,12 @@ export default async function NewProductImagePage({
       </div>
 
       {isMediaStorageConfigured() ? (
-        <ImageUploadForm
-          action={uploadProductImageAction.bind(null, product.id)}
-          cancelHref={productHref}
-        />
+        <section className="bg-card rounded-md border p-4 sm:p-6">
+          <ImageUploadForm
+            action={uploadProductImageAction.bind(null, product.id)}
+            cancelHref={productHref}
+          />
+        </section>
       ) : (
         <AdminNotice tone="warning">
           La subida de imágenes aún no está configurada. Avísale a la

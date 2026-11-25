@@ -1,10 +1,9 @@
-import { Pause, Pencil, Play } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { adminRoleLabels } from "@/components/admin/admin-navigation";
 import { ConfirmActionButton } from "@/components/admin/confirm-action-button";
-import { buttonVariants } from "@/components/ui/button";
 import type { AdminUser, AdminUserStatus } from "@/lib/admin/admin-users";
 import { cn } from "@/lib/utils";
 
@@ -26,12 +25,12 @@ const accountStates: Record<
 > = {
   ACTIVE: {
     label: "Activa",
-    className: "text-primary",
-    marker: <circle cx="4" cy="4" r="4" className="fill-primary" />,
+    className: "text-foreground bg-muted",
+    marker: <circle cx="4" cy="4" r="4" className="fill-foreground" />,
   },
   PENDING: {
     label: "Invitación pendiente",
-    className: "text-foreground",
+    className: "text-foreground bg-card border",
     marker: (
       <circle
         cx="4"
@@ -46,7 +45,7 @@ const accountStates: Record<
   },
   INACTIVE: {
     label: "Inactiva",
-    className: "text-muted-foreground",
+    className: "text-muted-foreground bg-muted",
     marker: (
       <rect
         x="0.75"
@@ -89,7 +88,7 @@ export function AccountStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 font-mono text-xs font-medium whitespace-nowrap",
+        "inline-flex min-h-6 items-center gap-1.5 rounded-full px-2.5 text-[0.8125rem] font-bold whitespace-nowrap",
         toneClassName,
         className,
       )}
@@ -119,7 +118,8 @@ function StatusAction({
             <span className="sr-only">{user.name}</span>
           </>
         }
-        triggerClassName="w-full sm:w-auto"
+        triggerVariant="ghost"
+        triggerClassName="text-muted-foreground whitespace-nowrap"
         title={`¿Desactivar a ${user.name}?`}
         description="Perderá el acceso al panel de inmediato. Su cuenta de acceso y los cambios que hizo se conservan; puedes reactivarla cuando quieras."
         confirmLabel="Desactivar"
@@ -139,7 +139,8 @@ function StatusAction({
           <span className="sr-only">{user.name}</span>
         </>
       }
-      triggerClassName="w-full sm:w-auto"
+      triggerVariant="ghost"
+      triggerClassName="text-muted-foreground whitespace-nowrap"
       title={`¿Activar a ${user.name}?`}
       description="Podrá entrar de nuevo al panel con su rol y su asociación actuales."
       confirmLabel="Activar"
@@ -159,35 +160,28 @@ function RowActions({
   setStatusAction: AdminUserListProps["setStatusAction"];
 }) {
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-      <Link
-        href={`/admin/users/${user.id}/edit`}
-        className={buttonVariants({
-          variant: "outline",
-          className: "w-full sm:w-auto",
-        })}
-      >
-        <Pencil aria-hidden />
-        Editar
-        <span className="sr-only">{user.name}</span>
-      </Link>
-      {isSelf ? null : (
-        <StatusAction user={user} setStatusAction={setStatusAction} />
-      )}
-    </div>
+    // The name opens the account; the row keeps only its status action.
+    isSelf ? null : (
+      <StatusAction user={user} setStatusAction={setStatusAction} />
+    )
   );
 }
 
 function Person({ user, isSelf }: { user: AdminUser; isSelf: boolean }) {
   return (
     <>
-      <span className="block font-semibold wrap-anywhere">
-        {user.name}
+      <span className="block wrap-anywhere">
+        <Link
+          href={`/admin/users/${user.id}/edit`}
+          className="text-primary font-bold underline-offset-4 hover:underline"
+        >
+          {user.name}
+        </Link>
         {isSelf ? (
           <span className="text-muted-foreground font-normal"> (tú)</span>
         ) : null}
       </span>
-      <span className="text-muted-foreground block text-xs wrap-anywhere">
+      <span className="text-muted-foreground block text-sm wrap-anywhere">
         {user.email}
       </span>
     </>
@@ -203,7 +197,7 @@ function Scope({ user }: { user: AdminUser }) {
     <>
       {user.associationName}
       {user.associationStatus === "INACTIVE" ? (
-        <span className="text-muted-foreground block text-xs">
+        <span className="text-muted-foreground block text-sm">
           Asociación inactiva
         </span>
       ) : null}
@@ -218,24 +212,24 @@ function AdminUserList({
   setStatusAction,
 }: AdminUserListProps) {
   return (
-    <>
-      <table className="hidden w-full text-sm md:table">
+    <div className="bg-card overflow-hidden rounded-md border">
+      <table className="hidden w-full xl:table">
         <caption className="sr-only">Cuentas administrativas</caption>
         <thead>
-          <tr className="text-muted-foreground border-b text-left font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
-            <th scope="col" className="py-2 pr-4 font-medium">
+          <tr className="bg-muted/60 text-muted-foreground border-b text-left text-sm">
+            <th scope="col" className="py-2.5 pr-4 font-bold first:pl-4">
               Persona
             </th>
-            <th scope="col" className="py-2 pr-4 font-medium">
+            <th scope="col" className="py-2.5 pr-4 font-bold first:pl-4">
               Rol
             </th>
-            <th scope="col" className="py-2 pr-4 font-medium">
+            <th scope="col" className="py-2.5 pr-4 font-bold first:pl-4">
               Asociación
             </th>
-            <th scope="col" className="py-2 pr-4 font-medium">
+            <th scope="col" className="py-2.5 pr-4 font-bold first:pl-4">
               Estado
             </th>
-            <th scope="col" className="py-2 text-right font-medium">
+            <th scope="col" className="py-2.5 pr-4 text-right font-bold">
               <span className="sr-only">Acciones</span>
             </th>
           </tr>
@@ -245,8 +239,11 @@ function AdminUserList({
             const isSelf = user.id === currentUserId;
 
             return (
-              <tr key={user.id} className="border-b align-top">
-                <th scope="row" className="py-3 pr-4 text-left font-normal">
+              <tr key={user.id} className="border-b align-top last:border-b-0">
+                <th
+                  scope="row"
+                  className="py-3 pr-4 pl-4 text-left font-normal"
+                >
                   <Person user={user} isSelf={isSelf} />
                 </th>
                 <td className="py-3 pr-4">{adminRoleLabels[user.role]}</td>
@@ -256,7 +253,7 @@ function AdminUserList({
                 <td className="py-3 pr-4">
                   <AccountStatusBadge user={user} />
                 </td>
-                <td className="py-3 text-right">
+                <td className="py-0.5 pr-4 text-right">
                   <RowActions
                     user={user}
                     isSelf={isSelf}
@@ -269,40 +266,47 @@ function AdminUserList({
         </tbody>
       </table>
 
-      <ul aria-label="Cuentas administrativas" className="border-t md:hidden">
+      <ul aria-label="Cuentas administrativas" className="xl:hidden">
         {users.map((user) => {
           const isSelf = user.id === currentUserId;
 
           return (
-            <li key={user.id} className="space-y-2 border-b py-4">
+            <li
+              key={user.id}
+              className="space-y-1 border-b px-4 py-3 last:border-b-0"
+            >
               <div className="flex items-start justify-between gap-3">
                 <p className="min-w-0">
                   <Person user={user} isSelf={isSelf} />
                 </p>
                 <AccountStatusBadge user={user} className="pt-0.5" />
               </div>
-              <p className="text-sm">
-                {adminRoleLabels[user.role]}
-                {user.role === "ASSOCIATION_ADMIN" ? (
-                  <>
-                    {" · "}
-                    {user.associationName}
-                    {user.associationStatus === "INACTIVE" ? " (inactiva)" : ""}
-                  </>
-                ) : null}
-              </p>
-              <div className="pt-1">
-                <RowActions
-                  user={user}
-                  isSelf={isSelf}
-                  setStatusAction={setStatusAction}
-                />
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm">
+                  {adminRoleLabels[user.role]}
+                  {user.role === "ASSOCIATION_ADMIN" ? (
+                    <>
+                      {" · "}
+                      {user.associationName}
+                      {user.associationStatus === "INACTIVE"
+                        ? " (inactiva)"
+                        : ""}
+                    </>
+                  ) : null}
+                </p>
+                <div className="-mr-3 shrink-0">
+                  <RowActions
+                    user={user}
+                    isSelf={isSelf}
+                    setStatusAction={setStatusAction}
+                  />
+                </div>
               </div>
             </li>
           );
         })}
       </ul>
-    </>
+    </div>
   );
 }
 

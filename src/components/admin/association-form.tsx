@@ -24,8 +24,8 @@ type AssociationFormProps = {
 const initialState: AssociationFormState = { status: "idle", attempt: 0 };
 
 const hints = {
-  name: "El nombre completo, como aparecerá en la vitrina. Su dirección pública se genera con él y no cambia después. Hasta 200 caracteres.",
-  location: "Vereda, municipio o departamento. Hasta 255 caracteres.",
+  name: "Su dirección web se crea con este nombre y no cambia después.",
+  location: "",
 };
 
 function AssociationForm({

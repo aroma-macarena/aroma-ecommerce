@@ -76,6 +76,15 @@ export function getAdminNavigation(role: AdminRole) {
   return adminNavigationItems.filter((item) => item.roles.includes(role));
 }
 
+/** On phones, the first three destinations are tabs; the rest go under «Más». */
+export const ADMIN_TAB_COUNT = 3;
+
+export function isActiveAdminPath(pathname: string, href: string) {
+  return href === "/admin"
+    ? pathname === href
+    : pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export const adminRoleLabels: Record<AdminRole, string> = {
   SUPER_ADMIN: "Superadministrador",
   ASSOCIATION_ADMIN: "Administrador de asociación",

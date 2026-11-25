@@ -2,7 +2,14 @@ import "./globals.css";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
+import {
+  Archivo,
+  Atkinson_Hyperlegible_Next,
+  Bricolage_Grotesque,
+  Geist,
+  Geist_Mono,
+  Source_Serif_4,
+} from "next/font/google";
 
 import { clerkLocalization } from "@/lib/clerk-localization";
 
@@ -15,6 +22,27 @@ const bricolageGrotesque = Bricolage_Grotesque({
   variable: "--font-bricolage-grotesque",
   subsets: ["latin"],
   axes: ["opsz"],
+});
+
+// Public site: a variable grotesque, condensed for headlines and figures.
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin", "latin-ext"],
+  axes: ["wdth"],
+});
+
+// Public site: editorial serif for product and organization names.
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin", "latin-ext"],
+  axes: ["opsz"],
+});
+
+// Admin panel: a face drawn for legibility, for leaders with little
+// digital practice reading on a phone outdoors.
+const atkinson = Atkinson_Hyperlegible_Next({
+  variable: "--font-atkinson",
+  subsets: ["latin", "latin-ext"],
 });
 
 const geistMono = Geist_Mono({
@@ -47,14 +75,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fffdf8",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${bricolageGrotesque.variable} ${archivo.variable} ${sourceSerif.variable} ${atkinson.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider afterSignOutUrl="/" localization={clerkLocalization}>

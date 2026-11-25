@@ -25,7 +25,6 @@ type PresentationFormProps = {
   submitLabel: string;
   cancelHref: string;
   secondaryAction?: ReactNode;
-  actionsNote?: ReactNode;
 };
 
 const initialState: PresentationFormState = { status: "idle", attempt: 0 };
@@ -46,13 +45,11 @@ const unitSuggestions = [
 ];
 
 const hints = {
-  name: "Como la verá el comprador, por ejemplo «Bolsa 250 g». Hasta 150 caracteres.",
+  name: "Por ejemplo, «Bolsa 250 g».",
   quantity: "Por ejemplo: 250 o 1,5.",
   unit: "Por ejemplo: g, kg, ml o unidad.",
-  referencePrice:
-    "En pesos colombianos, sin centavos. Es una referencia para el comprador.",
-  isAvailable:
-    "Solo las presentaciones disponibles cuentan para publicar el producto.",
+  referencePrice: "En pesos, sin centavos. Vacío: «A consultar».",
+  isAvailable: "Para publicar, el producto necesita al menos una disponible.",
 };
 
 function PresentationForm({
@@ -61,7 +58,6 @@ function PresentationForm({
   submitLabel,
   cancelHref,
   secondaryAction,
-  actionsNote,
 }: PresentationFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
   const values = state.values ?? defaultValues;
@@ -215,7 +211,6 @@ function PresentationForm({
         submitLabel={submitLabel}
         isPending={isPending}
         secondaryAction={secondaryAction}
-        note={actionsNote}
       />
     </form>
   );

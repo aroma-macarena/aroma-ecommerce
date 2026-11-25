@@ -1,19 +1,25 @@
 import Link from "next/link";
 
-import { getProductsByCategoryHref, publicRoutes } from "@/lib/public-routes";
 import { cn } from "@/lib/utils";
 
 type CategoryFilterProps = {
   categories: { name: string; slug: string }[];
   activeSlug?: string;
+  /** Builds each option's address (the page decides where the filter lives). */
+  getHref: (categorySlug: string | undefined) => string;
 };
 
-function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) {
+/** One chip per category; the current one is filled in ink. */
+function CategoryFilter({
+  categories,
+  activeSlug,
+  getHref,
+}: CategoryFilterProps) {
   const options = [
-    { label: "Todos", href: publicRoutes.products, isActive: !activeSlug },
+    { label: "Todos", href: getHref(undefined), isActive: !activeSlug },
     ...categories.map(({ name, slug }) => ({
       label: name,
-      href: getProductsByCategoryHref(slug),
+      href: getHref(slug),
       isActive: slug === activeSlug,
     })),
   ];
@@ -21,9 +27,9 @@ function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) {
   return (
     <nav
       aria-label="Filtrar por categoría"
-      className="-mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0"
+      className="rail-scroll -mx-5 px-5 pb-1 sm:mx-0 sm:px-0"
     >
-      <ul className="flex gap-6 whitespace-nowrap">
+      <ul className="flex gap-2 whitespace-nowrap">
         {options.map(({ label, href, isActive }) => (
           <li key={href}>
             <Link
@@ -31,10 +37,10 @@ function CategoryFilter({ categories, activeSlug }: CategoryFilterProps) {
               scroll={false}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "inline-flex min-h-12 items-center text-[0.9375rem] transition-colors focus-visible:outline-offset-[-2px]",
+                "inline-flex min-h-11 items-center rounded-full border px-4 text-[0.9375rem] font-semibold transition-colors",
                 isActive
-                  ? "text-foreground shadow-[inset_0_-3px_0_var(--brand-orange)] font-semibold"
-                  : "text-muted-foreground hover:text-foreground font-medium",
+                  ? "border-foreground bg-foreground text-background"
+                  : "bg-card hover:border-foreground",
               )}
             >
               {label}

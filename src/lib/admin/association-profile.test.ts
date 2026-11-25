@@ -85,6 +85,7 @@ function input(overrides: Record<string, string> = {}) {
     history: "",
     contactName: "María Pérez",
     whatsappNumber: "",
+    zone: "",
     ...overrides,
   });
 
@@ -125,6 +126,25 @@ describe("parseAssociationProfile", () => {
       "573001112233",
     );
     expect(input().whatsappNumber).toBeNull();
+  });
+
+  it("accepts a zone from the territory list, or none", () => {
+    expect(input({ zone: "cristalina-del-losada" }).zone).toBe(
+      "cristalina-del-losada",
+    );
+    expect(input({ zone: "" }).zone).toBeNull();
+  });
+
+  it("rejects a zone that is not on the map", () => {
+    const parsed = parseAssociationProfile({
+      name: "Asociación Bosque Vivo",
+      zone: "bogota",
+    });
+
+    expect(parsed).toMatchObject({
+      success: false,
+      fieldErrors: { zone: "Elige una zona de la lista." },
+    });
   });
 
   it("rejects numbers that cannot open a chat", () => {

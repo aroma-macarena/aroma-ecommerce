@@ -48,27 +48,28 @@ export default async function AdminContentPage({
     typeof estado === "string" ? confirmations[estado] : undefined;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <AdminPageHeader
         eyebrow="Alianza AROMA"
         title="Contenido"
-        description="Los textos institucionales del sitio público y el contacto de la alianza. Cada uno tiene un lugar fijo; aquí cambias el contenido y el diseño se mantiene."
+        description="Cambias el texto; el diseño del sitio se mantiene."
       />
 
       {confirmation ? (
         <AdminNotice tone="success">{confirmation}</AdminNotice>
       ) : null}
 
-      <ul aria-label="Contenido institucional" className="border-t">
+      <ul
+        aria-label="Contenido institucional"
+        className="bg-card divide-y rounded-md border"
+      >
         {blocks.map((block) => (
           <li
             key={block.key}
-            className="grid gap-4 border-b py-5 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8"
+            className="grid gap-4 p-4 sm:p-6 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8"
           >
             <div className="min-w-0 space-y-2">
-              <h2 className="font-heading text-xl font-semibold tracking-[-0.015em]">
-                {block.label}
-              </h2>
+              <h2 className="text-lg font-bold">{block.label}</h2>
               <p className="text-muted-foreground max-w-prose text-sm leading-6">
                 {block.location}
               </p>
@@ -96,7 +97,7 @@ export default async function AdminContentPage({
                   ))}
                 </blockquote>
               )}
-              <p className="text-muted-foreground font-mono text-xs">
+              <p className="text-muted-foreground text-sm">
                 {block.updatedAt
                   ? `Editado el ${dateFormatter.format(block.updatedAt)}${
                       block.updatedByName ? ` por ${block.updatedByName}` : ""
@@ -111,7 +112,10 @@ export default async function AdminContentPage({
             <div className="flex flex-col gap-2 sm:flex-row md:flex-col md:items-stretch">
               <Link
                 href={`/admin/content/${block.key}/edit`}
-                className={buttonVariants({ className: "w-full sm:w-auto" })}
+                className={buttonVariants({
+                  variant: "outline",
+                  className: "w-full sm:w-auto",
+                })}
               >
                 <Pencil aria-hidden />
                 Editar
@@ -121,12 +125,9 @@ export default async function AdminContentPage({
                 <Link
                   href={block.href}
                   target="_blank"
-                  className={buttonVariants({
-                    variant: "outline",
-                    className: "w-full sm:w-auto",
-                  })}
+                  className="text-primary inline-flex min-h-11 items-center justify-center gap-1.5 text-sm font-bold underline-offset-4 hover:underline"
                 >
-                  <ExternalLink aria-hidden />
+                  <ExternalLink aria-hidden className="size-4" />
                   Ver en el sitio
                   <span className="sr-only">
                     (se abre en una nueva pestaña)

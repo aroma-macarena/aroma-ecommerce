@@ -80,7 +80,7 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
     (selection.status === "error" ? selection.message : undefined) ??
     state.fieldErrors?.file;
   const fileHint =
-    "JPG, PNG o WebP de hasta 20 MB. La reducimos a 2000 px antes de subirla y quitamos sus metadatos, como la ubicación.";
+    "Quitamos la ubicación y otros datos de la foto antes de subirla.";
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-8">
@@ -144,10 +144,7 @@ function ImageUploadForm({ action, cancelHref }: ImageUploadFormProps) {
                   </span>
                 ) : null}
               </div>
-              <p
-                aria-live="polite"
-                className="text-muted-foreground font-mono text-xs"
-              >
+              <p aria-live="polite" className="text-muted-foreground text-sm">
                 {selection.status === "preparing"
                   ? "Preparando la foto…"
                   : selection.status === "ready"

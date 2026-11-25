@@ -153,7 +153,7 @@ export function parsePresentationForm(values: PresentationFormValues) {
   return { success: false as const, fieldErrors };
 }
 
-/** Stored amounts as the form shows them: "1,5" and whole pesos. */
+/** Stored amounts as the form shows them: "1,5" and "18.500". */
 export function toPresentationFormValues(presentation: {
   name: string;
   quantity: string | null;
@@ -170,8 +170,11 @@ export function toPresentationFormValues(presentation: {
       ? trimDecimals(presentation.quantity).replace(".", ",")
       : "",
     unit: presentation.unit ?? "",
+    // Whole pesos with thousands points, as the list shows them: "18.500".
     referencePrice: presentation.referencePrice
-      ? trimDecimals(presentation.referencePrice).replace(".", ",")
+      ? Math.trunc(Number(presentation.referencePrice))
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ".")
       : "",
     isAvailable: presentation.isAvailable ? "on" : "",
   };

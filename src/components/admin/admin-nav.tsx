@@ -3,75 +3,56 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { getAdminNavigation } from "@/components/admin/admin-navigation";
+import {
+  getAdminNavigation,
+  isActiveAdminPath,
+} from "@/components/admin/admin-navigation";
 import type { AdminRole } from "@/lib/auth/get-current-profile";
 import { cn } from "@/lib/utils";
 
 type AdminNavProps = {
   role: AdminRole;
-  onNavigate?: () => void;
 };
 
-function isActivePath(pathname: string, href: string) {
-  return href === "/admin"
-    ? pathname === href
-    : pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function AdminNav({ role, onNavigate }: AdminNavProps) {
+/** The side rail's destinations, on screens wide enough to keep it open. */
+function AdminNav({ role }: AdminNavProps) {
   const pathname = usePathname();
 
   return (
     <nav aria-label="Navegación administrativa">
-      <ul className="space-y-1">
-        {getAdminNavigation(role).map(
-          ({ href, label, icon: Icon, available }) => {
-            const itemClassName =
-              "grid min-h-11 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-3 gap-y-1 rounded-md px-3 py-2 text-sm font-medium wrap-anywhere";
+      <ul className="space-y-0.5">
+        {getAdminNavigation(role).map(({ href, label, icon: Icon }) => {
+          const isActive = isActivePath(pathname, href);
 
-            if (!available) {
-              return (
-                <li key={href}>
-                  <span
-                    aria-disabled="true"
-                    className={cn(itemClassName, "text-muted-foreground")}
-                  >
-                    <Icon className="size-4 shrink-0" aria-hidden="true" />
-                    <span className="min-w-0">{label}</span>
-                    <span className="col-start-2 font-mono text-[0.6875rem] font-normal tracking-[0.06em] uppercase">
-                      Pronto
-                    </span>
-                  </span>
-                </li>
-              );
-            }
-
-            const isActive = isActivePath(pathname, href);
-
-            return (
-              <li key={href}>
-                <Link
-                  href={href}
-                  onClick={onNavigate}
-                  aria-current={isActive ? "page" : undefined}
+          return (
+            <li key={href}>
+              <Link
+                href={href}
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "flex min-h-11 items-center gap-3 rounded-md px-3 text-[0.9375rem] transition-colors duration-150",
+                  isActive
+                    ? "bg-accent text-accent-foreground font-bold"
+                    : "text-foreground hover:bg-muted",
+                )}
+              >
+                <Icon
+                  aria-hidden
                   className={cn(
-                    itemClassName,
-                    "transition-colors",
-                    isActive
-                      ? "bg-accent text-accent-foreground shadow-[inset_3px_0_0_var(--primary)] font-semibold"
-                      : "text-foreground hover:bg-muted",
+                    "size-5 shrink-0",
+                    isActive ? "text-primary" : "text-muted-foreground",
                   )}
-                >
-                  <Icon className="size-4 shrink-0" aria-hidden="true" />
-                  <span className="min-w-0">{label}</span>
-                </Link>
-              </li>
-            );
-          },
-        )}
+                />
+                {label}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
 }
+
+const isActivePath = isActiveAdminPath;
 
 export { AdminNav };

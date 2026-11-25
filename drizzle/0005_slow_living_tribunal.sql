@@ -1,0 +1,1 @@
+ALTER TABLE "products" ADD COLUMN "banner_object_key" varchar(500);

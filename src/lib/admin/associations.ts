@@ -85,6 +85,11 @@ export async function getAdminAssociations(profile: AdminProfile) {
       slug: associations.slug,
       location: associations.location,
       status: associations.status,
+      // What the public profile lacks, shown with the correction mark.
+      description: associations.description,
+      zone: associations.zone,
+      coverObjectKey: associations.coverObjectKey,
+      whatsappNumber: associations.whatsappNumber,
       productCount: sql<number>`(
         select count(*)::int from products as p
         where p.association_id = "associations"."id"

@@ -71,13 +71,13 @@ function ProductForm({
 
   const hints = {
     associationId: "No se puede cambiar después de crear el producto.",
-    name: "Así aparecerá en la vitrina. Hasta 200 caracteres.",
-    shortDescription: "Una o dos frases para la ficha. Hasta 500 caracteres.",
-    description: "Hasta 5000 caracteres.",
-    origin: "Vereda, municipio o finca. Hasta 255 caracteres.",
-    ingredients: "Hasta 2000 caracteres.",
+    name: "",
+    shortDescription: "Una o dos frases.",
+    description: "",
+    origin: "Vereda, municipio o finca.",
+    ingredients: "",
     availabilityNote:
-      "Por ejemplo: «Disponible por temporada» o «Bajo pedido». Hasta 500 caracteres.",
+      "Por ejemplo: «Disponible por temporada» o «Bajo pedido».",
   };
 
   return (
@@ -91,10 +91,7 @@ function ProductForm({
     >
       <FormAlert message={state.message} />
 
-      <FormSection
-        title="Información básica"
-        description="Lo que identifica al producto en la vitrina."
-      >
+      <FormSection title="Información básica">
         {associationOptions ? (
           <Field
             name="associationId"
@@ -175,10 +172,7 @@ function ProductForm({
         </Field>
       </FormSection>
 
-      <FormSection
-        title="Detalles"
-        description="Lo que un comprador quiere saber antes de pedirlo."
-      >
+      <FormSection title="Detalles">
         <Field
           name="description"
           label="Descripción"

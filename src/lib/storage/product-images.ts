@@ -37,6 +37,17 @@ export function detectImageFormat(bytes: Uint8Array) {
   return imageSignatures.find(({ matches }) => matches(bytes)) ?? null;
 }
 
+/** Longest side of a product's home banner after the browser reduces it. */
+export const PRODUCT_BANNER_MAX_DIMENSION = 2400;
+
+/**
+ * Object key for a product's home banner:
+ * `products/{productId}/banner-{uuid}.{extension}`, new on every upload.
+ */
+export function productBannerKey(productId: string, extension: string) {
+  return `products/${productId}/banner-${crypto.randomUUID()}.${extension}`;
+}
+
 /**
  * Object key for a product image: `products/{productId}/{uuid}.{extension}`.
  * Grouped by product and never reused, so keys cannot collide.

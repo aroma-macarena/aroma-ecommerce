@@ -31,15 +31,17 @@ export default async function NewAssociationPage() {
         <AdminPageHeader
           eyebrow="Alianza AROMA"
           title="Nueva asociación"
-          description="Se crea activa y aparece en el directorio público. Su descripción, historia, contacto y logo se completan después."
+          description="Se crea activa y aparece en el directorio. El resto del perfil se completa después."
         />
       </div>
 
-      <AssociationForm
-        action={createAssociationAction}
-        cancelHref="/admin/associations"
-        submitLabel="Crear asociación"
-      />
+      <section className="bg-card rounded-md border p-4 sm:p-6">
+        <AssociationForm
+          action={createAssociationAction}
+          cancelHref="/admin/associations"
+          submitLabel="Crear asociación"
+        />
+      </section>
     </div>
   );
 }

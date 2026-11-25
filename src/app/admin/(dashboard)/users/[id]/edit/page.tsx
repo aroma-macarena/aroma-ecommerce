@@ -67,6 +67,7 @@ export default async function EditAdminUserPage({
   const confirmation =
     typeof estado === "string" ? confirmations[estado] : undefined;
   const notice = typeof aviso === "string" ? notices[aviso] : undefined;
+  const hasSide = user.isPending || !isSelf;
 
   return (
     <div className="space-y-8">
@@ -76,9 +77,7 @@ export default async function EditAdminUserPage({
           eyebrow="Alianza AROMA"
           title={user.name}
           description={
-            isSelf
-              ? "Tu propia cuenta: puedes cambiar tu nombre."
-              : "Cambia su nombre, su rol o la asociación que administra."
+            isSelf ? "Tu propia cuenta: puedes cambiar tu nombre." : undefined
           }
           actions={<AccountStatusBadge user={user} />}
         />
@@ -89,112 +88,132 @@ export default async function EditAdminUserPage({
       ) : null}
       {notice ? <AdminNotice tone="warning">{notice}</AdminNotice> : null}
 
-      <AdminSection
-        id="datos"
-        title="Datos y rol"
-        description="El rol decide qué puede hacer en el panel."
+      {/* Wide screens: the account's data on the left; its access, which
+          acts on its own, in a column on the right. */}
+      <div
+        className={
+          hasSide
+            ? "grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start xl:gap-8"
+            : undefined
+        }
       >
-        <AdminUserForm
-          action={updateAdminUserAction.bind(null, user.id)}
-          associations={associations}
-          initialValues={{
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            associationId: user.associationId ?? "",
-          }}
-          isSelf={isSelf}
-          cancelHref="/admin/users"
-          submitLabel="Guardar cambios"
-        />
-      </AdminSection>
+        <AdminSection id="datos" title="Datos y rol" className="min-w-0">
+          <AdminUserForm
+            action={updateAdminUserAction.bind(null, user.id)}
+            associations={associations}
+            initialValues={{
+              name: user.name,
+              email: user.email,
+              role: user.role,
+              associationId: user.associationId ?? "",
+            }}
+            isSelf={isSelf}
+            cancelHref="/admin/users"
+            submitLabel="Guardar cambios"
+          />
+        </AdminSection>
 
-      {user.isPending ? (
-        <AdminSection
-          id="invitacion"
-          title="Invitación"
-          description="Aún no ha creado su acceso."
-        >
-          <p className="max-w-prose text-sm leading-6">
-            Enviamos la invitación a{" "}
-            <span className="font-medium wrap-anywhere">{user.email}</span>. Si
-            no la encuentra o venció, reenvíala. Si la persona ya no necesita
-            acceso, cancélala.
-          </p>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <ConfirmActionButton
-              trigger={
-                <>
-                  <Mail aria-hidden />
-                  Reenviar invitación
-                </>
-              }
-              triggerClassName="w-full sm:w-auto"
-              title="¿Reenviar la invitación?"
-              description={`Enviaremos un correo nuevo a ${user.email}. El enlace anterior dejará de funcionar.`}
-              confirmLabel="Reenviar"
-              pendingLabel="Reenviando…"
-              action={resendInvitationAction.bind(null, user.id)}
-            />
-            <ConfirmActionButton
-              trigger={
-                <>
-                  <X aria-hidden />
-                  Cancelar invitación
-                </>
-              }
-              triggerClassName="w-full sm:w-auto"
-              title="¿Cancelar la invitación?"
-              description={`El enlace enviado a ${user.email} dejará de funcionar y esta cuenta pendiente se borrará. Puedes invitarla de nuevo cuando quieras.`}
-              confirmLabel="Cancelar invitación"
-              pendingLabel="Cancelando…"
-              tone="destructive"
-              action={cancelInvitationAction.bind(null, user.id)}
-            />
+        {hasSide ? (
+          <div className="space-y-6 xl:sticky xl:top-6">
+            {user.isPending ? (
+              <AdminSection
+                id="invitacion"
+                title="Invitación"
+                description="Aún no ha creado su acceso."
+              >
+                <p className="max-w-prose text-sm leading-6">
+                  Enviamos la invitación a{" "}
+                  <span className="font-medium wrap-anywhere">
+                    {user.email}
+                  </span>
+                  . Si no la encuentra o venció, reenvíala. Si la persona ya no
+                  necesita acceso, cancélala.
+                </p>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <ConfirmActionButton
+                    trigger={
+                      <>
+                        <Mail aria-hidden />
+                        Reenviar invitación
+                      </>
+                    }
+                    triggerClassName="w-full sm:w-auto"
+                    title="¿Reenviar la invitación?"
+                    description={`Enviaremos un correo nuevo a ${user.email}. El enlace anterior dejará de funcionar.`}
+                    confirmLabel="Reenviar"
+                    pendingLabel="Reenviando…"
+                    action={resendInvitationAction.bind(null, user.id)}
+                  />
+                  <ConfirmActionButton
+                    trigger={
+                      <>
+                        <X aria-hidden />
+                        Cancelar invitación
+                      </>
+                    }
+                    triggerClassName="w-full sm:w-auto"
+                    title="¿Cancelar la invitación?"
+                    description={`El enlace enviado a ${user.email} dejará de funcionar y esta cuenta pendiente se borrará. Puedes invitarla de nuevo cuando quieras.`}
+                    confirmLabel="Cancelar invitación"
+                    pendingLabel="Cancelando…"
+                    tone="destructive"
+                    action={cancelInvitationAction.bind(null, user.id)}
+                  />
+                </div>
+              </AdminSection>
+            ) : null}
+
+            {isSelf ? null : (
+              <AdminSection
+                id="acceso"
+                title="Acceso"
+                description="Desactivar no borra la cuenta ni su historial."
+              >
+                {user.status === "ACTIVE" ? (
+                  <ConfirmActionButton
+                    trigger={
+                      <>
+                        <Pause aria-hidden />
+                        Desactivar cuenta
+                      </>
+                    }
+                    triggerClassName="w-full sm:w-auto"
+                    title={`¿Desactivar a ${user.name}?`}
+                    description="Perderá el acceso al panel de inmediato. Su cuenta de acceso y los cambios que hizo se conservan; puedes reactivarla cuando quieras."
+                    confirmLabel="Desactivar"
+                    pendingLabel="Desactivando…"
+                    tone="destructive"
+                    action={setAdminUserStatusAction.bind(
+                      null,
+                      user.id,
+                      "INACTIVE",
+                    )}
+                  />
+                ) : (
+                  <ConfirmActionButton
+                    trigger={
+                      <>
+                        <Play aria-hidden />
+                        Activar cuenta
+                      </>
+                    }
+                    triggerClassName="w-full sm:w-auto"
+                    title={`¿Activar a ${user.name}?`}
+                    description="Podrá entrar de nuevo al panel con su rol y su asociación actuales."
+                    confirmLabel="Activar"
+                    pendingLabel="Activando…"
+                    action={setAdminUserStatusAction.bind(
+                      null,
+                      user.id,
+                      "ACTIVE",
+                    )}
+                  />
+                )}
+              </AdminSection>
+            )}
           </div>
-        </AdminSection>
-      ) : null}
-
-      {isSelf ? null : (
-        <AdminSection
-          id="acceso"
-          title="Acceso"
-          description="Desactivar no borra la cuenta ni su historial."
-        >
-          {user.status === "ACTIVE" ? (
-            <ConfirmActionButton
-              trigger={
-                <>
-                  <Pause aria-hidden />
-                  Desactivar cuenta
-                </>
-              }
-              triggerClassName="w-full sm:w-auto"
-              title={`¿Desactivar a ${user.name}?`}
-              description="Perderá el acceso al panel de inmediato. Su cuenta de acceso y los cambios que hizo se conservan; puedes reactivarla cuando quieras."
-              confirmLabel="Desactivar"
-              pendingLabel="Desactivando…"
-              tone="destructive"
-              action={setAdminUserStatusAction.bind(null, user.id, "INACTIVE")}
-            />
-          ) : (
-            <ConfirmActionButton
-              trigger={
-                <>
-                  <Play aria-hidden />
-                  Activar cuenta
-                </>
-              }
-              triggerClassName="w-full sm:w-auto"
-              title={`¿Activar a ${user.name}?`}
-              description="Podrá entrar de nuevo al panel con su rol y su asociación actuales."
-              confirmLabel="Activar"
-              pendingLabel="Activando…"
-              action={setAdminUserStatusAction.bind(null, user.id, "ACTIVE")}
-            />
-          )}
-        </AdminSection>
-      )}
+        ) : null}
+      </div>
     </div>
   );
 }

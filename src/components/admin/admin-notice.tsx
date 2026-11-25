@@ -7,19 +7,19 @@ const tones = {
   success: {
     icon: CircleCheck,
     role: "status",
-    className: "border-primary bg-accent",
+    className: "border-primary/30 bg-accent text-accent-foreground",
     iconClassName: "text-primary",
   },
   warning: {
     icon: Info,
     role: undefined,
-    className: "border-brand-orange bg-card",
-    iconClassName: "text-brand-orange",
+    className: "bg-card",
+    iconClassName: "text-primary",
   },
   error: {
     icon: CircleAlert,
     role: "alert",
-    className: "border-destructive bg-destructive/5 text-destructive",
+    className: "border-destructive/40 bg-destructive/5 text-destructive",
     iconClassName: "",
   },
 } as const;
@@ -30,7 +30,7 @@ type AdminNoticeProps = {
   className?: string;
 };
 
-/** A one-line message with a colored left rule: confirmations and warnings. */
+/** A one-line message in a bordered box: confirmations, notes and errors. */
 function AdminNotice({ tone, children, className }: AdminNoticeProps) {
   const {
     icon: Icon,
@@ -43,7 +43,7 @@ function AdminNotice({ tone, children, className }: AdminNoticeProps) {
     <p
       role={role}
       className={cn(
-        "flex items-start gap-2 border-l-[3px] px-4 py-3 text-sm font-medium",
+        "flex items-start gap-2 rounded-md border px-4 py-3 text-[0.9375rem] font-bold",
         toneClassName,
         className,
       )}

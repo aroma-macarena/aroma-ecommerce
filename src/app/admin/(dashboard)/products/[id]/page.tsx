@@ -16,6 +16,8 @@ import { AdminEmptyState } from "@/components/admin/admin-empty-state";
 import { AdminNotice } from "@/components/admin/admin-notice";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminSection } from "@/components/admin/admin-section";
+import { ConfirmActionButton } from "@/components/admin/confirm-action-button";
+import { ImageFieldForm } from "@/components/admin/image-field-form";
 import { ProductImagesPanel } from "@/components/admin/product-images-panel";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { SubmitButton } from "@/components/admin/submit-button";
@@ -35,6 +37,7 @@ import {
   type ProductPublication,
 } from "@/lib/admin/product-publication";
 import getCurrentProfile from "@/lib/auth/get-current-profile";
+import { getMediaUrl } from "@/lib/media";
 import { formatPresentationDetails } from "@/lib/presentation-format";
 import { isMediaStorageConfigured } from "@/lib/storage/r2";
 import { cn } from "@/lib/utils";
@@ -43,6 +46,8 @@ import {
   changeProductStatusAction,
   movePresentationAction,
   moveProductImageAction,
+  removeProductBannerAction,
+  uploadProductBannerAction,
 } from "./actions";
 
 export const metadata: Metadata = {
@@ -59,6 +64,8 @@ const confirmations: Record<string, string> = {
   "imagen-actualizada": "Imagen actualizada.",
   "imagen-principal": "Imagen principal actualizada.",
   "imagen-eliminada": "Imagen eliminada.",
+  "foto-inicio-actualizada": "Foto para el inicio guardada.",
+  "foto-inicio-eliminada": "Foto para el inicio eliminada.",
   publicado: "Producto publicado.",
   pausado: "Producto pausado: ya no aparece en la vitrina.",
 };
@@ -96,26 +103,21 @@ function PublicationPanel({
       : null;
 
   const summary = {
-    DRAFT:
-      "Solo lo ve la administración. Al publicarlo aparecerá en la vitrina.",
-    PUBLISHED: [
-      hiddenReason ? null : "Visible en la vitrina.",
-      publishedAt
-        ? `Publicado por primera vez el ${dateFormatter.format(publishedAt)}.`
-        : null,
-    ]
-      .filter(Boolean)
-      .join(" "),
-    PAUSED:
-      "No aparece en la vitrina y conserva toda su información. Puedes volver a publicarlo.",
+    DRAFT: "Aún no se ve en la vitrina.",
+    PUBLISHED: publishedAt
+      ? `Desde el ${dateFormatter.format(publishedAt)}.`
+      : "",
+    PAUSED: "No se ve en la vitrina. Conserva toda su información.",
   }[status];
 
   return (
     <>
-      <div className="space-y-2">
+      <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <StatusBadge status={status} />
-        <p className="leading-7">{summary}</p>
-      </div>
+        {summary ? (
+          <span className="text-muted-foreground text-sm">{summary}</span>
+        ) : null}
+      </p>
 
       {isPublished && hiddenReason ? (
         <AdminNotice tone="warning">
@@ -125,7 +127,7 @@ function PublicationPanel({
 
       {isPublished ? null : (
         <div className="space-y-2">
-          <h3 className="text-muted-foreground font-mono text-xs font-medium tracking-[0.06em] uppercase">
+          <h3 className="text-muted-foreground text-sm">
             Requisitos para publicar
           </h3>
           <ul className="border-t">
@@ -145,7 +147,7 @@ function PublicationPanel({
                 ) : (
                   <X
                     aria-hidden
-                    className="text-brand-orange mt-0.5 size-4 shrink-0"
+                    className="text-correction mt-0.5 size-4 shrink-0"
                   />
                 )}
                 <span>
@@ -160,19 +162,20 @@ function PublicationPanel({
         </div>
       )}
 
-      <form
-        action={changeProductStatusAction.bind(
-          null,
-          productId,
-          isPublished ? "PAUSED" : "PUBLISHED",
-        )}
-        className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4"
-      >
-        {isPublished ? (
-          <SubmitButton variant="outline" pendingLabel="Pausando…">
-            Pausar
-          </SubmitButton>
-        ) : (
+      {isPublished ? (
+        <ConfirmActionButton
+          trigger="Pausar"
+          title="¿Pausar este producto?"
+          description="Deja de verse en la vitrina sin borrar nada. Puedes volver a publicarlo cuando quieras."
+          confirmLabel="Pausar"
+          pendingLabel="Pausando…"
+          action={changeProductStatusAction.bind(null, productId, "PAUSED")}
+        />
+      ) : (
+        <form
+          action={changeProductStatusAction.bind(null, productId, "PUBLISHED")}
+          className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4"
+        >
           <SubmitButton
             disabled={!meetsRequirements}
             aria-describedby="publicacion-nota"
@@ -180,17 +183,15 @@ function PublicationPanel({
           >
             {status === "DRAFT" ? "Publicar" : "Volver a publicar"}
           </SubmitButton>
-        )}
-        <p id="publicacion-nota" className="text-muted-foreground text-sm">
-          {isPublished
-            ? "Deja de aparecer en la vitrina sin borrar nada."
-            : meetsRequirements
+          <p id="publicacion-nota" className="text-muted-foreground text-sm">
+            {meetsRequirements
               ? status === "DRAFT"
-                ? "Al publicarlo, su identificador web queda fijo."
-                : "Volverá a aparecer en la vitrina."
-              : "Completa los requisitos pendientes para publicarlo."}
-        </p>
-      </form>
+                ? "Al publicarlo, su dirección web queda fija."
+                : "Volverá a verse en la vitrina."
+              : "Completa lo pendiente para publicarlo."}
+          </p>
+        </form>
+      )}
     </>
   );
 }
@@ -219,8 +220,10 @@ function PresentationRow({
           {" · "}
           <span
             className={cn(
-              "font-mono text-xs tracking-[0.04em] uppercase",
-              presentation.isAvailable && "text-primary",
+              "text-sm",
+              presentation.isAvailable
+                ? "text-foreground"
+                : "text-muted-foreground",
             )}
           >
             {presentation.isAvailable ? "Disponible" : "No disponible"}
@@ -267,8 +270,8 @@ function PresentationRow({
 
 function InfoItem({ label, value }: { label: string; value: string | null }) {
   return (
-    <div className="grid gap-1 border-b py-2.5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-4">
-      <dt className="text-muted-foreground font-mono text-xs tracking-[0.06em] uppercase sm:pt-0.5">
+    <div className="grid gap-1 border-b py-2.5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-4 xl:grid-cols-1 xl:gap-0.5">
+      <dt className="text-muted-foreground text-sm sm:pt-0.5 xl:pt-0">
         {label}
       </dt>
       <dd className={cn("wrap-anywhere", !value && "text-muted-foreground")}>
@@ -323,7 +326,6 @@ export default async function ProductPage({
         <AdminPageHeader
           eyebrow={product.associationName}
           title={product.name}
-          description="Gestiona su publicación, sus presentaciones, sus imágenes y su información."
         />
       </div>
 
@@ -332,110 +334,133 @@ export default async function ProductPage({
       ) : null}
       {warning ? <AdminNotice tone="error">{warning}</AdminNotice> : null}
 
-      <AdminSection
-        id="publicacion"
-        title="Publicación"
-        description="Qué ve el público y qué falta para publicar."
-      >
-        <PublicationPanel productId={product.id} publication={publication} />
-      </AdminSection>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:grid-rows-[auto_1fr] xl:items-start xl:gap-x-8">
+        {/* Phones read publication, the work (presentations and images) and
+            then the information; wide screens put publication and
+            information in the right column. */}
+        <div className="xl:col-start-2 xl:row-start-1">
+          <AdminSection id="publicacion" title="Publicación">
+            <PublicationPanel
+              productId={product.id}
+              publication={publication}
+            />
+          </AdminSection>
+        </div>
+        <div className="min-w-0 space-y-6 xl:col-start-1 xl:row-span-2 xl:row-start-1">
+          <AdminSection id="presentaciones" title="Presentaciones">
+            {presentations.length > 0 ? (
+              <>
+                <ol
+                  aria-label="Presentaciones del producto"
+                  className="border-t"
+                >
+                  {presentations.map((presentation, index) => (
+                    <PresentationRow
+                      key={presentation.id}
+                      productId={product.id}
+                      presentation={presentation}
+                      isFirst={index === 0}
+                      isLast={index === presentations.length - 1}
+                    />
+                  ))}
+                </ol>
+                <Link
+                  href={newPresentationHref}
+                  className={buttonVariants({
+                    variant: "outline",
+                    className: "w-full sm:w-auto",
+                  })}
+                >
+                  <Plus aria-hidden />
+                  Agregar presentación
+                </Link>
+              </>
+            ) : (
+              <AdminEmptyState
+                icon={PackagePlus}
+                title="Sin presentaciones"
+                description="Agrega al menos una disponible para poder publicar el producto, por ejemplo «Bolsa 250 g»."
+                action={
+                  <Link
+                    href={newPresentationHref}
+                    className={buttonVariants({ variant: "outline" })}
+                  >
+                    <Plus aria-hidden />
+                    Agregar presentación
+                  </Link>
+                }
+              />
+            )}
+          </AdminSection>
 
-      <AdminSection
-        id="presentaciones"
-        title="Presentaciones"
-        description="Las formas en que se ofrece el producto, en el orden en que se muestran."
-      >
-        {presentations.length > 0 ? (
-          <>
-            <ol aria-label="Presentaciones del producto" className="border-t">
-              {presentations.map((presentation, index) => (
-                <PresentationRow
-                  key={presentation.id}
-                  productId={product.id}
-                  presentation={presentation}
-                  isFirst={index === 0}
-                  isLast={index === presentations.length - 1}
-                />
-              ))}
-            </ol>
+          <AdminSection id="imagenes" title="Imágenes">
+            <ProductImagesPanel
+              productId={product.id}
+              productName={product.name}
+              images={images}
+              canUpload={isMediaStorageConfigured()}
+              moveAction={(imageId, direction) =>
+                moveProductImageAction.bind(
+                  null,
+                  product.id,
+                  imageId,
+                  direction,
+                )
+              }
+            />
+          </AdminSection>
+
+          <AdminSection
+            id="foto-inicio"
+            title="Foto para el inicio"
+            description="Opcional: se ve a todo el ancho si el producto sale destacado en el inicio."
+          >
+            <ImageFieldForm
+              key={product.bannerObjectKey ?? "none"}
+              kind="banner"
+              ownerName={product.name}
+              currentUrl={getMediaUrl(product.bannerObjectKey)}
+              canUpload={isMediaStorageConfigured()}
+              uploadAction={uploadProductBannerAction.bind(null, product.id)}
+              removeAction={removeProductBannerAction.bind(null, product.id)}
+            />
+          </AdminSection>
+        </div>
+        <div className="xl:col-start-2 xl:row-start-2">
+          <AdminSection id="informacion" title="Información">
+            <dl className="border-t">
+              <InfoItem
+                label="Categoría"
+                value={
+                  category
+                    ? `${category.name}${category.isActive ? "" : " (inactiva)"}`
+                    : null
+                }
+              />
+              <InfoItem
+                label="Descripción corta"
+                value={product.shortDescription}
+              />
+              <InfoItem label="Origen" value={product.origin} />
+              <InfoItem
+                label="Disponibilidad"
+                value={product.availabilityNote}
+              />
+              <InfoItem label="Dirección web" value={product.slug} />
+            </dl>
             <Link
-              href={newPresentationHref}
+              href={`/admin/products/${product.id}/edit`}
               className={buttonVariants({
                 variant: "outline",
                 className: "w-full sm:w-auto",
               })}
             >
-              <Plus aria-hidden />
-              Agregar presentación
+              <Pencil aria-hidden />
+              Editar información
             </Link>
-          </>
-        ) : (
-          <AdminEmptyState
-            icon={PackagePlus}
-            title="Sin presentaciones"
-            description="Agrega al menos una disponible para poder publicar el producto, por ejemplo «Bolsa 250 g»."
-            action={
-              <Link
-                href={newPresentationHref}
-                className={buttonVariants({ variant: "outline" })}
-              >
-                <Plus aria-hidden />
-                Agregar presentación
-              </Link>
-            }
-          />
-        )}
-      </AdminSection>
-
-      <AdminSection
-        id="imagenes"
-        title="Imágenes"
-        description="La primera es la principal: la que se ve en la vitrina. Las demás se mostrarán en este orden en la ficha del producto."
-      >
-        <ProductImagesPanel
-          productId={product.id}
-          productName={product.name}
-          images={images}
-          canUpload={isMediaStorageConfigured()}
-          moveAction={(imageId, direction) =>
-            moveProductImageAction.bind(null, product.id, imageId, direction)
-          }
-        />
-      </AdminSection>
-
-      <AdminSection
-        id="informacion"
-        title="Información"
-        description="Lo que el comprador lee en la ficha."
-      >
-        <dl className="border-t">
-          <InfoItem
-            label="Categoría"
-            value={
-              category
-                ? `${category.name}${category.isActive ? "" : " (inactiva)"}`
-                : null
-            }
-          />
-          <InfoItem
-            label="Descripción corta"
-            value={product.shortDescription}
-          />
-          <InfoItem label="Origen" value={product.origin} />
-          <InfoItem label="Disponibilidad" value={product.availabilityNote} />
-          <InfoItem label="Identificador web" value={product.slug} />
-        </dl>
-        <Link
-          href={`/admin/products/${product.id}/edit`}
-          className={buttonVariants({
-            variant: "outline",
-            className: "w-full sm:w-auto",
-          })}
-        >
-          <Pencil aria-hidden />
-          Editar información
-        </Link>
-      </AdminSection>
+          </AdminSection>
+        </div>
+      </div>
     </div>
   );
 }

@@ -6,63 +6,84 @@ import { type FormEvent, startTransition, useActionState } from "react";
 
 import { ConfirmActionButton } from "@/components/admin/confirm-action-button";
 import { FormAlert } from "@/components/admin/form-fields";
+import { ImageZoom } from "@/components/admin/image-zoom";
 import {
   formatFileSize,
   useImageSelection,
 } from "@/components/admin/use-image-selection";
 import { AromaLogo } from "@/components/brand/aroma-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
-import type { AssociationImageFormState } from "@/lib/admin/association-profile-form";
-import type { AssociationImageKind } from "@/lib/storage/association-images";
+import type { SingleImageFormState } from "@/lib/admin/image-form";
 import { ASSOCIATION_IMAGE_MAX_DIMENSION } from "@/lib/storage/association-images";
+import { PRODUCT_BANNER_MAX_DIMENSION } from "@/lib/storage/product-images";
 import { cn } from "@/lib/utils";
 
-type AssociationImageFormProps = {
-  kind: AssociationImageKind;
-  associationName: string;
+/** An association's logo or cover, or a product's home banner. */
+export type ImageFieldKind = "logo" | "cover" | "banner";
+
+type ImageFieldFormProps = {
+  kind: ImageFieldKind;
+  /** The association or product the image belongs to, for its alt text. */
+  ownerName: string;
   currentUrl: string | null;
   canUpload: boolean;
   uploadAction: (
-    state: AssociationImageFormState,
+    state: SingleImageFormState,
     formData: FormData,
-  ) => Promise<AssociationImageFormState>;
+  ) => Promise<SingleImageFormState>;
   removeAction: () => Promise<void>;
 };
 
-const initialState: AssociationImageFormState = { status: "idle", attempt: 0 };
+const initialState: SingleImageFormState = { status: "idle", attempt: 0 };
+
+const maxDimension: Record<ImageFieldKind, number> = {
+  ...ASSOCIATION_IMAGE_MAX_DIMENSION,
+  banner: PRODUCT_BANNER_MAX_DIMENSION,
+};
 
 const copy = {
   logo: {
     noun: "logo",
-    hint: "JPG, PNG o WebP. Mejor cuadrado y con fondo transparente o claro. Lo reducimos a 800 px y quitamos sus metadatos.",
-    empty: "Sin logo: el directorio muestra el símbolo de AROMA.",
+    hint: "",
+    empty: "",
     save: "Guardar logo",
     remove: "Quitar logo",
   },
   cover: {
     noun: "portada",
-    hint: "JPG, PNG o WebP, horizontal. Una foto real del territorio o del trabajo de la asociación. La reducimos a 2400 px y quitamos sus metadatos.",
+    hint: "Horizontal.",
     empty: "Sin portada: el perfil empieza directamente con el nombre.",
     save: "Guardar portada",
     remove: "Quitar portada",
   },
+  banner: {
+    noun: "foto",
+    hint: "Horizontal, mejor 16:9. Deja el producto al centro: los bordes se recortan.",
+    empty: "Sin foto para el inicio, se usa la principal recortada.",
+    save: "Guardar foto",
+    remove: "Quitar foto",
+  },
 } as const;
 
-function AssociationImageForm({
+/** How the home's featured carousel crops a banner, shown in its preview. */
+const bannerCrops = [
+  { label: "En computador", className: "aspect-[15/7]" },
+  { label: "En celular", className: "aspect-4/3" },
+] as const;
+
+function ImageFieldForm({
   kind,
-  associationName,
+  ownerName,
   currentUrl,
   canUpload,
   uploadAction,
   removeAction,
-}: AssociationImageFormProps) {
+}: ImageFieldFormProps) {
   const [state, formAction, isPending] = useActionState(
     uploadAction,
     initialState,
   );
-  const { selection, selectFile } = useImageSelection(
-    ASSOCIATION_IMAGE_MAX_DIMENSION[kind],
-  );
+  const { selection, selectFile } = useImageSelection(maxDimension[kind]);
   const text = copy[kind];
   const inputId = `${kind}-file`;
   const previewUrl =
@@ -89,9 +110,16 @@ function AssociationImageForm({
       <div
         className={cn(
           "bg-muted relative flex items-center justify-center overflow-hidden rounded-sm border",
+          // An empty wide slot is only grey space: the line below says it.
+          kind !== "logo" &&
+            !previewUrl &&
+            selection.status !== "preparing" &&
+            "hidden",
           kind === "logo"
             ? "bg-card aspect-square w-32"
-            : "aspect-[21/8] w-full",
+            : kind === "cover"
+              ? "aspect-[21/8] w-full"
+              : "aspect-video w-full max-w-xl",
         )}
       >
         {selection.status === "preparing" ? (
@@ -100,34 +128,55 @@ function AssociationImageForm({
             className="text-muted-foreground size-6 animate-spin"
           />
         ) : previewUrl ? (
-          selection.status === "ready" ? (
-            // A local preview: next/image cannot optimize blob URLs.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewUrl}
-              alt={`Vista previa del nuevo ${text.noun}`}
-              className={cn(
-                "h-full w-full",
-                kind === "logo" ? "object-contain p-2" : "object-cover",
-              )}
-            />
-          ) : (
-            <Image
-              src={previewUrl}
-              alt={
-                kind === "logo"
-                  ? `Logo de ${associationName}`
-                  : `Portada actual de ${associationName}`
-              }
-              fill
-              sizes={
-                kind === "logo" ? "8rem" : "(min-width: 768px) 42rem, 100vw"
-              }
-              className={
-                kind === "logo" ? "object-contain p-2" : "object-cover"
-              }
-            />
-          )
+          <ImageZoom
+            src={previewUrl}
+            alt={
+              kind === "logo"
+                ? `Logo de ${ownerName}`
+                : kind === "cover"
+                  ? `Portada de ${ownerName}`
+                  : `Foto de ${ownerName} para el inicio`
+            }
+            label={
+              kind === "logo"
+                ? "Ver el logo completo"
+                : kind === "cover"
+                  ? "Ver la portada completa"
+                  : "Ver la foto completa"
+            }
+            className="h-full"
+          >
+            {selection.status === "ready" ? (
+              // A local preview: next/image cannot optimize blob URLs.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={previewUrl}
+                alt={`Vista previa de ${kind === "banner" ? "la nueva" : "el nuevo"} ${text.noun}`}
+                className={cn(
+                  "h-full w-full",
+                  kind === "logo" ? "object-contain p-2" : "object-cover",
+                )}
+              />
+            ) : (
+              <Image
+                src={previewUrl}
+                alt={
+                  kind === "logo"
+                    ? `Logo de ${ownerName}`
+                    : kind === "cover"
+                      ? `Portada actual de ${ownerName}`
+                      : `Foto actual de ${ownerName} para el inicio`
+                }
+                fill
+                sizes={
+                  kind === "logo" ? "8rem" : "(min-width: 768px) 42rem, 100vw"
+                }
+                className={
+                  kind === "logo" ? "object-contain p-2" : "object-cover"
+                }
+              />
+            )}
+          </ImageZoom>
         ) : kind === "logo" ? (
           <AromaLogo variant="symbol" className="w-3/5 opacity-35 grayscale" />
         ) : (
@@ -135,7 +184,37 @@ function AssociationImageForm({
         )}
       </div>
 
-      {currentUrl || selection.status === "ready" ? null : (
+      {kind === "banner" && previewUrl && selection.status !== "preparing" ? (
+        <div className="grid max-w-xl grid-cols-[1.6fr_1fr] gap-3">
+          {bannerCrops.map(({ label, className }) => (
+            <figure key={label} className="space-y-1.5">
+              <div
+                className={cn(
+                  "bg-muted relative overflow-hidden rounded-sm border",
+                  className,
+                )}
+              >
+                {/* Same image as above, cropped like the home does. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={previewUrl}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <figcaption className="text-muted-foreground text-xs">
+                {label}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      ) : null}
+
+      {/* The banner's section description already says it is optional. */}
+      {currentUrl ||
+      selection.status === "ready" ||
+      !text.empty ||
+      kind === "banner" ? null : (
         <p className="text-muted-foreground text-sm">{text.empty}</p>
       )}
 
@@ -149,7 +228,7 @@ function AssociationImageForm({
                 id={inputId}
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-                aria-describedby={`${inputId}-ayuda`}
+                aria-describedby={text.hint ? `${inputId}-ayuda` : undefined}
                 onChange={(event) => void selectFile(event.target.files?.[0])}
                 className="peer sr-only"
               />
@@ -188,7 +267,7 @@ function AssociationImageForm({
                 triggerVariant="ghost"
                 triggerClassName="text-destructive hover:bg-destructive/10 hover:text-destructive w-full sm:w-auto"
                 title={`¿${text.remove}?`}
-                description={`Se borrará de forma definitiva. ${text.empty}`}
+                description={`Se borrará de forma definitiva. ${text.empty}`.trim()}
                 confirmLabel={text.remove}
                 pendingLabel="Quitando…"
                 tone="destructive"
@@ -196,19 +275,21 @@ function AssociationImageForm({
               />
             ) : null}
           </div>
-          <p
-            aria-live="polite"
-            className="text-muted-foreground font-mono text-xs"
-          >
+          <p aria-live="polite" className="text-muted-foreground text-sm">
             {selection.status === "preparing"
               ? "Preparando la imagen…"
               : selection.status === "ready"
                 ? `Lista para subir · ${selection.image.width} × ${selection.image.height} px · ${formatFileSize(selection.image.file.size)}`
                 : null}
           </p>
-          <p id={`${inputId}-ayuda`} className="text-muted-foreground text-sm">
-            {text.hint}
-          </p>
+          {text.hint ? (
+            <p
+              id={`${inputId}-ayuda`}
+              className="text-muted-foreground text-sm"
+            >
+              {text.hint}
+            </p>
+          ) : null}
         </div>
       ) : (
         <p className="text-muted-foreground text-sm">
@@ -220,4 +301,4 @@ function AssociationImageForm({
   );
 }
 
-export { AssociationImageForm };
+export { ImageFieldForm };

@@ -40,11 +40,7 @@ export default async function OwnAssociationPage({
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader
-        eyebrow={association.name}
-        title="Mi asociación"
-        description="La información, el contacto y las imágenes que el público ve en el perfil de tu asociación."
-      />
+      <AdminPageHeader eyebrow={association.name} title="Mi asociación" />
 
       <AssociationProfileEditor
         association={association}

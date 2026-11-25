@@ -1,6 +1,7 @@
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
+import { associationPhotosTable as associationPhotos_ } from "@/db/schema/associationPhotos";
 import { associationsTable as associations } from "@/db/schema/associations";
 import { categoriesTable as categories } from "@/db/schema/categories";
 import { productImagesTable as productImages } from "@/db/schema/productImages";
@@ -39,9 +40,18 @@ export async function getCatalogProducts({
       shortDescription: products.shortDescription,
       associationName: associations.name,
       associationSlug: associations.slug,
+      associationLocation: associations.location,
+      associationLogoObjectKey: associations.logoObjectKey,
       categoryName: categories.name,
+      categorySlug: categories.slug,
       imageObjectKey: productImages.objectKey,
       imageAltText: productImages.altText,
+      // Lowest reference price among available presentations, as text like
+      // the column itself; null when none has a price.
+      fromPrice: sql<string | null>`(
+        select min(pp.reference_price)::text from product_presentations as pp
+        where pp.product_id = "products"."id" and pp.is_available
+      )`,
     })
     .from(products)
     .innerJoin(associations, eq(products.associationId, associations.id))
@@ -85,6 +95,7 @@ export async function getPublicProduct(
       origin: products.origin,
       ingredients: products.ingredients,
       availabilityNote: products.availabilityNote,
+      bannerObjectKey: products.bannerObjectKey,
       categoryName: categories.name,
       categorySlug: categories.slug,
       association: {
@@ -93,6 +104,7 @@ export async function getPublicProduct(
         description: associations.description,
         location: associations.location,
         whatsappNumber: associations.whatsappNumber,
+        logoObjectKey: associations.logoObjectKey,
       },
     })
     .from(products)
@@ -163,7 +175,9 @@ export async function getPublicAssociations() {
       slug: associations.slug,
       description: associations.description,
       location: associations.location,
+      zone: associations.zone,
       logoObjectKey: associations.logoObjectKey,
+      coverObjectKey: associations.coverObjectKey,
       // Explicit aliases: in a single-table select Drizzle leaves columns
       // unqualified, which would be ambiguous inside this subquery.
       productCount: sql<number>`(
@@ -191,11 +205,13 @@ export type PublicAssociationSummary = Awaited<
 export async function getPublicAssociation(slug: string) {
   const [association] = await db
     .select({
+      id: associations.id,
       name: associations.name,
       slug: associations.slug,
       description: associations.description,
       history: associations.history,
       location: associations.location,
+      zone: associations.zone,
       whatsappNumber: associations.whatsappNumber,
       logoObjectKey: associations.logoObjectKey,
       coverObjectKey: associations.coverObjectKey,
@@ -208,10 +224,25 @@ export async function getPublicAssociation(slug: string) {
     return null;
   }
 
-  return {
-    ...association,
-    products: await getCatalogProducts({ associationSlug: association.slug }),
-  };
+  const [products, associationPhotos] = await Promise.all([
+    getCatalogProducts({ associationSlug: association.slug }),
+    db
+      .select({
+        id: associationPhotos_.id,
+        objectKey: associationPhotos_.objectKey,
+        altText: associationPhotos_.altText,
+        caption: associationPhotos_.caption,
+      })
+      .from(associationPhotos_)
+      .where(eq(associationPhotos_.associationId, association.id))
+      .orderBy(
+        asc(associationPhotos_.displayOrder),
+        asc(associationPhotos_.createdAt),
+        asc(associationPhotos_.id),
+      ),
+  ]);
+
+  return { ...association, products, photos: associationPhotos };
 }
 
 export type PublicAssociation = NonNullable<

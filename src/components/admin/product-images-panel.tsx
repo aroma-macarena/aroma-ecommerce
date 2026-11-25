@@ -8,7 +8,6 @@ import { SubmitButton } from "@/components/admin/submit-button";
 import { buttonVariants } from "@/components/ui/button";
 import type { ProductImage } from "@/lib/admin/product-image-mutations";
 import { MAX_IMAGES_PER_PRODUCT } from "@/lib/storage/product-images";
-import { cn } from "@/lib/utils";
 
 type ProductImagesPanelProps = {
   productId: string;
@@ -56,14 +55,15 @@ function ProductImagesPanel({
         <AdminEmptyState
           icon={ImagePlus}
           title="Sin imágenes"
-          description="Sin foto, la vitrina muestra el símbolo de AROMA. Agrega una para que el producto se vea como es."
+          description="Sin foto, la vitrina muestra el símbolo de AROMA."
           action={canUpload ? addLink : undefined}
         />
       ) : (
         <>
           <ol
             aria-label="Imágenes del producto"
-            className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-4"
+            // Never narrower than its three controls.
+            className="grid grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-x-4 gap-y-5"
           >
             {images.map((image, index) => {
               const label = `imagen ${index + 1}`;
@@ -77,20 +77,14 @@ function ProductImagesPanel({
                       sizes="(min-width: 1024px) 12rem, (min-width: 640px) 30vw, 45vw"
                     />
                     {image.isPrimary ? (
-                      <span className="bg-card absolute top-2 left-2 rounded-sm px-1.5 py-0.5 font-mono text-[0.6875rem] font-medium tracking-[0.06em] uppercase shadow-sm">
+                      <span className="bg-card absolute top-2 left-2 rounded-sm px-1.5 py-0.5 text-[0.8125rem] font-bold">
                         Principal
                       </span>
                     ) : null}
                   </div>
-                  <p
-                    className={cn(
-                      "line-clamp-2 text-sm wrap-anywhere",
-                      !image.altText && "text-muted-foreground",
-                    )}
-                  >
-                    {image.altText ?? "Sin texto alternativo"}
-                  </p>
-                  <div className="flex items-center gap-1">
+                  {/* Optional (the product's name stands in), so no row
+                      says it is missing. */}
+                  <div className="-ml-2.5 flex items-center">
                     <form action={moveAction(image.id, "up")}>
                       <SubmitButton
                         variant="ghost"
@@ -113,15 +107,15 @@ function ProductImagesPanel({
                     </form>
                     <Link
                       href={`/admin/products/${productId}/images/${image.id}/edit`}
+                      aria-label={`Editar la ${label}`}
+                      title="Editar"
                       className={buttonVariants({
-                        variant: "outline",
-                        size: "sm",
-                        className: "ml-auto",
+                        variant: "ghost",
+                        size: "icon",
+                        className: "text-primary ml-auto",
                       })}
                     >
                       <Pencil aria-hidden />
-                      Editar
-                      <span className="sr-only">{label}</span>
                     </Link>
                   </div>
                 </li>

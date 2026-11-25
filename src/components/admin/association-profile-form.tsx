@@ -9,7 +9,9 @@ import {
   FormActions,
   FormAlert,
   FormSection,
+  SelectControl,
 } from "@/components/admin/form-fields";
+import { formatZoneSuffix, territoryZones } from "@/content/territory";
 import {
   type AssociationProfileField,
   associationProfileFields,
@@ -35,15 +37,14 @@ const initialState: AssociationProfileFormState = {
 };
 
 const hints = {
-  name: "Como aparece en la vitrina, el directorio y los mensajes. Su dirección pública no cambia. Hasta 200 caracteres.",
-  location: "Vereda, municipio o departamento. Hasta 255 caracteres.",
-  description:
-    "Quiénes son y qué producen, en pocas frases. Aparece en el directorio y en el perfil. Hasta 2000 caracteres.",
-  history: "Cómo empezó la asociación y qué la mueve. Hasta 5000 caracteres.",
+  name: "Su dirección web no cambia al renombrarla.",
+  location: "",
+  zone: "Zona aproximada, nunca una dirección. Sin zona, no aparece en el mapa.",
+  description: "",
+  history: "",
   whatsappNumber:
-    "Celular para el botón «Consultar por WhatsApp». No se muestra el número: se abre el chat. Por ejemplo, 300 111 2233.",
-  contactName:
-    "Persona que atiende los mensajes. No se publica: es para coordinar con la alianza. Hasta 150 caracteres.",
+    "El número no se muestra: el botón abre el chat. Por ejemplo, 300 111 2233.",
+  contactName: "No se publica: es para coordinar con la alianza.",
 };
 
 function AssociationProfileForm({
@@ -90,10 +91,7 @@ function AssociationProfileForm({
     >
       <FormAlert message={state.message} />
 
-      <FormSection
-        title="Información pública"
-        description="Lo que el público lee en el directorio y en el perfil."
-      >
+      <FormSection title="Información pública">
         {canEditName ? (
           <Field
             name="name"
@@ -135,6 +133,30 @@ function AssociationProfileForm({
         </Field>
 
         <Field
+          name="zone"
+          label="Zona en el mapa"
+          hint={hints.zone}
+          error={errors.zone}
+          optional
+        >
+          <SelectControl
+            id="zone"
+            name="zone"
+            defaultValue={values.zone ?? ""}
+            aria-invalid={errors.zone ? true : undefined}
+            aria-describedby={describedBy("zone", hints.zone, errors.zone)}
+          >
+            <option value="">Sin zona en el mapa</option>
+            {territoryZones.map((zone) => (
+              <option key={zone.slug} value={zone.slug}>
+                {zone.name}
+                {formatZoneSuffix(zone)}
+              </option>
+            ))}
+          </SelectControl>
+        </Field>
+
+        <Field
           name="description"
           label="Descripción"
           hint={hints.description}
@@ -163,10 +185,7 @@ function AssociationProfileForm({
         </Field>
       </FormSection>
 
-      <FormSection
-        title="Contacto"
-        description="Cómo los compradores llegan a la asociación."
-      >
+      <FormSection title="Contacto">
         <Field
           name="whatsappNumber"
           label="WhatsApp"

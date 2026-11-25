@@ -40,12 +40,12 @@ export const siteContentBlocks = [
     href: "/",
     title: {
       label: "Título",
-      hint: "El título más grande del sitio. Corto y directo. Hasta 80 caracteres.",
+      hint: "El título más grande del sitio. Corto y directo.",
       maxLength: 80,
     },
     content: {
       label: "Presentación",
-      hint: "Una o dos frases bajo el título. Hasta 220 caracteres.",
+      hint: "Una o dos frases bajo el título.",
       maxLength: 220,
       multiline: false,
     },
@@ -64,12 +64,12 @@ export const siteContentBlocks = [
     href: "/#alianza",
     title: {
       label: "Título",
-      hint: "Hasta 100 caracteres.",
+      hint: "",
       maxLength: 100,
     },
     content: {
       label: "Texto",
-      hint: "Quiénes son y qué hacen, en un párrafo. Hasta 400 caracteres.",
+      hint: "Quiénes son y qué hacen, en un párrafo.",
       maxLength: 400,
       multiline: false,
     },
@@ -89,7 +89,7 @@ export const siteContentBlocks = [
     title: null,
     content: {
       label: "Presentación",
-      hint: "Una o dos frases. Hasta 260 caracteres.",
+      hint: "Una o dos frases.",
       maxLength: 260,
       multiline: false,
     },
@@ -109,7 +109,7 @@ export const siteContentBlocks = [
     title: null,
     content: {
       label: "Texto",
-      hint: "Uno o dos párrafos cortos. Hasta 400 caracteres.",
+      hint: "Uno o dos párrafos cortos.",
       maxLength: 400,
       multiline: true,
     },

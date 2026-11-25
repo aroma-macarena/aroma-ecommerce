@@ -36,15 +36,22 @@ export function Field({
 }: FieldProps) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={name} className="flex items-baseline gap-2 font-medium">
+      <label htmlFor={name} className="flex items-baseline gap-1.5 font-bold">
         {label}
         {optional ? (
-          <span className="text-muted-foreground font-mono text-[0.6875rem] font-normal tracking-[0.06em] uppercase">
-            Opcional
+          <span className="text-muted-foreground text-sm font-normal">
+            (opcional)
           </span>
         ) : null}
       </label>
       {children}
+      {/* Filled by CharacterBudget when few characters are left. */}
+      <p
+        data-char-budget={name}
+        aria-live="polite"
+        hidden
+        className="text-muted-foreground data-[full=true]:text-correction text-sm font-bold"
+      />
       {hint ? (
         <p id={`${name}-ayuda`} className="text-muted-foreground text-sm">
           {hint}
@@ -84,21 +91,26 @@ export function FormSection({
   children,
 }: {
   title: string;
-  description: string;
+  /** Only when it says something the title does not. */
+  description?: string;
   children: ReactNode;
 }) {
   return (
-    <fieldset className="border-foreground grid gap-5 border-t pt-5 first-of-type:border-t-0 first-of-type:pt-0 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10">
-      <div className="space-y-1">
-        <legend className="font-heading float-left text-xl font-semibold tracking-[-0.015em]">
-          {title}
-        </legend>
-        <p className="text-muted-foreground clear-left text-sm leading-6">
-          {description}
-        </p>
-      </div>
-      <div className="max-w-2xl space-y-6">{children}</div>
-    </fieldset>
+    // Title beside the fields only where the sheet is wide enough; in a
+    // narrow column (beside a side panel) it sits above them.
+    <div className="@container">
+      <fieldset className="bg-card grid gap-5 rounded-md border p-4 sm:p-6 @3xl:grid-cols-[12rem_minmax(0,1fr)] @3xl:gap-10">
+        <div className="space-y-1">
+          <legend className="float-left text-lg font-bold">{title}</legend>
+          {description ? (
+            <p className="text-muted-foreground clear-left text-sm">
+              {description}
+            </p>
+          ) : null}
+        </div>
+        <div className="max-w-2xl space-y-6">{children}</div>
+      </fieldset>
+    </div>
   );
 }
 
@@ -124,27 +136,41 @@ export function FormActions({
   cancelHref: string;
   submitLabel: string;
   isPending: boolean;
-  /** A less frequent action, such as deleting, kept apart on the left. */
+  /**
+   * A less frequent action, such as deleting (or why it is not possible):
+   * on the left of the bar from 640 px; on phones at the end of the form,
+   * out of the bar that follows the thumb.
+   */
   secondaryAction?: ReactNode;
   note?: ReactNode;
 }) {
   return (
-    <div className="border-foreground space-y-3 border-t-[1.5px] pt-5">
-      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
-        {secondaryAction ? (
-          <div className="sm:mr-auto">{secondaryAction}</div>
-        ) : null}
-        <Link
-          href={cancelHref}
-          className={buttonVariants({ variant: "outline" })}
-        >
-          Cancelar
-        </Link>
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Guardando…" : submitLabel}
-        </Button>
+    <>
+      {secondaryAction ? (
+        <div className="pt-2 pb-1 sm:hidden">{secondaryAction}</div>
+      ) : null}
+      {/* Stays in view while the form scrolls, above the phone's tab bar; a
+          sheet of its own on the paper, a ruled footer inside a card. */}
+      <div className="bg-card sticky bottom-(--admin-tabbar-height) z-20 -mx-4 space-y-3 border-t px-4 py-3 sm:mx-0 sm:rounded-md sm:border lg:bottom-4 in-[.bg-card]:mx-0! in-[.bg-card]:rounded-none! in-[.bg-card]:border-x-0! in-[.bg-card]:border-b-0! in-[.bg-card]:px-0! in-[.bg-card]:pb-0!">
+        <div className="flex items-center justify-end gap-2 sm:gap-3">
+          {/* The same action, rendered once per layout: only one is shown. */}
+          {secondaryAction ? (
+            <div className="mr-auto min-w-0 max-sm:hidden">
+              {secondaryAction}
+            </div>
+          ) : null}
+          <Link
+            href={cancelHref}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Cancelar
+          </Link>
+          <Button type="submit" disabled={isPending} className="max-sm:flex-1">
+            {isPending ? "Guardando…" : submitLabel}
+          </Button>
+        </div>
+        {note}
       </div>
-      {note}
-    </div>
+    </>
   );
 }

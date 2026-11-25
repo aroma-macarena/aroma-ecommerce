@@ -21,3 +21,14 @@ export function associationImageKey(
 ) {
   return `associations/${associationId}/${kind}-${crypto.randomUUID()}.${extension}`;
 }
+
+/** Photos an association can show on its profile. */
+export const MAX_ASSOCIATION_PHOTOS = 8;
+
+/**
+ * Object key for a profile photo:
+ * `associations/{associationId}/photo-{uuid}.{extension}`, new every upload.
+ */
+export function associationPhotoKey(associationId: string, extension: string) {
+  return `associations/${associationId}/photo-${crypto.randomUUID()}.${extension}`;
+}

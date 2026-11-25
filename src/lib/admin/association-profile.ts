@@ -58,6 +58,7 @@ export async function getAssociationProfile(
       slug: associations.slug,
       status: associations.status,
       location: associations.location,
+      zone: associations.zone,
       description: associations.description,
       history: associations.history,
       contactName: associations.contactName,
@@ -111,6 +112,7 @@ export async function updateAssociationProfile(
       .set({
         ...rename,
         location: input.location,
+        zone: input.zone,
         description: input.description,
         history: input.history,
         contactName: input.contactName,

@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
-import { AssociationLogo } from "@/components/catalog/association-logo";
+import {
+  AssociationDirectory,
+  type DirectoryAssociation,
+} from "@/components/plaza/association-directory";
+import { TerritoryMap } from "@/components/plaza/territory-map";
 import { Container } from "@/components/public/container";
-import { SectionHeading } from "@/components/public/section-heading";
+import { getTerritoryZone } from "@/content/territory";
 import { getPublicAssociations } from "@/lib/catalog/queries";
+import { getMediaUrl } from "@/lib/media";
 import { getAssociationHref } from "@/lib/public-routes";
 import { getSiteContent } from "@/lib/site-content/queries";
 
@@ -18,68 +22,55 @@ export const metadata: Metadata = {
     "Las organizaciones de mujeres productoras que forman la Alianza AROMA, en La Macarena, Meta, y lo que ofrece cada una.",
 };
 
-function formatProductCount(count: number) {
-  if (count === 0) {
-    return "Sin productos publicados";
-  }
-
-  return count === 1 ? "1 producto" : `${count} productos`;
-}
-
 export default async function AssociationsPage() {
   const [associations, content] = await Promise.all([
     getPublicAssociations(),
     getSiteContent(),
   ]);
 
-  return (
-    <Container className="space-y-10 pt-8 pb-16 md:space-y-14 md:pt-14 md:pb-24">
-      <SectionHeading
-        as="h1"
-        eyebrow="La alianza"
-        title="Asociaciones"
-        description={content.associations_intro.content}
-      />
+  const directory: DirectoryAssociation[] = associations.map((association) => ({
+    slug: association.slug,
+    name: association.name,
+    location: association.location,
+    description: association.description,
+    productCount: association.productCount,
+    href: getAssociationHref(association.slug),
+    logoUrl: getMediaUrl(association.logoObjectKey),
+    coverUrl: getMediaUrl(association.coverObjectKey),
+    // Only zones on the map count; anything else stays off it.
+    zone: getTerritoryZone(association.zone)?.slug ?? null,
+  }));
+  const zoneCount = new Set(
+    directory.flatMap(({ zone }) => (zone ? [zone] : [])),
+  ).size;
 
-      {associations.length > 0 ? (
-        <ul className="border-foreground border-t-[1.5px]">
-          {associations.map((association) => (
-            <li
-              key={association.slug}
-              className="group has-[a:focus-visible]:outline-ring relative grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-4 gap-y-2 border-b py-5 has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-4 sm:grid-cols-[4.5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-x-6"
-            >
-              <AssociationLogo
-                name={association.name}
-                objectKey={association.logoObjectKey}
-                sizes="4.5rem"
-                className="row-span-2 sm:row-span-1"
-              />
-              <div className="min-w-0 space-y-1 wrap-anywhere">
-                <h2 className="font-heading text-xl leading-tight font-semibold tracking-[-0.015em] md:text-2xl">
-                  <Link
-                    href={getAssociationHref(association.slug)}
-                    className="decoration-1 underline-offset-4 outline-none group-hover:underline after:absolute after:inset-0"
-                  >
-                    {association.name}
-                  </Link>
-                </h2>
-                {association.location ? (
-                  <p className="font-mono text-xs">{association.location}</p>
-                ) : null}
-                {association.description ? (
-                  <p className="text-muted-foreground line-clamp-2 leading-relaxed">
-                    {association.description}
-                  </p>
-                ) : null}
-              </div>
-              <p className="text-muted-foreground col-start-2 font-mono text-xs tracking-[0.04em] uppercase sm:col-start-auto sm:text-right">
-                {formatProductCount(association.productCount)}
-              </p>
-            </li>
-          ))}
-        </ul>
+  return (
+    <Container className="space-y-10 pt-8 pb-16 md:space-y-12 md:pt-12 md:pb-24">
+      <header className="space-y-4">
+        <h1 className="font-sign text-[2.75rem] leading-[0.9] uppercase sm:text-[4rem] lg:text-[4.5rem]">
+          Asociaciones
+        </h1>
+        <div className="space-y-2">
+          <p className="font-editorial text-muted-foreground text-lg leading-relaxed md:text-xl">
+            {content.associations_intro.content}
+          </p>
+          {directory.length > 0 ? (
+            <p className="text-sm font-semibold">
+              {directory.length === 1
+                ? "1 asociación"
+                : `${directory.length} asociaciones`}
+              {zoneCount > 0
+                ? ` en ${zoneCount === 1 ? "1 zona" : `${zoneCount} zonas`} de La Macarena`
+                : ""}
+            </p>
+          ) : null}
+        </div>
+      </header>
+
+      {directory.length > 0 ? (
+        <AssociationDirectory associations={directory} map={<TerritoryMap />} />
       ) : (
-        <p className="text-muted-foreground max-w-xl leading-relaxed">
+        <p className="font-editorial text-muted-foreground max-w-xl text-lg leading-relaxed">
           Pronto encontrarás aquí las asociaciones de la Alianza AROMA.
         </p>
       )}

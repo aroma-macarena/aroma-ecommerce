@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { territoryZoneSlugs } from "@/content/territory";
+import type { SingleImageFormState } from "@/lib/admin/image-form";
 import {
   INVALID_WHATSAPP_MESSAGE,
   normalizeWhatsAppNumber,
@@ -22,6 +24,11 @@ export const associationProfileSchema = z.object({
     .min(1, "Escribe el nombre de la asociación.")
     .max(200, "El nombre puede tener hasta 200 caracteres."),
   location: optionalText(255, "La ubicación"),
+  zone: z
+    .union([z.enum(territoryZoneSlugs), z.literal("")], {
+      error: "Elige una zona de la lista.",
+    })
+    .transform((value) => value || null),
   description: optionalText(2000, "La descripción"),
   history: optionalText(5000, "La historia"),
   contactName: optionalText(150, "El nombre de contacto"),
@@ -67,16 +74,12 @@ export type AssociationProfileFormState = {
   values?: AssociationProfileValues;
 };
 
-export type AssociationImageFormState = {
-  status: "idle" | "error";
-  /** Increases on every failed upload. */
-  attempt: number;
-  message?: string;
-};
+export type AssociationImageFormState = SingleImageFormState;
 
 export const associationProfileFields = [
   "name",
   "location",
+  "zone",
   "description",
   "history",
   "contactName",

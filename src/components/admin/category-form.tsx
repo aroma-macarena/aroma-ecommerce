@@ -21,17 +21,14 @@ type CategoryFormProps = {
   submitLabel: string;
   defaultValues?: { name: string; description: string };
   secondaryAction?: ReactNode;
-  actionsNote?: ReactNode;
 };
 
 const initialState: CategoryFormState = { status: "idle", attempt: 0 };
 
 const hints = {
-  name: "Como aparecerá en el filtro de la vitrina y en las fichas. Hasta 100 caracteres.",
-  newName:
-    "Como aparecerá en el filtro de la vitrina y en las fichas. Su dirección en el filtro se genera con él y no cambia después. Hasta 100 caracteres.",
-  description:
-    "Para orientar a las asociaciones al elegirla. Hasta 500 caracteres.",
+  name: "",
+  newName: "Su dirección web se crea con este nombre y no cambia después.",
+  description: "Ayuda a las asociaciones a elegirla.",
 };
 
 function CategoryForm({
@@ -40,7 +37,6 @@ function CategoryForm({
   submitLabel,
   defaultValues = { name: "", description: "" },
   secondaryAction,
-  actionsNote,
 }: CategoryFormProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
   const values = state.values ?? defaultValues;
@@ -115,7 +111,6 @@ function CategoryForm({
         submitLabel={submitLabel}
         isPending={isPending}
         secondaryAction={secondaryAction}
-        note={actionsNote}
       />
     </form>
   );

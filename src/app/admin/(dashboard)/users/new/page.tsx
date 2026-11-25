@@ -14,7 +14,9 @@ export const metadata: Metadata = {
   title: "Nuevo usuario",
 };
 
-export default async function NewAdminUserPage() {
+export default async function NewAdminUserPage({
+  searchParams,
+}: PageProps<"/admin/users/new">) {
   const result = await getCurrentProfile();
 
   if (result.status !== "ACTIVE") {
@@ -26,6 +28,9 @@ export default async function NewAdminUserPage() {
   }
 
   const associations = await getAssignableAssociations(result.currentProfile);
+  // «Invitar» on the home page names the association nobody administers.
+  const { asociacion } = await searchParams;
+  const preselected = associations.find(({ id }) => id === asociacion)?.id;
 
   return (
     <div className="space-y-8">
@@ -34,16 +39,19 @@ export default async function NewAdminUserPage() {
         <AdminPageHeader
           eyebrow="Alianza AROMA"
           title="Nuevo usuario"
-          description="Le enviaremos una invitación por correo. El acceso es solo por invitación: nadie puede registrarse por su cuenta."
+          description="Le llegará una invitación por correo. Nadie puede registrarse por su cuenta."
         />
       </div>
 
-      <AdminUserForm
-        action={createAdminUserAction}
-        associations={associations}
-        cancelHref="/admin/users"
-        submitLabel="Enviar invitación"
-      />
+      <section className="bg-card rounded-md border p-4 sm:p-6">
+        <AdminUserForm
+          action={createAdminUserAction}
+          associations={associations}
+          cancelHref="/admin/users"
+          submitLabel="Enviar invitación"
+          defaultAssociationId={preselected}
+        />
+      </section>
     </div>
   );
 }
