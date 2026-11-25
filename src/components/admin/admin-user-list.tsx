@@ -119,7 +119,7 @@ function StatusAction({
           </>
         }
         triggerVariant="ghost"
-        triggerClassName="text-muted-foreground"
+        triggerClassName="text-muted-foreground whitespace-nowrap"
         title={`¿Desactivar a ${user.name}?`}
         description="Perderá el acceso al panel de inmediato. Su cuenta de acceso y los cambios que hizo se conservan; puedes reactivarla cuando quieras."
         confirmLabel="Desactivar"
@@ -140,7 +140,7 @@ function StatusAction({
         </>
       }
       triggerVariant="ghost"
-      triggerClassName="text-muted-foreground"
+      triggerClassName="text-muted-foreground whitespace-nowrap"
       title={`¿Activar a ${user.name}?`}
       description="Podrá entrar de nuevo al panel con su rol y su asociación actuales."
       confirmLabel="Activar"
@@ -253,7 +253,7 @@ function AdminUserList({
                 <td className="py-3 pr-4">
                   <AccountStatusBadge user={user} />
                 </td>
-                <td className="py-2 pr-4 text-right">
+                <td className="py-0.5 pr-4 text-right">
                   <RowActions
                     user={user}
                     isSelf={isSelf}

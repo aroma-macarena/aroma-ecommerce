@@ -37,7 +37,7 @@ function StatusAction({
           </>
         }
         triggerVariant="ghost"
-        triggerClassName="text-muted-foreground"
+        triggerClassName="text-muted-foreground whitespace-nowrap"
         title={`¿Desactivar ${association.name}?`}
         description="Sus productos dejarán de verse en la vitrina y su perfil público dejará de estar disponible. Sus administradoras no podrán entrar al panel. No se borra nada: al reactivarla, todo vuelve a estar como antes."
         confirmLabel="Desactivar"
@@ -58,7 +58,7 @@ function StatusAction({
         </>
       }
       triggerVariant="ghost"
-      triggerClassName="text-muted-foreground"
+      triggerClassName="text-muted-foreground whitespace-nowrap"
       title={`¿Activar ${association.name}?`}
       description="Su perfil y sus productos publicados volverán a verse en la vitrina, y sus administradoras podrán entrar de nuevo al panel."
       confirmLabel="Activar"
@@ -182,7 +182,7 @@ function AdminAssociationList({
               <td className="py-3 pr-4 whitespace-nowrap">
                 {association.adminCount}
               </td>
-              <td className="py-2 pr-4 text-right">
+              <td className="py-0.5 pr-4 text-right">
                 <RowActions
                   association={association}
                   setStatusAction={setStatusAction}

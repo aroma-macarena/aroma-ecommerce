@@ -46,7 +46,7 @@ function StatusAction({
         </>
       }
       triggerVariant="ghost"
-      triggerClassName="text-muted-foreground"
+      triggerClassName="text-muted-foreground whitespace-nowrap"
       title={`¿Desactivar «${category.name}»?`}
       description="Sus productos dejarán de verse en la vitrina y no se podrá elegir para productos nuevos. Los productos que ya la tienen la conservan y no se borra nada: al reactivarla, todo vuelve a estar como antes."
       confirmLabel="Desactivar"
@@ -64,7 +64,7 @@ function StatusAction({
         </>
       }
       triggerVariant="ghost"
-      triggerClassName="text-muted-foreground"
+      triggerClassName="text-muted-foreground whitespace-nowrap"
       title={`¿Activar «${category.name}»?`}
       description="Sus productos publicados volverán a verse en la vitrina y se podrá elegir para productos nuevos."
       confirmLabel="Activar"
@@ -158,7 +158,7 @@ function AdminCategoryList({
               <td className="py-3 pr-4 whitespace-nowrap">
                 <UsageCell category={category} />
               </td>
-              <td className="py-2 pr-4 text-right">
+              <td className="py-0.5 pr-4 text-right">
                 <StatusAction
                   category={category}
                   setActiveAction={setActiveAction}
